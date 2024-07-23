@@ -62,7 +62,7 @@ const HomePage = () => {
           <a href="pages/absen/geolocation" className="btn btn-danger me-2 mb-2">
             Geolocation
           </a>
-          <a href="pages/absen/halaman-absen" className="btn btn-success me-2 mb-2">
+          <a href="pages/absen/absen-harian" className="btn btn-success me-2 mb-2">
             Absen Hari Ini
           </a>
           <a href="pages/absen/absen-pulang" className="btn btn-info me-2 mb-2">

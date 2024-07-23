@@ -41,8 +41,8 @@ export const DashboardMenu = [
 		icon: 'layers',
 		children: [
 			{ id: uuid(), link: '/pages/absen/geolocation', name: 'Geolocation' },
-			{ id: uuid(), link: '/pages/absen/halaman-absen', name: 'Absen Hadir'},
-			{ id: uuid(), link: '/pages/absen/halaman-pulang', name: 'Absen Pulang' }
+			{ id: uuid(), link: '/pages/absen/absen-harian', name: 'Absen Hadir'},
+			{ id: uuid(), link: '/pages/absen/absen-pulang', name: 'Absen Pulang' }
 		]
 	},	
 	
@@ -61,6 +61,7 @@ export const DashboardMenu = [
 			{ id: uuid(), link: '/data-pengguna/pkl', name: 'Data PKL'}			
 		]
 	},
+
 ];
 
 // siu

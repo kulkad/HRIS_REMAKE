@@ -114,7 +114,7 @@ const FaceComparison = () => {
 
   if (initializing) {
     return (
-      <div className="w-full bg-white dark:bg-slate-900 dark:text-white max-w-md mx-auto rounded-lg shadow-md overflow-hidden md:max-w-2xl p-4">
+      <div className="container bg-white dark:bg-slate-900 dark:text-white rounded-lg shadow-md overflow-hidden p-4">
         <Skeleton height={40} count={1} className="mb-4" />
         <Skeleton height={20} count={1} className="mb-4" />
         <Skeleton height={20} count={1} className="mb-4" />
@@ -125,34 +125,34 @@ const FaceComparison = () => {
   }
 
   return (
-    <div className="flex justify-center bg-gray-300 dark:bg-gray-600 mt-2 ml-4 rounded-md">
-      <div>
+    <div className="container d-flex justify-content-center bg-light dark:bg-dark mt-2 rounded">
+      <div className="text-center">
         <Webcam
           audio={false}
           ref={webcamRef}
           screenshotFormat="image/jpeg"
-          className=" mt-4 rounded-md w-96 h-auto"
+          className="rounded mt-4 w-100"
           style={{ transform: "scaleX(-1)" }}
         />
         <div>
-          <img ref={imageRef2} className="hidden" alt="Captured Image" />
+          <img ref={imageRef2} className="d-none" alt="Captured Image" />
         </div>
         <button
-          className="flex justify-self-center ml-40 mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-sm text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          className="btn btn-primary mt-3"
           onClick={calculateSimilarity}
         >
           Absen
         </button>
         {similarity && (
-          <p className="text-red-600 font-semibold mb-4">
+          <p className="text-danger font-weight-bold mt-3">
             Kemiripan wajah :{" "}
-            <span className="mb-4 text-blue-800 font-semibold">
+            <span className="text-primary">
               {similarity}
             </span>
           </p>
         )}
         {absenSuccess && currentUser && (
-          <p className="text-blue-600 font-semibold">
+          <p className="text-success font-weight-bold mt-3">
             Hai {currentUser.name}, absen berhasil! Silahkan melanjutkan
             aktifitas anda!
           </p>
