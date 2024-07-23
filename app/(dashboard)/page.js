@@ -3,19 +3,6 @@
 import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-// import node module libraries
-import { Fragment } from "react";
-import Link from "next/link";
-import { Container, Col, Row } from "react-bootstrap";
-
-// import widget/custom components
-import { StatRightTopIcon } from "widgets";
-
-// import sub components
-import { ActiveProjects, Teams, TasksPerformance } from "sub-components";
-
-// import required data files
-import ProjectsStatsData from "data/dashboard/ProjectsStatsData";
 
 const HomePage = () => {
     const [user, setUser] = useState(null);
@@ -58,23 +45,6 @@ const HomePage = () => {
     }
 
     return ( <
-        Fragment >
-        <
-        div className = "bg-primary pt-10 pb-21" > < /div> <
-        Container fluid className = "mt-n22 px-6" >
-        <
-        Row >
-        <
-        Col lg = { 12 }
-        md = { 12 }
-        xs = { 12 } > { /* Page header */ } <
-        div >
-        <
-        div className = "d-flex justify-content-between align-items-center" >
-        <
-        /div> <
-        /div> <
-        /Col> <
         div className = "container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow" >
         <
         div className = "p-4" >
@@ -126,10 +96,7 @@ const HomePage = () => {
         /a> <
         /div> <
         /div> <
-        /div> <
-        /Row> <
-        /Container>      <
-        /Fragment>
+        /div>
     );
 };
 
