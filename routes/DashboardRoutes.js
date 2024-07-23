@@ -23,44 +23,43 @@ import { v4 as uuid } from 'uuid';
  *
  */
 
-export const DashboardMenu = [
-	{
-		id: uuid(),
-		title: 'Dashboard',
-		icon: 'home',
-		link: '/'
-	},
-	{
-		id: uuid(),
-		title: 'Bagian Absen',
-		grouptitle: true
-	},
-	{
-		id: uuid(),
-		title: 'Absensi',
-		icon: 'layers',
-		children: [
-			{ id: uuid(), link: '/pages/geolocation', name: 'Geolocation' },
-			{ id: uuid(), link: '/pages/halaman-absen', name: 'Absen Hadir'},
-			{ id: uuid(), link: '/pages/halaman-pulang', name: 'Absen Pulang' }
-		]
-	},	
-	
-	{
-		id: uuid(),
-		title: 'Data Pengguna',
-		grouptitle: true
-	},	
-	{
-		id: uuid(),
-		title: 'Data Pengguna',
-		icon: 'lock',
-		children: [
-			{ id: uuid(), link: '/data-pengguna/karyawan', name: 'Data Karyawan' },
-			{ id: uuid(), link: '/data-pengguna/magang', name: 'Data Magang' },
-			{ id: uuid(), link: '/data-pengguna/pkl', name: 'Data PKL'}			
-		]
-	},
+export const DashboardMenu = [{
+        id: uuid(),
+        title: 'Dashboard',
+        icon: 'home',
+        link: '/'
+    },
+    {
+        id: uuid(),
+        title: 'Bagian Absen',
+        grouptitle: true
+    },
+    {
+        id: uuid(),
+        title: 'Absensi',
+        icon: 'clock',
+        children: [
+            { id: uuid(), link: '/pages/geolocation', name: 'Geolocation' },
+            { id: uuid(), link: '/pages/halaman-absen', name: 'Absen Hadir' },
+            { id: uuid(), link: '/pages/halaman-pulang', name: 'Absen Pulang' }
+        ]
+    },
+
+    {
+        id: uuid(),
+        title: 'Data Pengguna',
+        grouptitle: true
+    },
+    {
+        id: uuid(),
+        title: 'Data Pengguna',
+        icon: 'user',
+        children: [
+            { id: uuid(), link: '/data-pengguna/karyawan', name: 'Data Karyawan' },
+            { id: uuid(), link: '/data-pengguna/magang', name: 'Data Magang' },
+            { id: uuid(), link: '/data-pengguna/pkl', name: 'Data PKL' }
+        ]
+    },
 ];
 
 export default DashboardMenu;
