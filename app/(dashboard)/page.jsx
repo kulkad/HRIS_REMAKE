@@ -89,7 +89,7 @@ const HomePage = () => {
                 </a>
                 <a
                   href="pages/absen/absen-pulang"
-                  className="btn btn-info me-2 mb-2"
+                  className="btn btn-info text-light me-2 mb-2"
                 >
                   Absen Pulang
                 </a>

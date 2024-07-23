@@ -106,7 +106,7 @@ const FaceComparison = () => {
 
   if (initializing) {
     return (
-      <div className="container bg-white dark:bg-dark text-dark dark:text-white rounded shadow p-4">
+      <div className="container bg-white dark:bg-dark text-light dark:text-white rounded shadow p-4">
         <Skeleton height={40} count={1} className="mb-4" />
         <Skeleton height={20} count={1} className="mb-4" />
         <Skeleton height={20} count={1} className="mb-4" />
@@ -130,7 +130,7 @@ const FaceComparison = () => {
           <img ref={imageRef2} className="d-none" alt="Captured Image" />
         </div>
         <button
-          className="btn btn-primary mt-3"
+          className="btn text-primary btn-primary mt-3"
           onClick={calculateSimilarity}
         >
           Absen pulang
