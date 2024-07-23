@@ -56,10 +56,10 @@ export const DashboardMenu = [{
         title: 'Data Pengguna',
         icon: 'user',
         children: [
-            { id: uuid(), link: '/data-pengguna/manager', name: 'Data Manager' },
-            { id: uuid(), link: '/data-pengguna/karyawan', name: 'Data Karyawan' },
-            { id: uuid(), link: '/data-pengguna/magang', name: 'Data Magang' },
-            { id: uuid(), link: '/data-pengguna/pkl', name: 'Data PKL' }
+            { id: uuid(), link: '/pages/user', name: 'Data Manager' },
+            { id: uuid(), link: '/pages/user/karyawan', name: 'Data Karyawan' },
+            { id: uuid(), link: '/pages/user/magang', name: 'Data Magang' },
+            { id: uuid(), link: '/pages/user/pkl', name: 'Data PKL' }
         ]
     },
 
