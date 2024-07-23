@@ -82,7 +82,7 @@ const HomePage = () => {
                   Geolocation
                 </a>
                 <a
-                  href="pages/absen/halaman-absen"
+                  href="pages/absen/absen-harian"
                   className="btn btn-success me-2 mb-2"
                 >
                   Absen Hari Ini
