@@ -40,9 +40,9 @@ export const DashboardMenu = [
 		title: 'Absensi',
 		icon: 'layers',
 		children: [
-			{ id: uuid(), link: '/pages/geolocation', name: 'Geolocation' },
-			{ id: uuid(), link: '/pages/halaman-absen', name: 'Absen Hadir'},
-			{ id: uuid(), link: '/pages/halaman-pulang', name: 'Absen Pulang' }
+			{ id: uuid(), link: '/pages/absen/geolocation', name: 'Geolocation' },
+			{ id: uuid(), link: '/pages/absen/halaman-absen', name: 'Absen Hadir'},
+			{ id: uuid(), link: '/pages/absen/halaman-pulang', name: 'Absen Pulang' }
 		]
 	},	
 	

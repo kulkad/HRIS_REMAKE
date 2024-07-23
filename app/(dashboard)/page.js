@@ -59,13 +59,13 @@ const HomePage = () => {
 
         <hr className="my-4" />
         <div className="d-grid gap-2 d-md-block">
-          <a href="geolocation" className="btn btn-danger me-2 mb-2">
+          <a href="pages/absen/geolocation" className="btn btn-danger me-2 mb-2">
             Geolocation
           </a>
-          <a href="halaman-absen" className="btn btn-success me-2 mb-2">
+          <a href="pages/absen/halaman-absen" className="btn btn-success me-2 mb-2">
             Absen Hari Ini
           </a>
-          <a href="absen-pulang" className="btn btn-info me-2 mb-2">
+          <a href="pages/absen/absen-pulang" className="btn btn-info me-2 mb-2">
             Absen Pulang
           </a>
         </div>
