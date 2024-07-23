@@ -39,6 +39,7 @@ export const DashboardMenu = [{
         title: 'Absensi',
         icon: 'clock',
         children: [
+            { id: uuid(), link: '/pages/data-absensi', name: 'Data Absensi' },
             { id: uuid(), link: '/pages/geolocation', name: 'Geolocation' },
             { id: uuid(), link: '/pages/halaman-absen', name: 'Absen Hadir' },
             { id: uuid(), link: '/pages/halaman-pulang', name: 'Absen Pulang' }
@@ -55,6 +56,7 @@ export const DashboardMenu = [{
         title: 'Data Pengguna',
         icon: 'user',
         children: [
+            { id: uuid(), link: '/data-pengguna/manager', name: 'Data Manager' },
             { id: uuid(), link: '/data-pengguna/karyawan', name: 'Data Karyawan' },
             { id: uuid(), link: '/data-pengguna/magang', name: 'Data Magang' },
             { id: uuid(), link: '/data-pengguna/pkl', name: 'Data PKL' }
