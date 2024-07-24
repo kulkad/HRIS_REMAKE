@@ -91,7 +91,8 @@ const QuickMenu = () => {
                         <i className="fe fe-user me-2"></i> Edit Photo Profile
                     </Dropdown.Item>
                     <Dropdown.Item>
-                        <i className="fe fe-power me-2"></i>Log Out
+                    <Link href="/authentication/logout" className="text-inherit fs-6">
+                    <i className="fe fe-power me-2"></i>Log Out</Link>
                     </Dropdown.Item>
                 </Dropdown.Menu>
             </Dropdown>
@@ -127,7 +128,8 @@ const QuickMenu = () => {
                         <i className="fe fe-user me-2"></i> Edit Photo Profile
                     </Dropdown.Item>
                     <Dropdown.Item>
-                        <i className="fe fe-power me-2"></i>Sign Out
+                    <Link href="/authentication/logout" className="text-inherit fs-6">
+                    <i className="fe fe-power me-2"></i>Log Out</Link>
                     </Dropdown.Item>
                 </Dropdown.Menu>
             </Dropdown>
