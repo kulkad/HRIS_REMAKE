@@ -83,12 +83,13 @@ const QuickMenu = () => {
                     <Dropdown.Item as="div" className="px-4 pb-0 pt-2" bsPrefix=' '>
                             <div className="lh-1 ">
                                 <h5 className="mb-1"> John Doe</h5>
-                                <Link href="#" className="text-inherit fs-6">View my profile</Link>
+                                <Link href="/pages/user/detailuser" className="text-inherit fs-6">View my profile</Link>
                             </div>
                             <div className=" dropdown-divider mt-3 mb-2"></div>
                     </Dropdown.Item>
                     <Dropdown.Item eventKey="2">
-                        <i className="fe fe-user me-2"></i> Edit Photo Profile
+                    <Link href="/pages/user/profile/edit-foto" className="text-inherit fs-6">
+                    <i className="fe fe-user me-2"></i> Edit Photo Profile</Link>
                     </Dropdown.Item>
                     <Dropdown.Item>
                     <Link href="/authentication/logout" className="text-inherit fs-6">
@@ -120,12 +121,13 @@ const QuickMenu = () => {
                     <Dropdown.Item as="div" className="px-4 pb-0 pt-2" bsPrefix=' '>
                             <div className="lh-1 ">
                                 <h5 className="mb-1"> John Doe</h5>
-                                <Link href="#" className="text-inherit fs-6">View my profile</Link>
+                                <Link href="/pages/user/detailuser" className="text-inherit fs-6">View my profile</Link>
                             </div>
                             <div className=" dropdown-divider mt-3 mb-2"></div>
                     </Dropdown.Item>
                     <Dropdown.Item eventKey="2">
-                        <i className="fe fe-user me-2"></i> Edit Photo Profile
+                    <Link href="/pages/user/profile/edit-foto" className="text-inherit fs-6">
+                    <i className="fe fe-user me-2"></i> Edit Photo Profile</Link>
                     </Dropdown.Item>
                     <Dropdown.Item>
                     <Link href="/authentication/logout" className="text-inherit fs-6">

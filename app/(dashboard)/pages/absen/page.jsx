@@ -127,11 +127,14 @@ const FaceComparison = () => {
   return (
     <div className="container d-flex justify-content-center bg-light dark:bg-dark mt-2 rounded">
       <div className="text-center">
-        <Webcam
+      <Webcam
           audio={false}
           ref={webcamRef}
           screenshotFormat="image/jpeg"
-          className="rounded mt-4 w-100"
+          className="rounded-circle w-100"
+          videoConstraints={{
+            facingMode: "user",
+          }}
           style={{ transform: "scaleX(-1)" }}
         />
         <div>

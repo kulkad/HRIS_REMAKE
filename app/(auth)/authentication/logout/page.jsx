@@ -1,49 +1,67 @@
 'use client'
 
-// import node module libraries
-import { useEffect } from 'react';
-import { Row, Col, Card, Button } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-// import hooks
-import useMounted from 'hooks/useMounted';
-
 const Logout = () => {
-  const hasMounted = useMounted();
   const router = useRouter();
+  const [showAnimation, setShowAnimation] = useState(true);
 
   useEffect(() => {
-    if (hasMounted) {
-      // Simulate logout process
-      // Perform actual logout logic here, e.g., clearing session, removing tokens, etc.
-      console.log("User logged out");
-      // Redirect to login page after logout
-      router.push('/authentication/login');
-    }
-  }, [hasMounted, router]);
+    // Clear user data from local storage
+    localStorage.removeItem("user");
+
+    // Set timeout for animation
+    const timer = setTimeout(() => {
+      setShowAnimation(false);
+      // Redirect to login page
+      router.push("/authentication/login");
+    }, 2000); // 2 seconds for animation
+
+    return () => clearTimeout(timer);
+  }, [router]);
 
   return (
-    <Row className="align-items-center justify-content-center g-0 min-vh-100">
-      <Col xxl={4} lg={6} md={8} xs={12} className="py-8 py-xl-0">
-        {/* Card */}
-        <Card className="smooth-shadow-md">
-          {/* Card body */}
-          <Card.Body className="p-6 text-center">
-            <div className="mb-4">
-              <h1>Logout</h1>
-              <p className="mb-6">You have been logged out successfully.</p>
-            </div>
-            {/* Button */}
-            <div className="d-grid">
-              <Button variant="primary" onClick={() => router.push('/authentication/login')}>
-                Go to Login
-              </Button>
-            </div>
-          </Card.Body>
-        </Card>
-      </Col>
-    </Row>
-  )
+    showAnimation && (
+      <div style={styles.container}>
+        <h1 style={styles.text}>Logging Out...</h1>
+        <div style={styles.spinner}></div>
+      </div>
+    )
+  );
 }
+
+const styles = {
+  container: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100vh',
+    flexDirection: 'column',
+    backgroundColor: '#f8f9fa',
+    animation: 'fadeOut 2s forwards'
+  },
+  text: {
+    marginBottom: '20px',
+    fontSize: '24px',
+    color: '#000'
+  },
+  spinner: {
+    width: '40px',
+    height: '40px',
+    border: '4px solid #f3f3f3',
+    borderTop: '4px solid #3498db',
+    borderRadius: '50%',
+    animation: 'spin 2s linear infinite'
+  },
+  '@keyframes spin': {
+    '0%': { transform: 'rotate(0deg)' },
+    '100%': { transform: 'rotate(360deg)' }
+  },
+  '@keyframes fadeOut': {
+    '0%': { opacity: 1 },
+    '100%': { opacity: 0 }
+  }
+};
 
 export default Logout;
