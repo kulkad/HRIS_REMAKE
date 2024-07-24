@@ -89,12 +89,9 @@ const TambahData = () => {
   }
 
   return (
-    <div className="bg-white rounded-lg mx-4 p-4 text-xl dark:bg-slate-900">
+    <div className="bg-white rounded-lg mx-4 p-4 text-xl dark:bg-slate-900 container">
       <div className="flex items-center mb-4">
-        <Link href="/" className="sm:hidden">
-          <IoIosArrowBack className="mr-2 text-xl dark:text-white" />
-        </Link>
-        <h1 className="text-lg font-semibold dark:text-white">Form Tambah User</h1>
+        <h3 className="text-lg font-semibold dark:text-white">Form Tambah User</h3>
       </div>
 
 
@@ -102,8 +99,8 @@ const TambahData = () => {
         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Nama
         </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+        <div className="relative d-flex">
+          <div className="p-2">
             <FaUser />
           </div>
           <input
@@ -111,15 +108,15 @@ const TambahData = () => {
             id="nama"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="form-control"
             placeholder="your name"
           />
         </div>
         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Email
         </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+        <div className="relative d-flex">
+          <div className="p-2">
             <MdEmail />
           </div>
           <input
@@ -127,7 +124,7 @@ const TambahData = () => {
             id="email-address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="form-control"
             placeholder="your@gmail.com"
           />
         </div>
@@ -135,8 +132,8 @@ const TambahData = () => {
         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Password
         </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+        <div className="relative d-flex">
+          <div className="p-2">
             <FaLock />
           </div>
           <input
@@ -144,16 +141,16 @@ const TambahData = () => {
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="form-control"
             placeholder="***********"
           />
         </div>
 
         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-          Confirmasi Password
+          Konfirmasi Password
         </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+        <div className="relative d-flex">
+          <div className="p-2">
             <FaLock />
           </div>
           <input
@@ -161,7 +158,7 @@ const TambahData = () => {
             id="password"
             value={confpassword}
             onChange={(e) => setConfpassword(e.target.value)}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="form-control"
             placeholder="***********"
           />
         </div>
@@ -169,12 +166,12 @@ const TambahData = () => {
         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Image
         </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+        <div className="relative d-flex">
+          <div className="p-2">
             <IoMdImage className="mr-5" size={24} />
           </div>
           <input
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="form-control"
             aria-describedby="user_avatar_help"
             id="user_avatar"
             onChange={loadImage}
@@ -194,7 +191,7 @@ const TambahData = () => {
 
         <input
           type="submit"
-          className="inline-block border-rounded w-18 h-15 mt-4 bg-green-400 hover:bg-green-500 hover:text-white"
+          className="mt-4 btn btn-success"
         />
       </form>
     </div>

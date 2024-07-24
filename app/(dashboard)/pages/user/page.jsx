@@ -131,7 +131,7 @@ const HomePage = () => {
                   <h3 className="mb-0  text-white">Data Karyawan</h3>
                 </div>
                 <div>
-                  <Link href="#" className="btn btn-white">
+                  <Link href="/pages/user/tambah" className="btn btn-white">
                     Tambah Data
                   </Link>
                 </div>

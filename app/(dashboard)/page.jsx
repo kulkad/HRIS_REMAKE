@@ -67,7 +67,7 @@ const HomePage = () => {
                   <div class="row">
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0">
-                        Total traffic
+                        Total User
                       </h5>
                       <span class="h2 font-weight-bold mb-0">350,897</span>
                     </div>
@@ -93,7 +93,7 @@ const HomePage = () => {
                   <div class="row">
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0">
-                        New users
+                        Hadir
                       </h5>
                       <span class="h2 font-weight-bold mb-0">2,356</span>
                     </div>
@@ -119,7 +119,7 @@ const HomePage = () => {
                   <div class="row">
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0">
-                        Sales
+                        Tidak Hadir
                       </h5>
                       <span class="h2 font-weight-bold mb-0">924</span>
                     </div>
@@ -145,7 +145,7 @@ const HomePage = () => {
                   <div class="row">
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0">
-                        Performance
+                        Kehadiran
                       </h5>
                       <span class="h2 font-weight-bold mb-0">49,65%</span>
                     </div>
