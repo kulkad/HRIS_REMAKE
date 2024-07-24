@@ -41,7 +41,7 @@ export const DashboardMenu = [{
         children: [
             { id: uuid(), link: '/pages/absen/data-absensi', name: 'Data Absensi' },
             { id: uuid(), link: '/pages/absen/geolocation', name: 'Geolocation' },
-            { id: uuid(), link: '/pages/absen/absen-harian', name: 'Absen Hadir' },
+            { id: uuid(), link: '/pages/absen/', name: 'Absen Hadir' },
             { id: uuid(), link: '/pages/absen/absen-pulang', name: 'Absen Pulang' }
         ]
     },
