@@ -5,16 +5,14 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 // import node module libraries
 import { Fragment } from "react";
-import Link from 'next/link';
-import { Container, Col, Row } from 'react-bootstrap';
+import Link from "next/link";
+import { Container, Col, Row } from "react-bootstrap";
 
 // import widget/custom components
 import { StatRightTopIcon } from "widgets";
 
 // import sub components
-import { ActiveProjects, Teams, 
-    TasksPerformance 
-} from "sub-components";
+import { ActiveProjects, Teams, TasksPerformance } from "sub-components";
 
 // import required data files
 import ProjectsStatsData from "data/dashboard/ProjectsStatsData";
@@ -25,7 +23,7 @@ const HomePage = () => {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://localhost:3000/login";
+      window.location.href = "http://localhost:3000/authentication/login";
     } else {
       setUser(JSON.parse(userData));
     }
