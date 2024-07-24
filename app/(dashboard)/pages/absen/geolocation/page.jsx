@@ -7,13 +7,13 @@ import { FaRegImage } from "react-icons/fa6";
 export default function Capture() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
+  const overlayCanvasRef = useRef(null);
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [attendance, setAttendance] = useState("Hadir");
-  const fileInputRef = useRef(null); // Tambahkan ref untuk input file
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
-    // Ambil geolocation
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -28,6 +28,28 @@ export default function Capture() {
         { enableHighAccuracy: true }
       );
     }
+
+    // Menggambar overlay panduan wajah
+    const context = overlayCanvasRef.current.getContext("2d");
+    const canvasWidth = overlayCanvasRef.current.width;
+    const canvasHeight = overlayCanvasRef.current.height;
+
+    context.clearRect(0, 0, canvasWidth, canvasHeight);
+    context.fillStyle = "rgba(0, 0, 0, 0.6)";
+    context.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    // Area untuk wajah
+    const faceRadius = 150; // Memperbesar lingkaran
+    const faceX = canvasWidth / 2;
+    const faceY = canvasHeight / 2;
+
+    // Gambar lingkaran untuk panduan wajah
+    context.save();
+    context.globalCompositeOperation = "destination-out";
+    context.beginPath();
+    context.arc(faceX, faceY, faceRadius, 0, 2 * Math.PI);
+    context.fill();
+    context.restore();
   }, []);
 
   const getFormattedDate = () => {
@@ -57,11 +79,9 @@ export default function Capture() {
     const img = new Image();
 
     img.onload = () => {
-      // Set background color
       context.fillStyle = "white";
       context.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
 
-      // Flip the image horizontally
       context.translate(canvasRef.current.width, 0);
       context.scale(-1, 1);
       context.drawImage(
@@ -73,11 +93,9 @@ export default function Capture() {
       );
       context.setTransform(1, 0, 0, 1, 0, 0);
 
-      // Ambil waktu sekarang
       const date = getFormattedDate();
       const time = getFormattedTime();
 
-      // Menggambar latar belakang transparan untuk keterangan
       context.fillStyle = "rgba(128, 128, 128, 0.5)";
       context.fillRect(
         0,
@@ -86,36 +104,36 @@ export default function Capture() {
         150
       );
 
-      // Muat logo dari direktori publik dan gambar di latar belakang transparan
       const logoImg = new Image();
       logoImg.src = "/images/assets/gmt-ultra-full-extra-hd.png";
       logoImg.onload = () => {
-        // Perbesar logo dan posisikan di tengah area latar belakang transparan
-        const logoWidth = 70; // Perbesar lebar logo
-        const logoHeight = 70; // Perbesar tinggi logo
-        const logoX = 10; // Posisi X logo
-        const logoY = canvasRef.current.height - 140; // Posisi Y logo
+        const logoWidth = 70;
+        const logoHeight = 70;
+        const logoX = 10;
+        const logoY = canvasRef.current.height - 140;
         context.drawImage(logoImg, logoX, logoY, logoWidth, logoHeight);
 
-        // Tulis keterangan setelah logo dimuat
         context.font = "20px Arial";
         context.fillStyle = "white";
-        const textX = logoX + logoWidth + 10; // Mulai teks setelah logo
+        const textX = logoX + logoWidth + 10;
+        const nama = "Abyan Yusuf D";
+
+        context.fillText(`Nama: ${nama}`, textX, canvasRef.current.height - 130);
+        const marginTop = 5;
+        let currentTextY = canvasRef.current.height - 130 + 30 + marginTop;
+
         if (location.latitude && location.longitude) {
           context.fillText(
             `Lokasi Anda: ${location.latitude}, ${location.longitude}`,
             textX,
-            canvasRef.current.height - 100
+            currentTextY
           );
+          currentTextY += 30 + marginTop;
         }
-        context.fillText(
-          `Tanggal: ${date}`,
-          textX,
-          canvasRef.current.height - 70
-        );
-        context.fillText(`Waktu: ${time}`, textX, canvasRef.current.height - 40);
+        context.fillText(`Tanggal: ${date}`, textX, currentTextY);
+        currentTextY += 30 + marginTop;
+        context.fillText(`Waktu: ${time}`, textX, currentTextY);
 
-        // Set foto dengan keterangan yang telah ditambahkan
         const image = canvasRef.current.toDataURL("image/png");
         setPhoto(image);
       };
@@ -128,7 +146,6 @@ export default function Capture() {
     setPhoto(null);
     setLocation({ latitude: null, longitude: null });
 
-    // Ambil geolocation lagi
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -146,7 +163,6 @@ export default function Capture() {
   };
 
   const submitData = () => {
-    // Kirim data photo dan geolocation ke server
     console.log("Photo:", photo);
     console.log("Location:", location);
     alert("Data submitted!");
@@ -166,19 +182,25 @@ export default function Capture() {
         {/* Geolocation */}
       </h1>
       {!photo && (
-        <div className="d-flex flex-column align-items-center">
+        <div className="d-flex flex-column align-items-center position-relative">
           <Webcam
-            audio={false}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            className="border border-secondary mt-4 rounded"
-            width="500"
-            height="350"
-            videoConstraints={{
-              facingMode: "user",
-            }}
-            style={{ transform: "scaleX(-1)" }}
-          />
+              audio={false}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              className=" rounded-circle"
+              width="450"
+              height="450"
+              videoConstraints={{
+                facingMode: "user",
+              }}
+              style={{ transform: "scaleX(-1)" }}
+            />
+          <canvas
+            ref={overlayCanvasRef}
+            className="position-absolute top-0 start-0 rounded-circle "
+            width="450"
+            height="450"
+          ></canvas>
           <button
             onClick={capturePhoto}
             className="btn btn-primary mt-4"
@@ -196,16 +218,10 @@ export default function Capture() {
             className="border border-secondary mt-2"
           />
           <div className="d-flex gap-2 mt-4">
-            <button
-              onClick={retakePhoto}
-              className="btn btn-secondary"
-            >
+            <button onClick={retakePhoto} className="btn btn-secondary">
               Retake Photo
             </button>
-            <button
-              onClick={submitData}
-              className="btn btn-success"
-            >
+            <button onClick={submitData} className="btn btn-success">
               Kirim Data
             </button>
           </div>
@@ -222,9 +238,6 @@ export default function Capture() {
       {attendance === "Tidak Hadir" && (
         <div className="mt-4 w-100 d-flex justify-content-center">
           <form className="w-100">
-            <label htmlFor="chat" className="form-label">
-              Alasan
-            </label>
             <div className="d-flex align-items-center">
               <div className="form-group me-2">
                 <select className="form-select">
@@ -238,11 +251,7 @@ export default function Capture() {
                 className="btn btn-outline-secondary me-2"
                 onClick={handleFileUploadClick}
               >
-                <input
-                  type="file"
-                  className="d-none"
-                  ref={fileInputRef}
-                />
+                <input type="file" className="d-none" ref={fileInputRef} />
                 <FaRegImage size={24} />
               </button>
               <textarea
@@ -251,22 +260,14 @@ export default function Capture() {
                 className="form-control me-2"
                 placeholder="Keterangan..."
               ></textarea>
-              <button
-                type="submit"
-                className="btn btn-primary"
-              >
+              <button type="submit" className="btn btn-primary">
                 Kirim
               </button>
             </div>
           </form>
         </div>
       )}
-      <canvas
-        ref={canvasRef}
-        className="d-none"
-        width="640"
-        height="480"
-      ></canvas>
+      <canvas ref={canvasRef} className="d-none" width="480" height="320"></canvas>
     </div>
   );
 }

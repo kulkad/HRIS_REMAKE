@@ -43,9 +43,121 @@ const HomePage = () => {
 
   return (
     <Fragment>
-      <div className="bg-primary pt-10 pb-21"></div>
+      <div className="bg-primary pt-12 pb-21"></div>
       <Container fluid className="mt-n22 px-6">
         <Row>
+          <div class="header pb-6">
+            {/* Card stats */}
+            <div class="row">
+              <div class="col-xl-3 col-md-6">
+                <div class="card card-stats">
+                  {/* Card body */}
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col">
+                        <h5 class="card-title text-uppercase text-muted mb-0">
+                          Total User
+                        </h5>
+                        <span class="h2 font-weight-bold mb-0">350,897</span>
+                      </div>
+                      <div class="col-auto">
+                        <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
+                          <i class="ni ni-active-40"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="mt-3 mb-0 text-sm">
+                      <span class="text-success mr-2">
+                        <i class="fa fa-arrow-up"></i> 3.48%
+                      </span>
+                      <span class="text-nowrap">Since last month</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-md-6">
+                <div class="card card-stats">
+                  {/* Card body */}
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col">
+                        <h5 class="card-title text-uppercase text-muted mb-0">
+                          Hadir
+                        </h5>
+                        <span class="h2 font-weight-bold mb-0">2,356</span>
+                      </div>
+                      <div class="col-auto">
+                        <div class="icon icon-shape bg-gradient-orange text-white rounded-circle shadow">
+                          <i class="ni ni-chart-pie-35"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="mt-3 mb-0 text-sm">
+                      <span class="text-success mr-2">
+                        <i class="fa fa-arrow-up"></i> 3.48%
+                      </span>
+                      <span class="text-nowrap">Since last month</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-md-6">
+                <div class="card card-stats">
+                  {/* Card body */}
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col">
+                        <h5 class="card-title text-uppercase text-muted mb-0">
+                          Tidak Hadir
+                        </h5>
+                        <span class="h2 font-weight-bold mb-0">924</span>
+                      </div>
+                      <div class="col-auto">
+                        <div class="icon icon-shape bg-gradient-green text-white rounded-circle shadow">
+                          <i class="ni ni-money-coins"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="mt-3 mb-0 text-sm">
+                      <span class="text-success mr-2">
+                        <i class="fa fa-arrow-up"></i> 3.48%
+                      </span>
+                      <span class="text-nowrap">Since last month</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-md-6">
+                <div class="card card-stats">
+                  {/* Card body */}
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col">
+                        <h5 class="card-title text-uppercase text-muted mb-0">
+                          Ketepatan
+                        </h5>
+                        <span class="h2 font-weight-bold mb-0">49,65%</span>
+                      </div>
+                      <div class="col-auto">
+                        <div class="icon icon-shape bg-gradient-info text-white rounded-circle shadow">
+                          <i class="ni ni-chart-bar-32"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="mt-3 mb-0 text-sm">
+                      <span class="text-success mr-2">
+                        <i class="fa fa-arrow-up"></i> 3.48%
+                      </span>
+                      <span class="text-nowrap">Since last month</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Page content */}
+
           <div className="container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
             <div className="p-4">
               <h1 className="h4 fw-bold">Selamat Datang, {user.name}</h1>
