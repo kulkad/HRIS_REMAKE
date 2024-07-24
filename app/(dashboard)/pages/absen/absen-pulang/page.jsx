@@ -130,7 +130,7 @@ const FaceComparison = () => {
           <img ref={imageRef2} className="d-none" alt="Captured Image" />
         </div>
         <button
-          className="btn text-primary btn-primary mt-3"
+          className="btn text-primary btn-primary mt-3 text-white"
           onClick={calculateSimilarity}
         >
           Absen pulang
