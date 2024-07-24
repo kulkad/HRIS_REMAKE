@@ -12,6 +12,7 @@ export default function Capture() {
   const [attendance, setAttendance] = useState("Hadir");
   const fileInputRef = useRef(null); // Tambahkan ref untuk input file
 
+
   useEffect(() => {
     // Ambil geolocation
     if (navigator.geolocation) {
@@ -101,6 +102,14 @@ export default function Capture() {
         context.font = "20px Arial";
         context.fillStyle = "white";
         const textX = logoX + logoWidth + 10; // Mulai teks setelah logo
+        const nama = "Abyan Yusuf D"; // Ganti dengan variabel nama yang Anda miliki
+        
+
+        context.fillText(
+          `Nama: ${nama}`,
+          textX,
+          canvasRef.current.height - 130
+        );
         if (location.latitude && location.longitude) {
           context.fillText(
             `Lokasi Anda: ${location.latitude}, ${location.longitude}`,
