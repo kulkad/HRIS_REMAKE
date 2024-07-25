@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import axios from "axios";
+import Link from "next/link";
 // import node module libraries
 import { Fragment } from "react";
 import { Container, Col, Row } from "react-bootstrap";
