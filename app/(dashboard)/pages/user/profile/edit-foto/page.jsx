@@ -1,24 +1,23 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import React, { useState, useEffect } from 'react';
-import { IoMdImage, IoIosArrowBack } from 'react-icons/io';
-import axios from 'axios';
-import { useParams } from 'next/navigation';
-import Skeleton from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css';
-
+import Link from "next/link";
+import React, { useState, useEffect } from "react";
+import { IoMdImage, IoIosArrowBack } from "react-icons/io";
+import axios from "axios";
+import { useParams } from "next/navigation";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const EditFotoProfile = () => {
   const [user, setUser] = useState(null);
   const { id } = useParams();
-  const [file, setFile] = useState('');
-  const [preview, setPreview] = useState('');
+  const [file, setFile] = useState("");
+  const [preview, setPreview] = useState("");
 
   useEffect(() => {
-    const userData = localStorage.getItem('user');
+    const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = 'http://localhost:3000/login';
+      window.location.href = "http://localhost:3000/login";
     } else {
       setUser(JSON.parse(userData));
     }
@@ -33,15 +32,15 @@ const EditFotoProfile = () => {
   const saveFotoProfile = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
     try {
-      await axios.patch(`http://localhost:5001/userfotoprofile/${user.uuid}`, formData, {
+      await axios.patch(`http://localhost:5001/updateuser/${id}`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
-      alert('Foto profil berhasil diperbarui');
+      alert("Foto profil berhasil diperbarui");
       window.location.reload();
     } catch (error) {
       console.log(error);
@@ -66,6 +65,7 @@ const EditFotoProfile = () => {
     <div className="container mt-5">
       <div className="card shadow-lg p-4">
         <div className="card-header d-flex align-items-center">
+          <h1 className="h5">Edit Foto Profil</h1>
         </div>
         <div className="card-body">
           <form onSubmit={saveFotoProfile}>
@@ -90,7 +90,7 @@ const EditFotoProfile = () => {
                   src={preview}
                   alt="Preview Image"
                   className="img-thumbnail rounded-circle"
-                  style={{ width: '150px', height: '150px' }}
+                  style={{ width: "150px", height: "150px" }}
                 />
               </div>
             )}
