@@ -141,7 +141,7 @@ const DataMagang = () => {
           <div>
             <div className="d-flex justify-content-between align-items-center mx-5">
               <div className="mb-2 mb-lg-0">
-                <h3 className="mb-0  text-white">Data Manager</h3>
+                <h3 className="mb-0  text-white">Data Praktek Kerja Lapangan</h3>
               </div>
               <div>
                 <Link
