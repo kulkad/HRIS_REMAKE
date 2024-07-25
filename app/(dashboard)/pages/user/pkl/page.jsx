@@ -29,7 +29,6 @@ import {
   TrashFill,
 } from "react-bootstrap-icons";
 
-
 const DataMagang = () => {
   const [user, setUser] = useState(null);
   const [usersByRole, setUsersByRole] = useState([]);
@@ -133,98 +132,99 @@ const DataMagang = () => {
 
   return (
     <Fragment>
-    <div className="bg-primary pt-10 pb-21"></div>
-    <Container fluid className="mt-n22 px-6">
-      <Row>
-        <Col lg={12} md={12} xs={12}>
-          {/* Page header */}
-          <div>
-            <div className="d-flex justify-content-between align-items-center mx-5">
-              <div className="mb-2 mb-lg-0">
-                <h3 className="mb-0  text-white">Data Praktek Kerja Lapangan</h3>
-              </div>
-              <div>
-                <Link
-                  href="/pages/user/tambah/?role=Pkl"
-                  className="btn btn-white"
-                >
-                  Tambah Data
-                </Link>
+      <div className="bg-primary pt-10 pb-21"></div>
+      <Container fluid className="mt-n22 px-6">
+        <Row>
+          <Col lg={12} md={12} xs={12}>
+            {/* Page header */}
+            <div>
+              <div className="d-flex justify-content-between align-items-center mx-5">
+                <div className="mb-2 mb-lg-0">
+                  <h3 className="mb-0  text-white">
+                    Data Praktek Kerja Lapangan
+                  </h3>
+                </div>
+                <div>
+                  <Link
+                    href="/pages/user/tambah/?role=Pkl"
+                    className="btn btn-white"
+                  >
+                    Tambah Data
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
-        </Col>
-        <div className="container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
-          {successMessage && (
-            <p className="text-green-600">{successMessage}</p>
-          )}
-          {/* Tampilkan pesan jika ada */}
-          <div className="container text-center">
-            {usersByRole.length === 0 ? (
-              <p className="text-center py-4">Tidak ada data</p>
-            ) : (
-              <div className="d-flex justify-content-center">
-                <table className="w-75 text-sm text-left text-gray-500 dark:bg-slate-900 dark:text-white mx-4">
-                  <thead className="text-xs text-gray-900 uppercase">
-                    <tr>
-                      <th className="px-6 py-3">Nama</th>
-                      <th className="px-6 py-3">Email</th>
-                      <th className="px-6 py-3">Role</th>
-                      <th className="px-6 py-3"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentUsers.map((user) => (
-                      <tr key={user.id} className="bg-white dark:bg-gray-800">
-                        <th className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                          {user.name}
-                        </th>
-                        <td className="px-6 py-4">{user.email}</td>
-                        <td className="px-6 py-4">{user.role}</td>
-                        <td className="px-6 py-4">
-                          <Link
-                            href={`/detailuser/${user.id}`}
-                            className="d-flex items-center hover:bg-blue-200 hover:text-gray-800 rounded-xl p-2 w-full"
-                          >
-                            <PersonVcard className="mt-1 me-2" /> Detail
-                          </Link>
-                          <Link
-                            key={user.id}
-                            href={`/register/${user.id}?role=${user.role}`}
-                            className="d-flex items-center hover:bg-blue-200 hover:text-gray-800 rounded-xl p-2 w-full"
-                          >
-                            {user.url_foto_absen == null ? (
-                              <>
-                                <EmojiSmile className="mt-1 me-2" /> Daftar Muka
-                              </>
-                            ) : (
-                              <span>Muka Sudah Terdaftar</span>
-                            )}
-                          </Link>
-                          <button
-                            onClick={() => {
-                              openDeleteModal(user.id);
-                              closeDropdownHandler();
-                            }}
-                            className="d-flex items-center hover:bg-red-300 hover:text-gray-800 rounded-xl p-2 w-full"
-                          >
-                            <TrashFill className="mt-1 me-2" /> Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+          </Col>
+          <div className="container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
+            {successMessage && (
+              <p className="text-green-600">{successMessage}</p>
             )}
-          </div>
+            {/* Tampilkan pesan jika ada */}
+            <div className="container text-center">
+              {usersByRole.length === 0 ? (
+                <p className="text-center py-4">Tidak ada data</p>
+              ) : (
+                <div className="d-flex justify-content-center">
+                  <table className="w-75 text-sm text-left text-gray-500 dark:bg-slate-900 dark:text-white mx-4">
+                    <thead className="text-xs text-gray-900 uppercase">
+                      <tr>
+                        <th className="px-6 py-3">Nama</th>
+                        <th className="px-6 py-3">Email</th>
+                        <th className="px-6 py-3">Role</th>
+                        <th className="px-6 py-3"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {currentUsers.map((user) => (
+                        <tr key={user.id} className="bg-white dark:bg-gray-800">
+                          <th className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            {user.name}
+                          </th>
+                          <td className="px-6 py-4">{user.email}</td>
+                          <td className="px-6 py-4">{user.role}</td>
+                          <td className="px-6 py-4">
+                            <Link
+                              href={`/detailuser/${user.id}`}
+                              className="d-flex items-center hover:bg-blue-200 hover:text-gray-800 rounded-xl p-2 w-full"
+                            >
+                              <PersonVcard className="mt-1 me-2" /> Detail
+                            </Link>
+                            <Link
+                              key={user.id}
+                              href={`/register/${user.id}?role=${user.role}`}
+                              className="d-flex items-center hover:bg-blue-200 hover:text-gray-800 rounded-xl p-2 w-full"
+                            >
+                              {user.url_foto_absen == null ? (
+                                <>
+                                  <EmojiSmile className="mt-1 me-2" /> Daftar
+                                  Muka
+                                </>
+                              ) : (
+                                <span>Muka Sudah Terdaftar</span>
+                              )}
+                            </Link>
+                            <button
+                              onClick={() => {
+                                openDeleteModal(user.id);
+                                closeDropdownHandler();
+                              }}
+                              className="d-flex items-center hover:bg-red-300 hover:text-gray-800 rounded-xl p-2 w-full"
+                            >
+                              <TrashFill className="mt-1 me-2" /> Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
             {/* Pagination Controls */}
             <div className="d-flex justify-content-center mt-4">
               <ul className="inline-flex items-center -space-x-px">
                 {[
-                  ...Array(
-                    Math.ceil(usersByRole.length / usersPerPage)
-                  ).keys(),
+                  ...Array(Math.ceil(usersByRole.length / usersPerPage)).keys(),
                 ].map((number) => (
                   <button
                     onClick={() => paginate(number + 1)}
@@ -237,11 +237,52 @@ const DataMagang = () => {
                 ))}
               </ul>
             </div>
-        </div>
-      </Row>
-    </Container>
-         
-  </Fragment>
+            {/* Modal */}
+            {showModal && (
+              <div
+                className="modal show d-block"
+                tabIndex="-1"
+                style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}
+              >
+                <div className="modal-dialog modal-dialog-centered">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title">Konfirmasi Hapus</h5>
+                      <button
+                        type="button"
+                        className="btn-close"
+                        onClick={closeDeleteModal}
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div className="modal-body">
+                      <p>Apakah Anda Yakin Ingin Menghapus Data Ini?</p>
+                    </div>
+                    <div className="modal-footer">
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={closeDeleteModal}
+                      >
+                        Batal
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-danger"
+                        onClick={confirmDelete}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </Row>
+      </Container>
+           
+    </Fragment>
   );
 };
 

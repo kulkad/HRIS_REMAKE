@@ -28,7 +28,6 @@ import {
   TrashFill,
 } from "react-bootstrap-icons";
 
-
 const DataMagang = () => {
   const [user, setUser] = useState(null);
   const [usersByRole, setUsersByRole] = useState([]);
@@ -192,14 +191,13 @@ const DataMagang = () => {
                         <td className="px-6 py-4">{user.email}</td>
                         <td className="px-6 py-4">{user.role}</td>
                         <td className="px-6 py-4">
-                       
                           <Link
                             href={`/detailuser/${user.id}`}
                             className="d-flex items-center hover:bg-blue-200 hover:text-gray-800 rounded-xl p-2 w-full"
                           >
                             <PersonVcard className="mr-1" /> Detail
                           </Link>
-                       
+
                           <Link
                             key={user.id}
                             href={`/register/${user.id}?role=${user.role}`}
@@ -229,25 +227,64 @@ const DataMagang = () => {
                 </table>
               )}
             </div>
-              {/* Pagination Controls */}
-              <div className="d-flex justify-content-center mt-4">
-                <ul className="inline-flex items-center -space-x-px">
-                  {[
-                    ...Array(
-                      Math.ceil(usersByRole.length / usersPerPage)
-                    ).keys(),
-                  ].map((number) => (
-                    <button
-                      onClick={() => paginate(number + 1)}
-                      className={`px-3 py-2 leading-tight text-gray-500 bg-gray-100 border border-gray-300 hover:bg-sky-100 bg-primary-hover rounded-2 dark:hover:bg-sky-200 dark:bg-gray-50 ${
-                        currentPage === number + 1 ? "bg-gray-300" : ""
-                      }`}
-                    >
-                      {number + 1}
-                    </button>
-                  ))}
-                </ul>
+            {/* Pagination Controls */}
+            <div className="d-flex justify-content-center mt-4">
+              <ul className="inline-flex items-center -space-x-px">
+                {[
+                  ...Array(Math.ceil(usersByRole.length / usersPerPage)).keys(),
+                ].map((number) => (
+                  <button
+                    onClick={() => paginate(number + 1)}
+                    className={`px-3 py-2 leading-tight text-gray-500 bg-gray-100 border border-gray-300 hover:bg-sky-100 bg-primary-hover rounded-2 dark:hover:bg-sky-200 dark:bg-gray-50 ${
+                      currentPage === number + 1 ? "bg-gray-300" : ""
+                    }`}
+                  >
+                    {number + 1}
+                  </button>
+                ))}
+              </ul>
+            </div>
+            {/* Modal */}
+            {showModal && (
+              <div
+                className="modal show d-block"
+                tabIndex="-1"
+                style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}
+              >
+                <div className="modal-dialog modal-dialog-centered">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title">Konfirmasi Hapus</h5>
+                      <button
+                        type="button"
+                        className="btn-close"
+                        onClick={closeDeleteModal}
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div className="modal-body">
+                      <p>Apakah Anda Yakin Ingin Menghapus Data Ini?</p>
+                    </div>
+                    <div className="modal-footer">
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={closeDeleteModal}
+                      >
+                        Batal
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-danger"
+                        onClick={confirmDelete}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
+            )}
           </div>
         </Row>
       </Container>

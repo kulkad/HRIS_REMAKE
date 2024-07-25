@@ -20,17 +20,20 @@ const Manager = () => {
   const [userToDelete, setUserToDelete] = useState(null);
 
   const openDeleteModal = (id) => {
+    console.log("Opening modal for user ID:", id); // Debug log
     setUserToDelete(id);
     setShowModal(true);
   };
 
   const closeDeleteModal = () => {
+    console.log("Closing modal"); // Debug log
     setUserToDelete(null);
     setShowModal(false);
   };
 
   const confirmDelete = () => {
     if (userToDelete) {
+      console.log("Confirming delete for user ID:", userToDelete); // Debug log
       deleteProduk(userToDelete);
       closeDeleteModal();
     }
@@ -141,7 +144,9 @@ const Manager = () => {
                           <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
                             {user.name}
                           </td>
-                          <td className="px-6 py-4 text-center">{user.email}</td>
+                          <td className="px-6 py-4 text-center">
+                            {user.email}
+                          </td>
                           <td className="px-6 py-4 text-center">{user.role}</td>
                           <td className="px-6 py-4 flex justify-end gap-2 text-center">
                             <Link
@@ -156,7 +161,8 @@ const Manager = () => {
                             >
                               {user.url_foto_absen == null ? (
                                 <>
-                                  <EmojiSmile className="mt-1 me-2" /> Daftar Muka
+                                  <EmojiSmile className="mt-1 me-2" /> Daftar
+                                  Muka
                                 </>
                               ) : (
                                 <span>Muka Sudah Terdaftar</span>
@@ -178,7 +184,9 @@ const Manager = () => {
               <div className="d-flex justify-content-center mt-4">
                 <ul className="inline-flex items-center -space-x-px">
                   {[
-                    ...Array(Math.ceil(usersByRole.length / usersPerPage)).keys(),
+                    ...Array(
+                      Math.ceil(usersByRole.length / usersPerPage)
+                    ).keys(),
                   ].map((number) => (
                     <button
                       key={number}
@@ -192,6 +200,43 @@ const Manager = () => {
                   ))}
                 </ul>
               </div>
+              {/* Modal */}
+              {showModal && (
+                <div className="modal show d-block" tabIndex="-1" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                  <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                      <div className="modal-header">
+                        <h5 className="modal-title">Konfirmasi Hapus</h5>
+                        <button
+                          type="button"
+                          className="btn-close"
+                          onClick={closeDeleteModal}
+                          aria-label="Close"
+                        ></button>
+                      </div>
+                      <div className="modal-body">
+                        <p>Apakah Anda Yakin Ingin Menghapus Data Ini?</p>
+                      </div>
+                      <div className="modal-footer">
+                        <button
+                          type="button"
+                          className="btn btn-secondary"
+                          onClick={closeDeleteModal}
+                        >
+                          Batal
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-danger"
+                          onClick={confirmDelete}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </Col>
         </Row>
