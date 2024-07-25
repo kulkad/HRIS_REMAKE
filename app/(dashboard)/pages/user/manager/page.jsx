@@ -156,7 +156,7 @@ const Manager = () => {
                               <PersonVcard className="mt-1 me-2" /> Detail
                             </Link>
                             <Link
-                              href={`/register/${user.id}?role=${user.role}`}
+                              href={`/pages/user/register/${user.id}?role=${user.role}`}
                               className="d-flex items-center hover:bg-blue-200 hover:text-gray-800 rounded-xl p-2"
                             >
                               {user.url_foto_absen == null ? (
