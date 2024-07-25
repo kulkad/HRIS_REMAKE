@@ -29,27 +29,6 @@ export default function Capture() {
       );
     }
 
-    // Menggambar overlay panduan wajah
-    const context = overlayCanvasRef.current.getContext("2d");
-    const canvasWidth = overlayCanvasRef.current.width;
-    const canvasHeight = overlayCanvasRef.current.height;
-
-    context.clearRect(0, 0, canvasWidth, canvasHeight);
-    context.fillStyle = "rgba(0, 0, 0, 0.6)";
-    context.fillRect(0, 0, canvasWidth, canvasHeight);
-
-    // Area untuk wajah
-    const faceRadius = 150; // Memperbesar lingkaran
-    const faceX = canvasWidth / 2;
-    const faceY = canvasHeight / 2;
-
-    // Gambar lingkaran untuk panduan wajah
-    context.save();
-    context.globalCompositeOperation = "destination-out";
-    context.beginPath();
-    context.arc(faceX, faceY, faceRadius, 0, 2 * Math.PI);
-    context.fill();
-    context.restore();
   }, []);
 
   const getFormattedDate = () => {
@@ -184,23 +163,16 @@ export default function Capture() {
       {!photo && (
         <div className="d-flex flex-column align-items-center position-relative">
           <Webcam
-              audio={false}
-              ref={webcamRef}
-              screenshotFormat="image/jpeg"
-              className=" rounded-circle"
-              width="450"
-              height="450"
-              videoConstraints={{
-                facingMode: "user",
-              }}
-              style={{ transform: "scaleX(-1)" }}
-            />
-          <canvas
-            ref={overlayCanvasRef}
-            className="position-absolute top-0 start-0 rounded-circle "
-            width="450"
-            height="450"
-          ></canvas>
+          audio={false}
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          className="rounded-circle w-100"
+          videoConstraints={{
+            facingMode: "user",
+          }}
+          style={{ transform: "scaleX(-1)" }}
+        />
+          
           <button
             onClick={capturePhoto}
             className="btn btn-primary mt-4"
