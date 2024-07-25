@@ -192,7 +192,7 @@ const DataMagang = () => {
                         <td className="px-6 py-4">{user.role}</td>
                         <td className="px-6 py-4">
                           <Link
-                            href={`/detailuser/${user.id}`}
+                            href={`/pages/user/detailuser/${user.id}`}
                             className="d-flex items-center hover:bg-blue-200 hover:text-gray-800 rounded-xl p-2 w-full"
                           >
                             <PersonVcard className="mt-1 me-2" /> Detail

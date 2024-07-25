@@ -34,9 +34,10 @@ const FaceComparison = () => {
     try {
       const response = await axios.get("http://localhost:5001/userfotoabsen");
       setUserPhotos(response.data);
-      console.log("User photos fetched:", response.data);
+      console.log("Foto pengguna berhasil diambil:", response.data);
     } catch (error) {
-      console.error("Error fetching user photos: ", error);
+      console.error("Error mengambil foto pengguna: ", error);
+      alert("Gagal mengambil foto pengguna. Silakan periksa server dan endpoint.");
     }
   };
 
@@ -59,7 +60,6 @@ const FaceComparison = () => {
     let matchedUser = null;
 
     for (let userPhoto of userPhotos) {
-      // console.log("Comparing with user photo:", userPhoto.url_foto_absen);
       const img1 = new Image();
       img1.crossOrigin = "anonymous";
       img1.src = userPhoto.url_foto_absen;
@@ -69,13 +69,11 @@ const FaceComparison = () => {
         .detectSingleFace(img1, new faceapi.SsdMobilenetv1Options())
         .withFaceLandmarks()
         .withFaceDescriptor();
-      // console.log("Detection1:", detection1);
 
       const detection2 = await faceapi
         .detectSingleFace(img2, new faceapi.SsdMobilenetv1Options())
         .withFaceLandmarks()
         .withFaceDescriptor();
-      // console.log("Detection2:", detection2);
 
       if (detection1 && detection2) {
         const distance = faceapi.euclideanDistance(
@@ -83,7 +81,6 @@ const FaceComparison = () => {
           detection2.descriptor
         );
         const similarityScore = (1 - distance).toFixed(2);
-        // console.log("Similarity score:", similarityScore);
 
         if (similarityScore >= 0.6) {
           isAbsenSuccess = true;
@@ -104,7 +101,7 @@ const FaceComparison = () => {
         });
         alert("Absen berhasil!");
       } catch (error) {
-        console.error("Error posting absen:", error);
+        console.error("Error mengirim data absen:", error);
         alert(`Gagal absen: ${error.response?.data?.msg || error.message}`);
       }
     } else {
