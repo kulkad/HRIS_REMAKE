@@ -176,10 +176,10 @@ const Manager = () => {
                         <td className="px-6 py-4"> 
                           
                           <Link
-                            href={`/detailuser/${user.id}`}
+                            href={`/pages/user/detailuser/${user.id}`}
                             className="d-flex items-center hover:bg-blue-200 hover:text-gray-800 rounded-xl p-2 w-full"
                           >
-                            <PersonVcard className="mr-1" /> Detail
+                            <PersonVcard className="mt-1 me-2" /> Detail
                           </Link>
                        
                           <Link
@@ -189,22 +189,22 @@ const Manager = () => {
                           >
                             {user.url_foto_absen == null ? (
                               <>
-                                <EmojiSmile className="mr-1" /> Daftar Muka
+                                <EmojiSmile className="mt-1 me-2" /> Daftar Muka
                               </>
                             ) : (
                               <span>Muka Sudah Terdaftar</span>
                             )}
                           </Link>
                           <button
-                            onClick={() => {
-                              openDeleteModal(user.id);
-                              closeDropdownHandler();
-                            }}
-                            className="d-flex items-center hover:bg-red-300 hover:text-gray-800 rounded-xl p-2 w-full"
-                          >
-                            <TrashFill className="mr-1" /> Delete
-                          </button>
-                       
+                          onClick={() => {
+                            openDeleteModal(user.id);
+                            closeDropdownHandler();
+                          }}
+                          className="d-flex items-center hover:bg-red-300 hover:text-gray-800 rounded-xl p-2 w-full"
+                        >
+                          <TrashFill className="mt-1 me-2" /> Delete
+                        </button>
+                     
                         </td>
                       </tr>
                     ))}
