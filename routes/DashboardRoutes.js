@@ -56,7 +56,7 @@ export const DashboardMenu = [{
         title: 'Data Pengguna',
         icon: 'user',
         children: [
-            { id: uuid(), link: '/pages/user', name: 'Data Manager' },
+            { id: uuid(), link: '/pages/user/manager', name: 'Data Manager' },
             { id: uuid(), link: '/pages/user/karyawan', name: 'Data Karyawan' },
             { id: uuid(), link: '/pages/user/magang', name: 'Data Magang' },
             { id: uuid(), link: '/pages/user/pkl', name: 'Data PKL' }
