@@ -173,24 +173,8 @@ const Manager = () => {
                         </th>
                         <td className="px-6 py-4">{user.email}</td>
                         <td className="px-6 py-4">{user.role}</td>
-                        <td className="px-6 py-4">
-                          <Link
-                            href={`/edit-data/${user.id}`}
-                            className="d-flex items-center hover:bg-green-200 hover:text-gray-800 rounded-xl p-2 w-full"
-                          >
-                            <PersonFillGear className="mr-1" /> Edit
-                          </Link>
-                       
-                          <button
-                            onClick={() => {
-                              openDeleteModal(user.id);
-                              closeDropdownHandler();
-                            }}
-                            className="d-flex items-center hover:bg-red-300 hover:text-gray-800 rounded-xl p-2 w-full"
-                          >
-                            <TrashFill className="mr-1" /> Delete
-                          </button>
-                       
+                        <td className="px-6 py-4"> 
+                          
                           <Link
                             href={`/detailuser/${user.id}`}
                             className="d-flex items-center hover:bg-blue-200 hover:text-gray-800 rounded-xl p-2 w-full"
@@ -211,6 +195,16 @@ const Manager = () => {
                               <span>Muka Sudah Terdaftar</span>
                             )}
                           </Link>
+                          <button
+                            onClick={() => {
+                              openDeleteModal(user.id);
+                              closeDropdownHandler();
+                            }}
+                            className="d-flex items-center hover:bg-red-300 hover:text-gray-800 rounded-xl p-2 w-full"
+                          >
+                            <TrashFill className="mr-1" /> Delete
+                          </button>
+                       
                         </td>
                       </tr>
                     ))}
