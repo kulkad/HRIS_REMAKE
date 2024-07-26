@@ -23,7 +23,7 @@ export default function Capture({ userName }) {
           });
         },
         (error) => {
-          console.error("Error accessing geolocation: ", error);
+          console.error("Error accessing geolocation: ", error);  
         },
         { enableHighAccuracy: true }
       );
