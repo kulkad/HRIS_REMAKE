@@ -14,8 +14,14 @@ const FaceComparison = () => {
   const [userPhotos, setUserPhotos] = useState([]);
   const [absenSuccess, setAbsenSuccess] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [isWithinBounds, setIsWithinBounds] = useState(false);
   const webcamRef = useRef(null);
   const imageRef2 = useRef(null);
+
+  const officeLat = -6.1751; // Latitude kantor
+  const officeLng = 106.8650; // Longitude kantor
+  const allowedRadius = 100; // Radius yang diizinkan dalam meter
 
   useEffect(() => {
     const loadModels = async () => {
@@ -53,7 +59,6 @@ const FaceComparison = () => {
     const imageSrc = webcamRef.current.getScreenshot();
     setImage(imageSrc);
     imageRef.current.src = imageSrc;
-    // console.log("Captured image:", imageSrc);
   };
 
   const calculateSimilarity = async () => {
@@ -99,7 +104,7 @@ const FaceComparison = () => {
         }
       }
     }
-// Halo bang, numpang komen
+
     if (isAbsenSuccess && matchedUser) {
       setAbsenSuccess(true);
       setCurrentUser(matchedUser);
@@ -118,6 +123,46 @@ const FaceComparison = () => {
     }
   };
 
+  // Utility untuk menghitung jarak dua titik menggunakan Haversine formula
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371e3; // jari-jari bumi dalam meter
+    const φ1 = lat1 * (Math.PI / 180);
+    const φ2 = lat2 * (Math.PI / 180);
+    const Δφ = (lat2 - lat1) * (Math.PI / 180);
+    const Δλ = (lon2 - lon1) * (Math.PI / 180);
+
+    const a = Math.sin(Δφ / 2) ** 2 +
+              Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // hasil dalam meter
+  };
+
+  // Fungsi untuk memeriksa apakah lokasi pengguna dalam batas kantor
+  const isWithinOfficeBounds = (userLat, userLng, officeLat, officeLng, allowedRadius) => {
+    const distance = calculateDistance(userLat, userLng, officeLat, officeLng);
+    return distance <= allowedRadius;
+  };
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setLocation({ latitude, longitude });
+
+          const withinBounds = isWithinOfficeBounds(latitude, longitude, officeLat, officeLng, allowedRadius);
+          setIsWithinBounds(withinBounds);
+        },
+        (error) => {
+          console.error('Error obtaining location:', error);
+        }
+      );
+    } else {
+      console.log('Geolocation is not supported by this browser.');
+    }
+  }, []);
+
   if (initializing) {
     return (
       <div className="container bg-white dark:bg-slate-900 dark:text-white rounded-lg shadow-md overflow-hidden p-4">
@@ -133,7 +178,7 @@ const FaceComparison = () => {
   return (
     <div className="container d-flex justify-content-center bg-light dark:bg-dark mt-2 rounded">
       <div className="text-center">
-      <Webcam
+        <Webcam
           audio={false}
           ref={webcamRef}
           screenshotFormat="image/jpeg"
@@ -148,7 +193,13 @@ const FaceComparison = () => {
         </div>
         <button
           className="btn btn-primary mt-3"
-          onClick={calculateSimilarity}
+          onClick={() => {
+            if (isWithinBounds) {
+              calculateSimilarity();
+            } else {
+              alert("Anda berada di luar area kantor. Absen tidak diizinkan.");
+            }
+          }}
         >
           Absen
         </button>
@@ -164,6 +215,11 @@ const FaceComparison = () => {
           <p className="text-success font-weight-bold mt-3">
             Hai {currentUser.name}, absen berhasil! Silahkan melanjutkan
             aktifitas anda!
+          </p>
+        )}
+        {!isWithinBounds && (
+          <p className="text-danger font-weight-bold mt-3">
+            Anda berada di luar area kantor. Absen tidak diizinkan.
           </p>
         )}
       </div>
