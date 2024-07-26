@@ -19,8 +19,8 @@ const FaceComparison = () => {
   const webcamRef = useRef(null);
   const imageRef2 = useRef(null);
 
-  const officeLat = -6.1751; // Latitude kantor
-  const officeLng = 106.8650; // Longitude kantor
+  const officeLat = -6.770397; // Latitude kantor
+  const officeLng = 108.461445; // Longitude kantor
   const allowedRadius = 100; // Radius yang diizinkan dalam meter
 
   useEffect(() => {
