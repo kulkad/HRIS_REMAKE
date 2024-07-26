@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { MdEdit, MdDelete } from "react-icons/md";
 import { BiSolidUserDetail } from "react-icons/bi";
 import { SlOptionsVertical } from "react-icons/sl";
@@ -10,8 +10,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Link from "next/link";
 import axios from "axios";
-import { Fragment } from "react";
-import { Container, Col, Row } from "react-bootstrap";
+import { Container, Col, Row, Modal, Button } from "react-bootstrap";
 import { EmojiSmile, PersonVcard, TrashFill } from "react-bootstrap-icons";
 
 const DataPkl = () => {
@@ -21,35 +20,88 @@ const DataPkl = () => {
   const [usersPerPage] = useState(5);
   const role = "Pkl";
   const [successMessage, setSuccessMessage] = useState("");
-  const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confPassword, setConfPassword] = useState("");
+  const [file, setFile] = useState("");
+  const [preview, setPreview] = useState("");
 
   const openDeleteModal = (id) => {
     setUserToDelete(id);
-    setShowModal(true);
+    setShowDeleteModal(true);
   };
 
   const closeDeleteModal = () => {
     setUserToDelete(null);
-    setShowModal(false);
+    setShowDeleteModal(false);
   };
 
   const confirmDelete = async () => {
     if (userToDelete) {
       try {
         await axios.delete(`http://localhost:5001/users/${userToDelete}`);
-        const response = await axios.get(
-          `http://localhost:5001/userbyrole/${role}`,
-          {
-            withCredentials: true,
-          }
-        );
+        const response = await axios.get(`http://localhost:5001/userbyrole/${role}`, {
+          withCredentials: true,
+        });
         setUsersByRole(response.data);
         setSuccessMessage("User berhasil dihapus.");
       } catch (error) {
         console.error("Error deleting user:", error.message);
       }
       closeDeleteModal();
+    }
+  };
+
+  const openCreateModal = () => {
+    setShowCreateModal(true);
+  };
+
+  const closeCreateModal = () => {
+    setShowCreateModal(false);
+    setName("");
+    setEmail("");
+    setPassword("");
+    setConfPassword("");
+    setFile("");
+    setPreview("");
+  };
+
+  const loadImage = (e) => {
+    const image = e.target.files[0];
+    setFile(image);
+    setPreview(URL.createObjectURL(image));
+  };
+
+  const saveData = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("role", role);
+    formData.append("password", password);
+    formData.append("confPassword", confPassword);
+
+    if (password !== confPassword) {
+      alert("Password dan Konfirmasi Password Tidak Cocok");
+      return;
+    }
+
+    try {
+      await axios.post("http://localhost:5001/users", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      alert("Berhasil Tambah Data");
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -65,12 +117,9 @@ const DataPkl = () => {
   useEffect(() => {
     const fetchUsersByRole = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5001/userbyrole/${role}`,
-          {
-            withCredentials: true,
-          }
-        );
+        const response = await axios.get(`http://localhost:5001/userbyrole/${role}`, {
+          withCredentials: true,
+        });
         setUsersByRole(response.data);
       } catch (error) {
         console.error("Error fetching users:", error.message);
@@ -109,12 +158,9 @@ const DataPkl = () => {
                 <h3 className="mb-0 text-white">Data Praktek Kerja Lapangan</h3>
               </div>
               <div>
-                <Link
-                  href="/pages/user/tambah/?role=Pkl"
-                  className="btn btn-white"
-                >
+                <Button onClick={openCreateModal} className="btn btn-white">
                   Tambah Data
-                </Link>
+                </Button>
               </div>
             </div>
           </Col>
@@ -181,70 +227,121 @@ const DataPkl = () => {
               )}
               <div className="d-flex justify-content-center mt-4">
                 <ul className="inline-flex items-center -space-x-px">
-                  {[
-                    ...Array(
-                      Math.ceil(usersByRole.length / usersPerPage)
-                    ).keys(),
-                  ].map((number) => (
-                    <button
-                      key={number}
-                      onClick={() => paginate(number + 1)}
-                      className={`px-3 py-2 leading-tight text-gray-500 bg-gray-100 border border-gray-300 hover:bg-sky-100 rounded-2 dark:hover:bg-sky-200 dark:bg-gray-50 ${
-                        currentPage === number + 1 ? "bg-gray-300" : ""
-                      }`}
-                    >
-                      {number + 1}
-                    </button>
+                  {Array.from({
+                    length: Math.ceil(usersByRole.length / usersPerPage),
+                  }).map((_, index) => (
+                    <li key={index}>
+                      <a
+                        href="#"
+                        className={`px-3 py-2 ${
+                          currentPage === index + 1
+                            ? "text-blue-500 bg-blue-50"
+                            : "text-gray-500 bg-white"
+                        } border border-gray-300 rounded-lg mx-1`}
+                        onClick={() => paginate(index + 1)}
+                      >
+                        {index + 1}
+                      </a>
+                    </li>
                   ))}
                 </ul>
               </div>
-              {showModal && (
-                <div
-                  className="modal show d-block"
-                  tabIndex="-1"
-                  style={{
-                    display: "block",
-                    backgroundColor: "rgba(0,0,0,0.5)",
-                  }}
-                >
-                  <div className="modal-dialog modal-dialog-centered">
-                    <div className="modal-content">
-                      <div className="modal-header">
-                        <h5 className="modal-title">Konfirmasi Hapus</h5>
-                        <button
-                          type="button"
-                          className="btn-close"
-                          onClick={closeDeleteModal}
-                          aria-label="Close"
-                        ></button>
-                      </div>
-                      <div className="modal-body">
-                        <p>Apakah Anda Yakin Ingin Menghapus Data Ini?</p>
-                      </div>
-                      <div className="modal-footer">
-                        <button
-                          type="button"
-                          className="btn btn-secondary"
-                          onClick={closeDeleteModal}
-                        >
-                          Batal
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-danger"
-                          onClick={confirmDelete}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </Col>
         </Row>
       </Container>
+      <Modal show={showDeleteModal} onHide={closeDeleteModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Konfirmasi Hapus</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Anda yakin ingin menghapus user ini?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeDeleteModal}>
+            Batal
+          </Button>
+          <Button variant="danger" onClick={confirmDelete}>
+            Hapus
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <Modal show={showCreateModal} onHide={closeCreateModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Tambah Data Baru</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form onSubmit={saveData}>
+            <div className="mb-3">
+              <label htmlFor="name" className="form-label">
+                Nama
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="email" className="form-label">
+                Email
+              </label>
+              <input
+                type="email"
+                className="form-control"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="password" className="form-label">
+                Password
+              </label>
+              <input
+                type="password"
+                className="form-control"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="confPassword" className="form-label">
+                Konfirmasi Password
+              </label>
+              <input
+                type="password"
+                className="form-control"
+                id="confPassword"
+                value={confPassword}
+                onChange={(e) => setConfPassword(e.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="file" className="form-label">
+                Foto
+              </label>
+              <input
+                type="file"
+                className="form-control"
+                id="file"
+                onChange={loadImage}
+              />
+              {preview && (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="img-thumbnail mt-3"
+                />
+              )}
+            </div>
+            <Button variant="primary" type="submit">
+              Simpan
+            </Button>
+          </form>
+        </Modal.Body>
+      </Modal>
     </Fragment>
   );
 };
