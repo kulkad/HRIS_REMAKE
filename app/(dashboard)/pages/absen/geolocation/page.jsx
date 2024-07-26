@@ -96,7 +96,7 @@ export default function Capture({ userName }) {
         context.font = "17px Arial";
         context.fillStyle = "white";
         const textX = logoX + logoWidth + 5;
-        const nama = userName; // Use the userName prop
+        const nama = userName; // Use the userName prop paras goblok
 
         context.fillText(`Nama: ${nama}`, textX, canvasRef.current.height - 130);
         const marginTop = 6;
