@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
-import { IoMdImage, IoIosArrowBack } from "react-icons/io";
+import { IoMdImage } from "react-icons/io";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import Skeleton from "react-loading-skeleton";
@@ -31,19 +31,36 @@ const EditFotoProfile = () => {
 
   const saveFotoProfile = async (e) => {
     e.preventDefault();
+    if (!file) {
+      alert("Please select a file first.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("file", file);
 
+    // Debugging log
+    for (let pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+
     try {
-      await axios.patch(`http://localhost:5001/updateuser/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.patch(
+        `http://localhost:5001/updateuser/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log(response.data); // Debugging log
       alert("Foto profil berhasil diperbarui");
       window.location.reload();
     } catch (error) {
       console.log(error);
+      alert("Gagal memperbarui foto profil. Silakan coba lagi.");
     }
   };
 
