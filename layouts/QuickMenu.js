@@ -58,27 +58,6 @@ const QuickMenu = () => {
         return <div>Please log in to view your profile.</div>;
     }
 
-    const Notifications = () => {
-        return (
-            <SimpleBar style={{ maxHeight: '300px' }}>
-                <ListGroup variant="flush">
-                    {NotificationList.map((item, index) => (
-                        <ListGroup.Item className={index === 0 ? 'bg-light' : ''} key={index}>
-                            <Row>
-                                <Col>
-                                    <Link href="#" className="text-muted">
-                                        <h5 className=" mb-1">{item.sender}</h5>
-                                        <p className="mb-0"> {item.message}</p>
-                                    </Link>
-                                </Col>
-                            </Row>
-                        </ListGroup.Item>
-                    ))}
-                </ListGroup>
-            </SimpleBar>
-        );
-    }
-
     const QuickMenuDesktop = () => {
         return (
             <ListGroup as="ul" bsPrefix='navbar-nav' className="navbar-right-wrap ms-auto d-flex nav-top-wrap">
@@ -99,7 +78,7 @@ const QuickMenu = () => {
                         id="dropdownUser"
                     >
                         <div className="avatar avatar-md avatar-indicators avatar-online">
-                            <Image alt="avatar" src='/images/avatar/avatar-1.jpg' className="rounded-circle" />
+                            <Image alt="avatar" src={user?.avatar || '/images/avatar/avatar-1.jpg'} className="rounded-circle" />
                         </div>
                     </BootstrapDropdown.Toggle>
                     <BootstrapDropdown.Menu
@@ -110,7 +89,7 @@ const QuickMenu = () => {
                     >
                         <BootstrapDropdown.Item as="div" className="px-4 pb-0 pt-2" bsPrefix=' '>
                             <div className="lh-1 ">
-                                <h5 className="mb-1"> John Doe</h5>
+                                <h5 className="mb-1">{user?.name || 'John Doe'}</h5>
                                 <Link href="/pages/user/detailuser" className="text-inherit fs-6">View my profile</Link>
                             </div>
                             <div className=" dropdown-divider mt-3 mb-2"></div>
@@ -140,7 +119,7 @@ const QuickMenu = () => {
                         id="dropdownUser"
                     >
                         <div className="avatar avatar-md avatar-indicators avatar-online">
-                            <Image alt="avatar" src='/images/avatar/avatar-1.jpg' className="rounded-circle" />
+                            <Image alt="avatar" src={user?.avatar || '/images/avatar/avatar-1.jpg'} className="rounded-circle" />
                         </div>
                     </BootstrapDropdown.Toggle>
                     <BootstrapDropdown.Menu
@@ -150,7 +129,7 @@ const QuickMenu = () => {
                     >
                         <BootstrapDropdown.Item as="div" className="px-4 pb-0 pt-2" bsPrefix=' '>
                             <div className="lh-1 ">
-                                <h5 className="mb-1"> John Doe</h5>
+                                <h5 className="mb-1">{user?.name || 'John Doe'}</h5>
                                 <Link href="/pages/user/detailuser" className="text-inherit fs-6">View my profile</Link>
                             </div>
                             <div className=" dropdown-divider mt-3 mb-2"></div>

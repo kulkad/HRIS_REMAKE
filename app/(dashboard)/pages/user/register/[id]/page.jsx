@@ -80,7 +80,7 @@ const DaftarAbsen = () => {
 
   if (initializing) {
     return (
-      <div className="w-full bg-white dark:bg-slate-900 dark:text-white max-w-md mx-auto rounded-lg shadow-md overflow-hidden md:max-w-2xl p-4">
+      <div className="container bg-white text-dark rounded shadow p-4">
         <Skeleton height={40} count={1} className="mb-4"/>
         <Skeleton height={20} count={1} className="mb-4"/>
         <Skeleton height={20} count={1} className="mb-4"/>
@@ -91,14 +91,14 @@ const DaftarAbsen = () => {
   }
 
   return (
-    <div className="bg-white rounded-lg mx-4 p-4 text-xl dark:bg-gray-800">
-      <div className="grid grid-cols-3 gap-4">
-        <p className="px-6 py-10 font-semibold dark:text-white">
+    <div className="container bg-white rounded p-4 text-xl">
+      <div className="row mb-4">
+        <h4 className="col-12 text-center font-weight-bold">
           Halaman Daftar Absen
-        </p>
+        </h4>
       </div>
-      <div className="mt-5 flex justify-center">
-        <div className="flex flex-col items-center">
+      <div className="row justify-content-center">
+        <div className="col-auto">
           {!photo && (
             <Webcam
               audio={false}
@@ -109,33 +109,34 @@ const DaftarAbsen = () => {
               videoConstraints={{
                 facingMode: "user",
               }}
-              className="transform scaleX-[-1]"
+              className="rounded-circle"
               style={{ transform: "scaleX(-1)" }}
             />
           )}
-          {photo && <img src={photo} alt="Captured" className="mt-4" />}
+          {photo && <img src={photo} alt="Captured" className="mt-4 rounded-circle" style={{ transform: "scaleX(-1)" }} />}
         </div>
       </div>
-      <div className="flex justify-center gap-16 mt-4">
+      <div className="row justify-content-center mt-4">
         {!photo && (
           <button
             onClick={capture}
-            className="flex self-start mt-3 w-30 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="btn btn-primary btn-sm"
+            style={{ width: 'auto' }}
           >
             Ambil Foto
           </button>
         )}
         {photo && (
-          <div className="flex space-x-2 mt-4">
+          <div className="d-flex justify-content-center mt-4">
             <button
               onClick={retakePhoto}
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+              className="btn btn-secondary me-2 btn-sm"
             >
               Retake Photo
             </button>
             <button
               onClick={handleSubmit}
-              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+              className="btn btn-success ms-2 btn-sm"
             >
               Kirim Data
             </button>
@@ -143,12 +144,12 @@ const DaftarAbsen = () => {
         )}
       </div>
       {similarity && (
-        <p className="text-red-600 font-semibold mb-4">
+        <p className="text-danger font-weight-bold mb-4">
           Kemiripan wajah : {similarity}
         </p>
       )}
       {absenSuccess && (
-        <p className="text-blue-600 font-semibold">
+        <p className="text-primary font-weight-bold">
           Absen berhasil! Silahkan melanjutkan aktifitas anda!
         </p>
       )}
