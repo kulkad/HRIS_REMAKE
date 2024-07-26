@@ -90,7 +90,7 @@ const FaceComparison = () => {
         }
       }
     }
-
+// Halo bang, numpang komen
     if (isAbsenSuccess && matchedUser) {
       setAbsenSuccess(true);
       setCurrentUser(matchedUser);
