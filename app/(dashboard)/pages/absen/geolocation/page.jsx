@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Webcam from "react-webcam";
 import { FaRegImage } from "react-icons/fa6";
 
-export default function Capture() {
+export default function Capture({ userName }) {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   const overlayCanvasRef = useRef(null);
@@ -95,7 +95,7 @@ export default function Capture() {
         context.font = "20px Arial";
         context.fillStyle = "white";
         const textX = logoX + logoWidth + 10;
-        const nama = "Abyan Yusuf D";
+        const nama = userName; // Use the userName prop
 
         context.fillText(`Nama: ${nama}`, textX, canvasRef.current.height - 130);
         const marginTop = 5;

@@ -37,6 +37,12 @@ const QuickMenu = () => {
         };
 
         fetchUserData();
+
+        const intervalId = setInterval(() => {
+            fetchUserData();
+        }, 3000);
+
+        return () => clearInterval(intervalId); // Moved return statement inside the cleanup function
     }, []);
 
     const toggleDropdown = () => {
@@ -78,7 +84,7 @@ const QuickMenu = () => {
                         id="dropdownUser"
                     >
                         <div className="avatar avatar-md avatar-indicators avatar-online">
-                            <Image alt="avatar" src={user?.avatar || '/images/avatar/avatar-1.jpg'} className="rounded-circle" />
+                            <Image alt="avatar" src={user?.pub || '/images/assets/gmt-ultra-full-extra-hd.png'} className="rounded-circle" />
                         </div>
                     </BootstrapDropdown.Toggle>
                     <BootstrapDropdown.Menu
@@ -154,5 +160,4 @@ const QuickMenu = () => {
         </Fragment>
     )
 }
-
 export default QuickMenu;
