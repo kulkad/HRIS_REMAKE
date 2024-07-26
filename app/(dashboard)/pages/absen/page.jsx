@@ -20,12 +20,16 @@ const FaceComparison = () => {
   useEffect(() => {
     const loadModels = async () => {
       const MODEL_URL = "/models";
-      await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-      await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-      await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-      await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
-      setInitializing(false);
-      console.log("Models loaded");
+      try {
+        await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+        await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+        await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+        await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+        setInitializing(false);
+        console.log("Models loaded");
+      } catch (error) {
+        console.error("Error loading models:", error);
+      }
     };
     loadModels();
   }, []);
@@ -60,6 +64,11 @@ const FaceComparison = () => {
     let matchedUser = null;
 
     for (let userPhoto of userPhotos) {
+      if (!userPhoto.url_foto_absen) {
+        console.error("User photo URL is null or undefined:", userPhoto);
+        continue;
+      }
+
       const img1 = new Image();
       img1.crossOrigin = "anonymous";
       img1.src = userPhoto.url_foto_absen;
