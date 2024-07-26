@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Webcam from "react-webcam";
 import { FaRegImage } from "react-icons/fa6";
+import Swal from "sweetalert2";
 
 export default function Capture({ userName }) {
   const webcamRef = useRef(null);
@@ -92,13 +93,13 @@ export default function Capture({ userName }) {
         const logoY = canvasRef.current.height - 140;
         context.drawImage(logoImg, logoX, logoY, logoWidth, logoHeight);
 
-        context.font = "20px Arial";
+        context.font = "17px Arial";
         context.fillStyle = "white";
-        const textX = logoX + logoWidth + 10;
+        const textX = logoX + logoWidth + 5;
         const nama = userName; // Use the userName prop
 
         context.fillText(`Nama: ${nama}`, textX, canvasRef.current.height - 130);
-        const marginTop = 5;
+        const marginTop = 6;
         let currentTextY = canvasRef.current.height - 130 + 30 + marginTop;
 
         if (location.latitude && location.longitude) {
@@ -144,7 +145,11 @@ export default function Capture({ userName }) {
   const submitData = () => {
     console.log("Photo:", photo);
     console.log("Location:", location);
-    alert("Data submitted!");
+    Swal.fire({
+      title: "Berhasil!",
+      text: "Datamu berhasil terkirim! Silahkan melanjutkan ke absen hadir!",
+      icon: "success"
+    });
   };
 
   const toggleAttendance = () => {

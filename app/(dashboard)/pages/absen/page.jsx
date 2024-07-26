@@ -6,6 +6,7 @@ import Webcam from "react-webcam";
 import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import Swal from "sweetalert2";
 
 const FaceComparison = () => {
   const [initializing, setInitializing] = useState(true);

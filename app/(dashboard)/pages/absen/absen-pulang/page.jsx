@@ -14,6 +14,9 @@ const FaceComparison = () => {
   const [userPhotos, setUserPhotos] = useState([]);
   const [absenSuccess, setAbsenSuccess] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const webcamRef = useRef(null);
   const imageRef2 = useRef(null);
 
@@ -94,13 +97,16 @@ const FaceComparison = () => {
         await axios.post("http://localhost:5001/absen", {
           userId: matchedUser.id,
         });
-        alert("Absen pulang berhasil!");
+        setShowModal(true); // Show success modal
       } catch (error) {
         console.error("Error posting absen:", error);
-        alert(`Gagal absen: ${error.response?.data?.msg || error.message}`);
+        setErrorMessage(`Gagal absen: ${error.response?.data?.msg || error.message}`);
+        setShowErrorModal(true); // Show error modal
       }
     } else {
       setSimilarity("Tidak dapat mendeteksi kedua wajah");
+      setErrorMessage("Tidak dapat mendeteksi kedua wajah");
+      setShowErrorModal(true); // Show error modal
     }
   };
 
@@ -152,6 +158,42 @@ const FaceComparison = () => {
             aktifitas anda!
           </p>
         )}
+      </div>
+
+      {/* Success Modal */}
+      <div className={`modal fade ${showModal ? 'show' : ''}`} style={{ display: showModal ? 'block' : 'none' }} tabIndex="-1" role="dialog">
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Absen Pulang</h5>
+              
+            </div>
+            <div className="modal-body">
+              <p>Absen pulang berhasil!</p>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Error Modal */}
+      <div className={`modal fade ${showErrorModal ? 'show' : ''}`} style={{ display: showErrorModal ? 'block' : 'none' }} tabIndex="-1" role="dialog">
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Absen Gagal</h5>
+              
+            </div>
+            <div className="modal-body">
+              <p>{errorMessage}</p>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" onClick={() => setShowErrorModal(false)}>Close</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
