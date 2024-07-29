@@ -32,7 +32,7 @@ const QuickMenu = () => {
             const userData = localStorage.getItem("user");
             if (userData) {
                 setUser(JSON.parse(userData));
-            }
+            }   
             setLoading(false);
         };
 
@@ -84,7 +84,7 @@ const QuickMenu = () => {
                         id="dropdownUser"
                     >
                         <div className="avatar avatar-md avatar-indicators avatar-online">
-                            <Image alt="avatar" src={user?.pub || '/images/assets/gmt-ultra-full-extra-hd.png'} className="rounded-circle" />
+                            <Image alt="avatar" src={user?.url || '/images/assets/gmt-ultra-full-extra-hd.png'} className="rounded-circle" />
                         </div>
                     </BootstrapDropdown.Toggle>
                     <BootstrapDropdown.Menu
@@ -95,7 +95,7 @@ const QuickMenu = () => {
                     >
                         <BootstrapDropdown.Item as="div" className="px-4 pb-0 pt-2" bsPrefix=' '>
                             <div className="lh-1 d-flex align-items-center">
-                                <Image alt="avatar" src={user?.avatar || '/images/assets/gmt-ultra-full-extra-hd.png'} className="rounded-circle me-2" style={{ width: '30px', height: '30px' }} />
+                                <Image alt="avatar" src={user?.url || '/images/assets/gmt-ultra-full-extra-hd.png'} className="rounded-circle me-2" style={{ width: '30px', height: '30px' }} />
                                 <h5 className="mb-1">{user?.name || 'John Doe'}</h5>
                                 <Link href="/pages/user/detailuser" className="text-inherit fs-6">View my profile</Link>
                             </div>
@@ -126,7 +126,7 @@ const QuickMenu = () => {
                         id="dropdownUser"
                     >
                         <div className="avatar avatar-md avatar-indicators avatar-online">
-                            <Image alt="avatar" src={user?.avatar || '/images/assets/gmt-ultra-full-extra-hd.png'} className="rounded-circle" />
+                            <Image alt="avatar" src={user?.url || '/images/assets/gmt-ultra-full-extra-hd.png'} className="rounded-circle" />
                         </div>
                     </BootstrapDropdown.Toggle>
                     <BootstrapDropdown.Menu
@@ -136,7 +136,7 @@ const QuickMenu = () => {
                     >
                         <BootstrapDropdown.Item as="div" className="px-4 pb-0 pt-2" bsPrefix=' '>
                             <div className="lh-1 d-flex align-items-center">
-                                <Image alt="avatar" src={user?.avatar || '/images/assets/gmt-ultra-full-extra-hd.png'} className="rounded-circle me-2" style={{ width: '30px', height: '30px' }} />
+                                <Image alt="avatar" src={user?.url || '/images/assets/gmt-ultra-full-extra-hd.png'} className="rounded-circle me-2" style={{ width: '30px', height: '30px' }} />
                                 <h5 className="mb-1">{user?.name || 'John Doe'}</h5>
                             </div>
                             <Link href="/pages/user/detailuser" className="text-inherit fs-6 mt-1">View my profile</Link>

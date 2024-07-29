@@ -6,6 +6,7 @@ import { IoMdImage } from "react-icons/io";
 import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import Image from 'next/image';
 
 const EditFotoProfile = () => {
   const [user, setUser] = useState(null);
@@ -21,6 +22,7 @@ const EditFotoProfile = () => {
       const user = JSON.parse(userData);
       setUser(user);
       setUserId(user.id); // Set user ID dari data pengguna yang login
+      setPreview(user.profilePicture); // Set preview ke foto profil saat ini
     }
   }, []);
 
@@ -62,7 +64,8 @@ const EditFotoProfile = () => {
 
       console.log(response.data); // Debugging log
       alert("Foto profil berhasil diperbarui");
-      window.location.reload();
+      // Update preview dengan path gambar baru dari respons backend
+      setPreview(response.data.profilePicture);
     } catch (error) {
       console.error("Error details:", error); // Detailed error log
       if (error.response) {
@@ -112,11 +115,12 @@ const EditFotoProfile = () => {
 
             {preview && (
               <div className="text-center my-3">
-                <img
+                <Image
                   src={preview}
                   alt="Preview Image"
                   className="img-thumbnail rounded-circle"
-                  style={{ width: "150px", height: "150px" }}
+                  width={150}
+                  height={150}
                 />
               </div>
             )}
