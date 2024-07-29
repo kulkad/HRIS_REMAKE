@@ -1,4 +1,6 @@
 import { v4 as uuid } from 'uuid';
+
+import { BsPersonLinesFill } from "react-icons/bs";
 /**
  *  All Dashboard Routes
  *
@@ -48,19 +50,15 @@ export const DashboardMenu = [{
 
     {
         id: uuid(),
-        title: 'Data Pengguna',
+        title: 'Semua Pengguna',
         grouptitle: true
     },
+
     {
         id: uuid(),
         title: 'Data Pengguna',
-        icon: 'user',
-        children: [
-            { id: uuid(), link: '/pages/user/manager', name: 'Data Manager' },
-            { id: uuid(), link: '/pages/user/karyawan', name: 'Data Karyawan' },
-            { id: uuid(), link: '/pages/user/magang', name: 'Data Magang' },
-            { id: uuid(), link: '/pages/user/pkl', name: 'Data PKL' }
-        ]
+        icon: <BsPersonLinesFill style={{ marginRight: '6px' }} />,
+        link: '/pages/user/all-user'
     },
 
 ];

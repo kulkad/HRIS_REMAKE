@@ -5,11 +5,11 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Link from "next/link";
 import axios from "axios";
-import { Container, Col, Row, Modal, Button, Form, Table, Pagination, DropdownButton, Dropdown, Card, DropdownMenu, DropdownItem } from "react-bootstrap";
+import { Container, Col, Row, Modal, Button, Form, Table, Pagination, DropdownButton, Dropdown, Card } from "react-bootstrap";
 import { EmojiSmile, PersonVcard, TrashFill } from "react-bootstrap-icons";
 import { FaEllipsisVertical } from "react-icons/fa6";
 
-const DataPkl = () => {
+const Users = () => {
   const [user, setUser] = useState(null);
   const [usersByRole, setUsersByRole] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -113,7 +113,8 @@ const DataPkl = () => {
   useEffect(() => {
     const fetchUsersByRole = async () => {
       try {
-        const response = await axios.get(`http://localhost:5001/userbyrole/${role}`, {
+        const endpoint = role === "All" ? "http://localhost:5001/users" : `http://localhost:5001/userbyrole/${role}`;
+        const response = await axios.get(endpoint, {
           withCredentials: true,
         });
         setUsersByRole(response.data);
@@ -164,9 +165,10 @@ const DataPkl = () => {
             <Form className="d-flex justify-content-end my-3">
               <DropdownButton
                 id="dropdown-role-selector"
-                title={role}
+                title={role === "All" ? "Semua" : role}
                 onSelect={(e) => setRole(e)}
               >
+                <Dropdown.Item eventKey="All">Semua</Dropdown.Item>
                 <Dropdown.Item eventKey="Manager">Manager</Dropdown.Item>
                 <Dropdown.Item eventKey="Karyawan">Karyawan</Dropdown.Item>
                 <Dropdown.Item eventKey="Magang">Magang</Dropdown.Item>
@@ -199,9 +201,10 @@ const DataPkl = () => {
                           <td className="d-flex justify-content-center">
                             <Link
                               href={`/pages/user/detailuser/${user.id}`}
-                              className="btn btn-info me-2"
-                            >
-                              <PersonVcard /> Detail
+                              className="btn btn-info me-2">
+                              <p className="text-white font-white">
+                                <PersonVcard /> Detail
+                              </p>
                             </Link>
                             <Link
                               href={`/pages/user/register/${user.id}?role=${user.role}`}
@@ -209,10 +212,10 @@ const DataPkl = () => {
                             >
                               {user.url_foto_absen == null ? (
                                 <>
-                                  <EmojiSmile /> Daftar Muka
+                                  <EmojiSmile /> Daftar Wajah
                                 </>
                               ) : (
-                                <span>Muka Sudah Terdaftar</span>
+                                <span>Wajah Sudah Terdaftar</span>
                               )}
                             </Link>
                             <Button
@@ -228,52 +231,52 @@ const DataPkl = () => {
                   </Table>
                 </div>
               )}
-{usersByRole.length > 0 && (
-  <div className="d-lg-none">
-    {currentUsers.map((user) => (
-      <Card key={user.id} className="mb-3">
-        <Card.Body>
-          <div className="d-flex justify-content-between align-items-center">
-            <div>
-              <Card.Title>{user.name}</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">{user.email}</Card.Subtitle>
-              <Card.Text>
-                Role: {user.role}
-              </Card.Text>
-            </div>
-            <Dropdown align="end">
-              <Dropdown.Toggle 
-                variant="link" 
-                id={`dropdown-custom-components-${user.id}`} 
-                className="p-0 bg-transparent border-0"
-              >
-                <FaEllipsisVertical />
-              </Dropdown.Toggle>
+              {usersByRole.length > 0 && (
+                <div className="d-lg-none">
+                  {currentUsers.map((user) => (
+                    <Card key={user.id} className="mb-3">
+                      <Card.Body>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div>
+                            <Card.Title>{user.name}</Card.Title>
+                            <Card.Subtitle className="mb-2 text-muted">{user.email}</Card.Subtitle>
+                            <Card.Text>
+                              Role: {user.role}
+                            </Card.Text>
+                          </div>
+                          <Dropdown align="end">
+                            <Dropdown.Toggle 
+                              variant="link" 
+                              id={`dropdown-custom-components-${user.id}`} 
+                              className="p-0 bg-transparent border-0"
+                            >
+                              <FaEllipsisVertical />
+                            </Dropdown.Toggle>
 
-              <Dropdown.Menu>
-                <Dropdown.Item href={`/pages/user/detailuser/${user.id}`}>
-                  <PersonVcard /> Detail
-                </Dropdown.Item>
-                <Dropdown.Item href={`/pages/user/register/${user.id}?role=${user.role}`}>
-                  {user.url_foto_absen == null ? (
-                    <>
-                      <EmojiSmile /> Daftar Muka
-                    </>
-                  ) : (
-                    <span>Muka Sudah Terdaftar</span>
-                  )}
-                </Dropdown.Item>
-                <Dropdown.Item onClick={() => openDeleteModal(user.id)}>
-                  <TrashFill /> Delete
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-          </div>
-        </Card.Body>
-      </Card>
-    ))}
-  </div>
-)}
+                            <Dropdown.Menu>
+                              <Dropdown.Item href={`/pages/user/detailuser/${user.id}`}>
+                                <PersonVcard className="text-white" /> Detail
+                              </Dropdown.Item>
+                              <Dropdown.Item href={`/pages/user/register/${user.id}?role=${user.role}`}>
+                                {user.url_foto_absen == null ? (
+                                  <>
+                                    <EmojiSmile /> Daftar Muka
+                                  </>
+                                ) : (
+                                  <span>Muka Sudah Terdaftar</span>
+                                )}
+                              </Dropdown.Item>
+                              <Dropdown.Item onClick={() => openDeleteModal(user.id)}>
+                                <TrashFill /> Delete
+                              </Dropdown.Item>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  ))}
+                </div>
+              )}
 
               <Pagination className="d-flex justify-content-center mt-4">
                 {Array.from({
@@ -361,4 +364,4 @@ const DataPkl = () => {
   );
 };
 
-export default DataPkl;
+export default Users;
