@@ -202,13 +202,9 @@ const AbsenPulang = () => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mx-auto">
-              <Nav.Link href="/dashboard-user/absen/geolocation">
-                Geolocation
-              </Nav.Link>
+              <Nav.Link href="/dashboard-user/absen/geolocation">Geolocation</Nav.Link>
               <Nav.Link href="/dashboard-user/absen">Absen Hadir</Nav.Link>
-              <Nav.Link href="/dashboard-user/absen/absen-pulang">
-                Absen Pulang
-              </Nav.Link>
+              <Nav.Link href="/dashboard-user/absen/absen-pulang">Absen Pulang</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
