@@ -51,8 +51,8 @@ const HomePage = () => {
             {/* Page header */}
             <div>
               <div className="d-flex justify-content-between align-items-center">
-                <div className="mb-2 mb-lg-0">
-                  <h3 className="mb-0  text-white">Dashboard</h3>
+                <div className="mb-2 mb-lg-6">
+                  <h2 className="mb-0  text-white">Dashboard  Admin</h2>
                 </div>
               </div>
             </div>
@@ -69,7 +69,7 @@ const HomePage = () => {
                       <h5 class="card-title text-uppercase text-muted mb-0">
                         Total User
                       </h5>
-                      <span class="h2 font-weight-bold mb-0">350,897</span>
+                      <span class="h2 font-weight-bold mb-0">100</span>
                     </div>
                     <div class="col-auto">
                       <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
@@ -79,9 +79,9 @@ const HomePage = () => {
                   </div>
                   <p class="mt-3 mb-0 text-sm">
                     <span class="text-success mr-2">
-                      <i class="fa fa-arrow-up"></i> 3.48%
+                      <i class="fa fa-arrow-up"></i> 100%
                     </span>
-                    <span class="text-nowrap">Since last month</span>
+                    <span class="text-nowrap"> Bulan Ini </span>
                   </p>
                 </div>
               </div>
@@ -95,7 +95,7 @@ const HomePage = () => {
                       <h5 class="card-title text-uppercase text-muted mb-0">
                         Hadir
                       </h5>
-                      <span class="h2 font-weight-bold mb-0">2,356</span>
+                      <span class="h2 font-weight-bold mb-0">95</span>
                     </div>
                     <div class="col-auto">
                       <div class="icon icon-shape bg-gradient-orange text-white rounded-circle shadow">
@@ -104,10 +104,10 @@ const HomePage = () => {
                     </div>
                   </div>
                   <p class="mt-3 mb-0 text-sm">
-                    <span class="text-success mr-2">
-                      <i class="fa fa-arrow-up"></i> 3.48%
+                    <span class="text-danger mr-2">
+                      <i class="fa fa-arrow-down"></i> 5%
                     </span>
-                    <span class="text-nowrap">Since last month</span>
+                    <span class="text-nowrap"> Bulan Ini </span>
                   </p>
                 </div>
               </div>
@@ -121,7 +121,7 @@ const HomePage = () => {
                       <h5 class="card-title text-uppercase text-muted mb-0">
                         Tidak Hadir
                       </h5>
-                      <span class="h2 font-weight-bold mb-0">924</span>
+                      <span class="h2 font-weight-bold mb-0">5</span>
                     </div>
                     <div class="col-auto">
                       <div class="icon icon-shape bg-gradient-green text-white rounded-circle shadow">
@@ -130,10 +130,10 @@ const HomePage = () => {
                     </div>
                   </div>
                   <p class="mt-3 mb-0 text-sm">
-                    <span class="text-success mr-2">
-                      <i class="fa fa-arrow-up"></i> 3.48%
+                    <span class="text-danger mr-2">
+                      <i class="fa fa-arrow-up"></i> 5%
                     </span>
-                    <span class="text-nowrap">Since last month</span>
+                    <span class="text-nowrap"> Bulan Ini</span>
                   </p>
                 </div>
               </div>
@@ -147,7 +147,7 @@ const HomePage = () => {
                       <h5 class="card-title text-uppercase text-muted mb-0">
                         Kehadiran
                       </h5>
-                      <span class="h2 font-weight-bold mb-0">49,65%</span>
+                      <span class="h2 font-weight-bold mb-0">95%</span>
                     </div>
                     <div class="col-auto">
                       <div class="icon icon-shape bg-gradient-info text-white rounded-circle shadow">
@@ -156,10 +156,10 @@ const HomePage = () => {
                     </div>
                   </div>
                   <p class="mt-3 mb-0 text-sm">
-                    <span class="text-success mr-2">
-                      <i class="fa fa-arrow-up"></i> 3.48%
+                    <span class="text-danger mr-2">
+                      <i class="fa fa-arrow-down"></i> 5%
                     </span>
-                    <span class="text-nowrap">Since last month</span>
+                    <span class="text-nowrap"> Bulan Ini</span>
                   </p>
                 </div>
               </div>
