@@ -8,7 +8,8 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Link from "next/link";
 // import node module libraries
 import { Fragment } from "react";
-import { Container, Col, Row } from "react-bootstrap";
+import { Container, Col, Row, Form } from "react-bootstrap";
+import { format } from "date-fns"; // import date-fns
 
 // import widget/custom components
 import { StatRightTopIcon } from "widgets";
@@ -23,6 +24,7 @@ const DataAbsen = () => {
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
+  const [searchDate, setSearchDate] = useState("");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -57,13 +59,15 @@ const DataAbsen = () => {
     setSelectedRole(e.target.value);
   };
 
+  const handleDateChange = (e) => {
+    setSearchDate(e.target.value);
+  };
+
   const filteredData = data.filter((item) => {
-    return (
-      item.user &&
-      item.user.name &&
-      item.user.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      (selectedRole === "" || item.user.role === selectedRole)
-    );
+    const matchesName = item.user && item.user.name && item.user.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesRole = selectedRole === "" || item.user.role === selectedRole;
+    const matchesDate = searchDate === "" || format(new Date(item.tanggal), 'yyyy-MM-dd') === searchDate;
+    return matchesName && matchesRole && matchesDate;
   });
 
   if (!user) {
@@ -95,6 +99,34 @@ const DataAbsen = () => {
           </Col>
   
           <div className="card container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
+            {/* Search and Filter Inputs */}
+            <div className="d-flex justify-content-between mb-3">
+              <input
+                type="text"
+                placeholder="Cari Nama"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="form-control w-25"
+              />
+              <select
+                value={selectedRole}
+                onChange={handleRoleChange}
+                className="form-control w-25 ml-3"
+              >
+                <option value="">Semua Role</option>
+                <option value="Manager">Manager</option>
+                <option value="Karyawan">Karyawan</option>
+                <option value="Magang">Magang</option>
+                <option value="Pkl">Pkl</option>
+              </select>
+              <input
+                type="date"
+                value={searchDate}
+                onChange={handleDateChange}
+                className="form-control w-25 ml-3"
+              />
+            </div>
+
             {/* Table Data Absensi */}
             <div className="table-responsive">
               <table className="table align-items-center table-flush">
@@ -103,8 +135,8 @@ const DataAbsen = () => {
                     <th>No</th>
                     <th>Nama</th>
                     <th>Role</th>
+                    <th>Tanggal</th>
                     <th>Waktu</th>
-                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -124,17 +156,8 @@ const DataAbsen = () => {
                         <td>
                           <span className="text-muted">{item.user.role}</span>
                         </td>
+                        <td>{item.tanggal}</td>
                         <td>{item.waktu_datang}</td>
-                        <td className="table-actions">
-                          <a
-                            href="#!"
-                            className="table-action"
-                            data-toggle="tooltip"
-                            data-original-title="Edit product"
-                          >
-                            <i className="fas fa-user-edit"></i>
-                          </a>
-                        </td>
                       </tr>
                     ))
                   )}
@@ -146,7 +169,6 @@ const DataAbsen = () => {
       </Container>
     </Fragment>
   );
-  
 };
 
 export default DataAbsen;
