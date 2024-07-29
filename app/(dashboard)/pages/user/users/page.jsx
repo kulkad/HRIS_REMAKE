@@ -5,9 +5,10 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Link from "next/link";
 import axios from "axios";
-import { Container, Col, Row, Modal, Button, Form, Table, Pagination, DropdownButton, Dropdown, Card } from "react-bootstrap";
+import { Container, Col, Row, Form, Table, Pagination, DropdownButton, Dropdown, Card, Button, Modal } from "react-bootstrap";
 import { EmojiSmile, PersonVcard, TrashFill } from "react-bootstrap-icons";
 import { FaEllipsisVertical } from "react-icons/fa6";
+import Swal from "sweetalert2";
 
 const Users = () => {
   const [user, setUser] = useState(null);
@@ -16,9 +17,7 @@ const Users = () => {
   const [usersPerPage] = useState(5);
   const [role, setRole] = useState("All");
   const [successMessage, setSuccessMessage] = useState("");
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [userToDelete, setUserToDelete] = useState(null);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -26,32 +25,6 @@ const Users = () => {
   const [confPassword, setConfPassword] = useState("");
   const [file, setFile] = useState("");
   const [preview, setPreview] = useState("");
-
-  const openDeleteModal = (id) => {
-    setUserToDelete(id);
-    setShowDeleteModal(true);
-  };
-
-  const closeDeleteModal = () => {
-    setUserToDelete(null);
-    setShowDeleteModal(false);
-  };
-
-  const confirmDelete = async () => {
-    if (userToDelete) {
-      try {
-        await axios.delete(`http://localhost:5001/users/${userToDelete}`);
-        const response = await axios.get(`http://localhost:5001/userbyrole/${role}`, {
-          withCredentials: true,
-        });
-        setUsersByRole(response.data);
-        setSuccessMessage("User berhasil dihapus.");
-      } catch (error) {
-        console.error("Error deleting user:", error.message);
-      }
-      closeDeleteModal();
-    }
-  };
 
   const openCreateModal = () => {
     setShowCreateModal(true);
@@ -144,6 +117,36 @@ const Users = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const confirmDelete = async (userId) => {
+    Swal.fire({
+      title: "Apakah kamu yakin ingin menghapus ?",
+      text: "User yang dihapus tidak akan bisa dikembalikan !",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Lanjutkan !"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.delete(`http://localhost:5001/users/${userId}`);
+          const response = await axios.get(`http://localhost:5001/userbyrole/${role}`, {
+            withCredentials: true,
+          });
+          setUsersByRole(response.data);
+          setSuccessMessage("User berhasil dihapus.");
+          Swal.fire({
+            title: "Deleted!",
+            text: "User telah berhasil dihapus!.",
+            icon: "success"
+          });
+        } catch (error) {
+          console.error("Error deleting user:", error.message);
+        }
+      }
+    });
+  };
+
   return (
     <Fragment>
       <div className="bg-primary pt-10 pb-21"></div>
@@ -201,19 +204,17 @@ const Users = () => {
                           <td className="d-flex justify-content-center">
                             <Link
                               href={`/pages/user/detailuser/${user.id}`}
-                              className="btn btn-info me-2">
-                              <p className="text-white font-white">
-                                <PersonVcard /> Detail
-                              </p>
+                              className="btn btn-info me-2 d-flex align-items-center justify-content-center text-white">
+                              <PersonVcard className="me-2 text-white" />Detail 
                             </Link>
                             {role !== "All" && (
                               <Link
                                 href={`/pages/user/register/${user.id}?role=${user.role}`}
-                                className="btn btn-primary me-2"
+                                className="btn btn-primary me-2 d-flex align-items-center justify-content-center"
                               >
                                 {user.url_foto_absen == null ? (
                                   <>
-                                    <EmojiSmile /> Daftar Wajah
+                                    <EmojiSmile className="me-2" /> Daftar Wajah
                                   </>
                                 ) : (
                                   <span>Wajah Sudah Terdaftar</span>
@@ -222,9 +223,10 @@ const Users = () => {
                             )}
                             <Button
                               variant="danger"
-                              onClick={() => openDeleteModal(user.id)}
+                              onClick={() => confirmDelete(user.id)}
+                              className="d-flex align-items-center justify-content-center"
                             >
-                              <TrashFill /> Delete
+                              <TrashFill className="me-2" /> Delete
                             </Button>
                           </td>
                         </tr>
@@ -256,22 +258,22 @@ const Users = () => {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                              <Dropdown.Item href={`/pages/user/detailuser/${user.id}`}>
-                                <PersonVcard className="text-white" /> Detail
+                              <Dropdown.Item className="text-white" href={`/pages/user/detailuser/${user.id}`}>
+                                <PersonVcard className="me-2" /> Detail
                               </Dropdown.Item>
                               {role !== "All" && (
                                 <Dropdown.Item href={`/pages/user/register/${user.id}?role=${user.role}`}>
                                   {user.url_foto_absen == null ? (
                                     <>
-                                      <EmojiSmile /> Daftar Muka
+                                      <EmojiSmile className="me-2" /> Daftar Muka
                                     </>
                                   ) : (
                                     <span>Muka Sudah Terdaftar</span>
                                   )}
                                 </Dropdown.Item>
                               )}
-                              <Dropdown.Item onClick={() => openDeleteModal(user.id)}>
-                                <TrashFill /> Delete
+                              <Dropdown.Item onClick={() => confirmDelete(user.id)}>
+                                <TrashFill className="me-2" /> Delete
                               </Dropdown.Item>
                             </Dropdown.Menu>
                           </Dropdown>
@@ -299,20 +301,6 @@ const Users = () => {
           </Col>
         </Row>
       </Container>
-      <Modal show={showDeleteModal} onHide={closeDeleteModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Konfirmasi Hapus</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Anda yakin ingin menghapus user ini?</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={closeDeleteModal}>
-            Batal
-          </Button>
-          <Button variant="danger" onClick={confirmDelete}>
-            Hapus
-          </Button>
-        </Modal.Footer>
-      </Modal>
       <Modal show={showCreateModal} onHide={closeCreateModal}>
         <Modal.Header closeButton>
           <Modal.Title>Tambah Data Baru</Modal.Title>
