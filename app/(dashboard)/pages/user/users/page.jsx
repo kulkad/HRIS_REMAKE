@@ -14,7 +14,7 @@ const Users = () => {
   const [usersByRole, setUsersByRole] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
-  const [role, setRole] = useState("Pkl");
+  const [role, setRole] = useState("All");
   const [successMessage, setSuccessMessage] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -152,7 +152,7 @@ const Users = () => {
           <Col lg={12} md={12} xs={12}>
             <div className="d-flex justify-content-between align-items-center mx-5">
               <div className="mb-2 mb-lg-0">
-                <h3 className="mb-0 text-white">Semua Data Pengguna</h3>
+                <h3 className="mb-0 text-white">Data Pengguna</h3>
               </div>
               <div>
                 <Button onClick={openCreateModal} className="btn btn-white">
@@ -183,7 +183,7 @@ const Users = () => {
                 <p className="text-center py-4">Tidak ada data</p>
               ) : (
                 <div className="d-none d-lg-block table-responsive">
-                  <Table bordered hover className="table text-center">
+                  <Table hover className="table text-center">
                     <thead className="table-light">
                       <tr>
                         <th>Nama</th>
@@ -206,18 +206,20 @@ const Users = () => {
                                 <PersonVcard /> Detail
                               </p>
                             </Link>
-                            <Link
-                              href={`/pages/user/register/${user.id}?role=${user.role}`}
-                              className="btn btn-primary me-2"
-                            >
-                              {user.url_foto_absen == null ? (
-                                <>
-                                  <EmojiSmile /> Daftar Wajah
-                                </>
-                              ) : (
-                                <span>Wajah Sudah Terdaftar</span>
-                              )}
-                            </Link>
+                            {role !== "All" && (
+                              <Link
+                                href={`/pages/user/register/${user.id}?role=${user.role}`}
+                                className="btn btn-primary me-2"
+                              >
+                                {user.url_foto_absen == null ? (
+                                  <>
+                                    <EmojiSmile /> Daftar Wajah
+                                  </>
+                                ) : (
+                                  <span>Wajah Sudah Terdaftar</span>
+                                )}
+                              </Link>
+                            )}
                             <Button
                               variant="danger"
                               onClick={() => openDeleteModal(user.id)}
@@ -257,15 +259,17 @@ const Users = () => {
                               <Dropdown.Item href={`/pages/user/detailuser/${user.id}`}>
                                 <PersonVcard className="text-white" /> Detail
                               </Dropdown.Item>
-                              <Dropdown.Item href={`/pages/user/register/${user.id}?role=${user.role}`}>
-                                {user.url_foto_absen == null ? (
-                                  <>
-                                    <EmojiSmile /> Daftar Muka
-                                  </>
-                                ) : (
-                                  <span>Muka Sudah Terdaftar</span>
-                                )}
-                              </Dropdown.Item>
+                              {role !== "All" && (
+                                <Dropdown.Item href={`/pages/user/register/${user.id}?role=${user.role}`}>
+                                  {user.url_foto_absen == null ? (
+                                    <>
+                                      <EmojiSmile /> Daftar Muka
+                                    </>
+                                  ) : (
+                                    <span>Muka Sudah Terdaftar</span>
+                                  )}
+                                </Dropdown.Item>
+                              )}
                               <Dropdown.Item onClick={() => openDeleteModal(user.id)}>
                                 <TrashFill /> Delete
                               </Dropdown.Item>

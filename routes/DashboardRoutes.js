@@ -58,7 +58,7 @@ export const DashboardMenu = [{
         id: uuid(),
         title: 'Data Pengguna',
         icon: <BsPersonLinesFill style={{ marginRight: '6px' }} />,
-        link: '/pages/user/all-user'
+        link: '/pages/user/users'
     },
 
 ];
