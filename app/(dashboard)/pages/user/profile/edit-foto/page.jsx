@@ -4,24 +4,29 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { IoMdImage } from "react-icons/io";
 import axios from "axios";
-import { useParams } from "next/navigation";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 const EditFotoProfile = () => {
   const [user, setUser] = useState(null);
-  const { id } = useParams();
   const [file, setFile] = useState("");
   const [preview, setPreview] = useState("");
+  const [userId, setUserId] = useState(null); // Menggunakan state untuk menyimpan user ID
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
       window.location.href = "http://localhost:3000/login";
     } else {
-      setUser(JSON.parse(userData));
+      const user = JSON.parse(userData);
+      setUser(user);
+      setUserId(user.id); // Set user ID dari data pengguna yang login
     }
   }, []);
+
+  useEffect(() => {
+    console.log("User ID:", userId);
+  }, [userId]);
 
   const loadImage = (e) => {
     const image = e.target.files[0];
@@ -46,7 +51,7 @@ const EditFotoProfile = () => {
 
     try {
       const response = await axios.patch(
-        `http://localhost:5001/updateuser/${id}`,
+        `http://localhost:5001/updateuser/${userId}`,
         formData,
         {
           headers: {
@@ -59,7 +64,11 @@ const EditFotoProfile = () => {
       alert("Foto profil berhasil diperbarui");
       window.location.reload();
     } catch (error) {
-      console.log(error);
+      console.error("Error details:", error); // Detailed error log
+      if (error.response) {
+        console.error("Server responded with a status:", error.response.status);
+        console.error("Response data:", error.response.data);
+      }
       alert("Gagal memperbarui foto profil. Silakan coba lagi.");
     }
   };
