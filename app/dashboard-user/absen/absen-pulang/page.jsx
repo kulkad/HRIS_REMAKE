@@ -6,30 +6,40 @@ import Webcam from "react-webcam";
 import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import Link from "next/link";
-import { Navbar, Nav, Container } from "react-bootstrap";
+import Swal from "sweetalert2";
+import { Navbar, Nav, Container, Modal, Button, Form } from "react-bootstrap";
 
-const FaceComparison = () => {
+const AbsenPulang = () => {
   const [initializing, setInitializing] = useState(true);
   const [similarity, setSimilarity] = useState(null);
   const [image2, setImage2] = useState(null);
   const [userPhotos, setUserPhotos] = useState([]);
   const [absenSuccess, setAbsenSuccess] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [isWithinBounds, setIsWithinBounds] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const webcamRef = useRef(null);
   const imageRef2 = useRef(null);
 
+  const officeLat = -6.770397; // Latitude kantor
+  const officeLng = 108.461445; // Longitude kantor
+  const allowedRadius = 100; // Radius yang diizinkan dalam meter
+
   useEffect(() => {
     const loadModels = async () => {
       const MODEL_URL = "/models";
-      await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-      await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-      await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-      await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
-      setInitializing(false);
+      try {
+        await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+        await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+        await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+        await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+        setInitializing(false);
+      } catch (error) {
+        console.error("Error loading models:", error);
+      }
     };
     loadModels();
   }, []);
@@ -40,6 +50,7 @@ const FaceComparison = () => {
       setUserPhotos(response.data);
     } catch (error) {
       console.error("Error fetching user photos: ", error);
+      alert("Gagal mengambil foto pengguna. Silakan periksa server dan endpoint.");
     }
   };
 
@@ -61,6 +72,11 @@ const FaceComparison = () => {
     let matchedUser = null;
 
     for (let userPhoto of userPhotos) {
+      if (!userPhoto.url_foto_absen) {
+        console.error("User photo URL is null or undefined:", userPhoto);
+        continue;
+      }
+
       const img1 = new Image();
       img1.crossOrigin = "anonymous";
       img1.src = userPhoto.url_foto_absen;
@@ -99,24 +115,77 @@ const FaceComparison = () => {
         await axios.post("http://localhost:5001/absen", {
           userId: matchedUser.id,
         });
-        setShowModal(true); // Show success modal
+        setShowModal(true);
       } catch (error) {
         console.error("Error posting absen:", error);
         setErrorMessage(
           `Gagal absen: ${error.response?.data?.msg || error.message}`
         );
-        setShowErrorModal(true); // Show error modal
+        setShowErrorModal(true);
       }
     } else {
-      setSimilarity("Tidak dapat mendeteksi kedua wajah");
-      setErrorMessage("Tidak dapat mendeteksi kedua wajah");
-      setShowErrorModal(true); // Show error modal
+      setSimilarity("Tidak dapat mendeteksi wajah");
+      setErrorMessage("Tidak dapat mendeteksi wajah");
+      setShowErrorModal(true);
     }
   };
 
+  // Utility untuk menghitung jarak dua titik menggunakan Haversine formula
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371e3; // jari-jari bumi dalam meter
+    const φ1 = lat1 * (Math.PI / 180);
+    const φ2 = lat2 * (Math.PI / 180);
+    const Δφ = (lat2 - lat1) * (Math.PI / 180);
+    const Δλ = (lon2 - lon1) * (Math.PI / 180);
+
+    const a =
+      Math.sin(Δφ / 2) ** 2 +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // hasil dalam meter
+  };
+
+  // Fungsi untuk memeriksa apakah lokasi pengguna dalam batas kantor
+  const isWithinOfficeBounds = (
+    userLat,
+    userLng,
+    officeLat,
+    officeLng,
+    allowedRadius
+  ) => {
+    const distance = calculateDistance(userLat, userLng, officeLat, officeLng);
+    return distance <= allowedRadius;
+  };
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setLocation({ latitude, longitude });
+
+          const withinBounds = isWithinOfficeBounds(
+            latitude,
+            longitude,
+            officeLat,
+            officeLng,
+            allowedRadius
+          );
+          setIsWithinBounds(withinBounds);
+        },
+        (error) => {
+          console.error("Error obtaining location:", error);
+        }
+      );
+    } else {
+      console.log("Geolocation is not supported by this browser.");
+    }
+  }, []);
+
   if (initializing) {
     return (
-      <div className="container bg-white dark:bg-dark text-light dark:text-white rounded shadow p-4">
+      <div className="container bg-white dark:bg-slate-900 dark:text-white rounded-lg shadow-md overflow-hidden p-4">
         <Skeleton height={40} count={1} className="mb-4" />
         <Skeleton height={20} count={1} className="mb-4" />
         <Skeleton height={20} count={1} className="mb-4" />
@@ -127,27 +196,24 @@ const FaceComparison = () => {
   }
 
   return (
-    <div className="container">
-      <Navbar bg="dark" variant="dark" expand="lg">
+    <div>
+      <Navbar bg="dark" variant="dark" expand="lg" className="justify-content-center">
         <Container>
-          <Navbar.Brand href="/">MyApp</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link as={Link} href="/">
-                Home
+            <Nav className="mx-auto">
+              <Nav.Link href="/dashboard-user/absen/geolocation">
+                Geolocation
               </Nav.Link>
-              <Nav.Link as={Link} href="/about">
-                About
-              </Nav.Link>
-              <Nav.Link as={Link} href="/contact">
-                Contact
+              <Nav.Link href="/dashboard-user/absen">Absen Hadir</Nav.Link>
+              <Nav.Link href="/dashboard-user/absen/absen-pulang">
+                Absen Pulang
               </Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <div className="d-flex justify-content-center bg-light dark:bg-dark mt-2 rounded">
+      <div className="container d-flex justify-content-center bg-light dark:bg-dark mt-2 rounded">
         <div className="text-center">
           <Webcam
             audio={false}
@@ -163,83 +229,53 @@ const FaceComparison = () => {
             <img ref={imageRef2} className="d-none" alt="Captured Image" />
           </div>
           <button
-            className="btn text-primary btn-primary mt-3 text-white"
-            onClick={calculateSimilarity}
+            className="btn btn-primary mt-3"
+            onClick={() => {
+              if (isWithinBounds) {
+                calculateSimilarity();
+              } else {
+                alert(
+                  "Anda berada di luar area kantor. Absen tidak diizinkan."
+                );
+              }
+            }}
           >
-            Absen pulang
+            Absen
           </button>
           {similarity && (
             <p className="text-danger font-weight-bold mt-3">
               Kemiripan wajah :{" "}
-              <span className="text-primary">{similarity}</span>
+              <span className="text-success">{similarity}</span>
             </p>
           )}
-          {absenSuccess && currentUser && (
-            <p className="text-success font-weight-bold mt-3">
-              Hai {currentUser.name}, absen pulang berhasil! Silahkan
-              melanjutkan aktifitas anda!
-            </p>
-          )}
-        </div>
-
-        {/* Success Modal */}
-        <div
-          className={`modal fade ${showModal ? "show" : ""}`}
-          style={{ display: showModal ? "block" : "none" }}
-          tabIndex="-1"
-          role="dialog"
-        >
-          <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Absen Pulang</h5>
-              </div>
-              <div className="modal-body">
-                <p>Absen pulang berhasil!</p>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowModal(false)}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Error Modal */}
-        <div
-          className={`modal fade ${showErrorModal ? "show" : ""}`}
-          style={{ display: showErrorModal ? "block" : "none" }}
-          tabIndex="-1"
-          role="dialog"
-        >
-          <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Absen Gagal</h5>
-              </div>
-              <div className="modal-body">
-                <p>{errorMessage}</p>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowErrorModal(false)}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Absen Berhasil</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Absen berhasil dilakukan untuk {currentUser?.name}.</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Tutup
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <Modal show={showErrorModal} onHide={() => setShowErrorModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Absen Gagal</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{errorMessage}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowErrorModal(false)}>
+            Tutup
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
 
-export default FaceComparison;
+export default AbsenPulang;

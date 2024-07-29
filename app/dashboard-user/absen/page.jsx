@@ -194,12 +194,11 @@ const FaceComparison = () => {
 
   return (
     <div>
-      <Navbar bg="dark" variant="dark" expand="lg">
+      <Navbar bg="dark" variant="dark" expand="lg" className="justify-content-center">
         <Container>
-          <Navbar.Brand href="#home">Dashboard</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
+            <Nav className="mx-auto">
               <Nav.Link href="/dashboard-user/absen/geolocation">
                 Geolocation
               </Nav.Link>
