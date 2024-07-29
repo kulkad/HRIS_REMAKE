@@ -7,6 +7,7 @@ import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Swal from "sweetalert2";
+import Image from "next/image";
 
 const FaceComparison = () => {
   const [initializing, setInitializing] = useState(true);
@@ -136,13 +137,17 @@ const FaceComparison = () => {
               Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    return R * c; // hasil dalam meter
+    const distance = R * c; // hasil dalam meter
+    console.log(`Distance: ${distance.toFixed(2)} meters`); // Log untuk memeriksa jarak
+    return distance;
   };
 
   // Fungsi untuk memeriksa apakah lokasi pengguna dalam batas kantor
   const isWithinOfficeBounds = (userLat, userLng, officeLat, officeLng, allowedRadius) => {
     const distance = calculateDistance(userLat, userLng, officeLat, officeLng);
-    return distance <= allowedRadius;
+    const withinBounds = distance <= allowedRadius;
+    console.log(`User is within bounds: ${withinBounds}`); // Log hasil perhitungan bounds
+    return withinBounds;
   };
 
   useEffect(() => {
@@ -150,10 +155,12 @@ const FaceComparison = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
+          console.log(`Latitude: ${latitude}, Longitude: ${longitude}`); // Log lokasi pengguna
           setLocation({ latitude, longitude });
 
           const withinBounds = isWithinOfficeBounds(latitude, longitude, officeLat, officeLng, allowedRadius);
           setIsWithinBounds(withinBounds);
+          console.log(`Within Bounds: ${withinBounds}`); // Log hasil perhitungan bounds
         },
         (error) => {
           console.error('Error obtaining location:', error);
@@ -190,7 +197,7 @@ const FaceComparison = () => {
           style={{ transform: "scaleX(-1)" }}
         />
         <div>
-          <img ref={imageRef2} className="d-none" alt="Captured Image" />
+          <Image ref={imageRef2} className="d-none" alt="Captured Image" />
         </div>
         <button
           className="btn btn-primary mt-3"

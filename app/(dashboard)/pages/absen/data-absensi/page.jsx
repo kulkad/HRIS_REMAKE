@@ -52,7 +52,7 @@ const DataAbsen = () => {
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
-
+  
   const handleRoleChange = (e) => {
     setSelectedRole(e.target.value);
   };
@@ -88,17 +88,17 @@ const DataAbsen = () => {
             <div>
               <div className="d-flex justify-content-between align-items-center">
                 <div className="mb-2 mb-lg-0">
-                  <h3 className="mb-0  text-white">Data Absensi</h3>
+                  <h3 className="mb-0 text-white">Data Absensi</h3>
                 </div>
               </div>
             </div>
           </Col>
-          
+  
           <div className="card container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
-            {/* Tabel Data Absensi */}
-            <div class="table-responsive">
-              <table class="table align-items-center table-flush">
-                <thead class="thead-light">
+            {/* Table Data Absensi */}
+            <div className="table-responsive">
+              <table className="table align-items-center table-flush">
+                <thead className="thead-light">
                   <tr>
                     <th>No</th>
                     <th>Nama</th>
@@ -108,39 +108,45 @@ const DataAbsen = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>
-                      <span>1</span>
-                    </td>
-                    <td class="table-user">
-                      <b>John Michael</b>
-                    </td>
-                    <td>
-                      <span class="text-muted">PKL</span>
-                    </td>
-                    <td>
-                        08.00
-                    </td>
-                    <td class="table-actions">
-                      <a
-                        href="#!"
-                        class="table-action"
-                        data-toggle="tooltip"
-                        data-original-title="Edit product"
-                      >
-                        <i class="fas fa-user-edit"></i>
-                      </a>
-                    </td>
-                  </tr>
+                  {loading ? (
+                    <tr>
+                      <td colSpan="5">
+                        <Skeleton count={5} />
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredData.map((item, index) => (
+                      <tr key={item.id}>
+                        <td>{index + 1}</td>
+                        <td className="table-user">
+                          <b>{item.user.name}</b>
+                        </td>
+                        <td>
+                          <span className="text-muted">{item.user.role}</span>
+                        </td>
+                        <td>{item.waktu_datang}</td>
+                        <td className="table-actions">
+                          <a
+                            href="#!"
+                            className="table-action"
+                            data-toggle="tooltip"
+                            data-original-title="Edit product"
+                          >
+                            <i className="fas fa-user-edit"></i>
+                          </a>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
         </Row>
       </Container>
-           
     </Fragment>
   );
+  
 };
 
 export default DataAbsen;
