@@ -7,6 +7,7 @@ import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Image from 'next/image';
+import Swal from "sweetalert2"; // Tambahkan import Swal
 
 const EditFotoProfile = () => {
   const [user, setUser] = useState(null);
@@ -63,9 +64,19 @@ const EditFotoProfile = () => {
       );
 
       console.log(response.data); // Debugging log
-      alert("Foto profil berhasil diperbarui");
+      
       // Update preview dengan path gambar baru dari respons backend
       setPreview(response.data.profilePicture);
+
+      // Tambahkan Swal.fire setelah berhasil menyimpan foto profil
+      Swal.fire({
+        title: "Berhasil!",
+        text: "Foto profil berhasil diperbarui !",
+        icon: "success"
+      }).then(() => {
+        // Pindah halaman setelah alert ditutup
+        window.location.href = "/";
+      });
     } catch (error) {
       console.error("Error details:", error); // Detailed error log
       if (error.response) {
@@ -126,9 +137,9 @@ const EditFotoProfile = () => {
             )}
 
             <div className="text-center">
-              <button type="submit" className="btn btn-success">
-                Simpan
-              </button>
+            <button type="submit" className="btn btn-success">
+              Simpan
+            </button>
             </div>
           </form>
         </div>

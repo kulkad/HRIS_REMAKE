@@ -7,6 +7,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Link from "next/link";
 // import node module libraries
+
 import { Fragment } from "react";
 import { Container, Col, Row } from "react-bootstrap";
 

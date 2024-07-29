@@ -105,10 +105,11 @@ const QuickMenu = () => {
                         <BootstrapDropdown.Item as="div" className="px-4 pb-0 pt-2" bsPrefix=' '>
                             <div className="lh-1 d-flex align-items-center">
                                 <Image alt="avatar" src={profileImageUrl} className="rounded-circle me-2" style={{ width: '30px', height: '30px' }} />
-                                <h5 className="mb-1">{user?.name || 'John Doe'}</h5>
-                                <Link href="/pages/user/detailuser" className="text-inherit fs-6">View my profile</Link>
+                                <h5 className="mb-1">
+                                {user?.name || 'John Doe'}</h5>
                             </div>
-                            <div className=" dropdown-divider mt-3 mb-2"></div>
+                                <Link href="/pages/user/detailuser" className="text-inherit fs-6 mt-4 text-center">Lihat Profile Saya</Link>
+                            <div className=" dropdown-divider mt-2 mb-2"></div>
                         </BootstrapDropdown.Item>
                         <BootstrapDropdown.Item eventKey="2">
                             <Link href="/pages/user/profile/edit-foto" className="text-inherit fs-6">
