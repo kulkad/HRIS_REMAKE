@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
-import { Card, Table, Dropdown, Image } from "react-bootstrap";
+import { Card, Table, Dropdown, Image, Pagination } from "react-bootstrap";
 import "react-loading-skeleton/dist/skeleton.css";
 // import node module libraries
 import { Fragment } from "react";
@@ -21,26 +21,25 @@ import ProjectsStatsData from "data/dashboard/ProjectsStatsData";
 
 const HomePage = () => {
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
-  const [user2, setUser2] = useState([]);
-  const [usersByRole, setUsersByRole] = useState([]);
+  const [users, setUsers] = useState([]); // State to store all users
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
+
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = usersByRole.slice(indexOfFirstUser, indexOfLastUser);
+  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
 
-  // const userData = localStorage.getItem("user");
-  // if (!userData) {
-  //   window.location.href = "http://localhost:3000/authentication/login";
-  // } else {
-  //   setUser(JSON.parse(userData));
-  // }
+  const totalPages = Math.ceil(users.length / usersPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   const fetchUsers = async () => {
     try {
       const response = await axios.get("http://localhost:5001/users");
       console.log(response.data);
-      setUser2(response.data);
+      setUsers(response.data); // Update state with fetched users
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
@@ -50,9 +49,7 @@ const HomePage = () => {
 
   useEffect(() => {
     fetchUsers();
-    
-  
-  },[]);
+  }, []);
 
   if (loading) {
     return (
@@ -193,7 +190,7 @@ const HomePage = () => {
 
         <div class="table-responsive">
           <div className="bg-white p-4">
-            <h4 className="mb-0">Total User</h4>
+              <h4 className="mb-0">Total User : {users.length}</h4>
           </div>
           <table class="table align-items-center table-flush">
             <thead class="thead-light">
@@ -205,9 +202,9 @@ const HomePage = () => {
               </tr>
             </thead>
             <tbody>
-            {user2.map((user, index) => (
+            {currentUsers.map((user, index) => (
                   <tr key={index}>
-                    <td>{index + 1}</td>
+                    <td>{indexOfFirstUser + index + 1}</td>
                     <td>{user.name}</td>
                     <td>{user.email}</td>
                     <td>{user.role}</td>
@@ -215,6 +212,24 @@ const HomePage = () => {
                 ))}
             </tbody>
           </table>
+        </div>
+
+        <div className="d-flex justify-content-center my-4">
+          <Pagination>
+            <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
+            <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
+            {[...Array(totalPages)].map((_, index) => (
+              <Pagination.Item
+                key={index}
+                active={index + 1 === currentPage}
+                onClick={() => handlePageChange(index + 1)}
+              >
+                {index + 1}
+              </Pagination.Item>
+            ))}
+            <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
+            <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
+          </Pagination>
         </div>
 
         <Row className="my-6">
