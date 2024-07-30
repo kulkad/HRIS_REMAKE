@@ -30,12 +30,15 @@ const HomePage = () => {
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = usersByRole.slice(indexOfFirstUser, indexOfLastUser);
 
-  // const userData = localStorage.getItem("user");
-  // if (!userData) {
-  //   window.location.href = "http://localhost:3000/authentication/login";
-  // } else {
-  //   setUser(JSON.parse(userData));
-  // }
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (!userData) {
+      window.location.href = "http://localhost:3000/authentication/login";
+    } else {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
+  
   const fetchUsers = async () => {
     try {
       const response = await axios.get("http://localhost:5001/users");

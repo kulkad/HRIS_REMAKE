@@ -27,6 +27,12 @@ export default function Capture({ userName }) {
 
   useEffect(() => {
     if (navigator.geolocation) {
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 60000, // 60 detik
+        maximumAge: 0,
+      };
+
       const id = navigator.geolocation.watchPosition(
         (position) => {
           setLocation({
@@ -37,11 +43,11 @@ export default function Capture({ userName }) {
         (error) => {
           console.error("Error accessing geolocation: ", error);
         },
-        { enableHighAccuracy: true }
+        options
       );
       setWatchId(id);
 
-      // Stop watching position after 15 seconds
+      // Hentikan watching position setelah 15 detik
       const timeoutId = setTimeout(() => {
         navigator.geolocation.clearWatch(id);
         navigator.geolocation.getCurrentPosition(
@@ -54,7 +60,7 @@ export default function Capture({ userName }) {
           (error) => {
             console.error("Error accessing geolocation: ", error);
           },
-          { enableHighAccuracy: true }
+          options
         );
       }, 15000);
 
