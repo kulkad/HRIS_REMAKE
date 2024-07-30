@@ -8,7 +8,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { Fragment } from "react";
 import Link from "next/link";
 import { Container, Col, Row } from "react-bootstrap";
-
+import axios from "axios";
 
 // import widget/custom components
 import { StatRightTopIcon } from "widgets";
@@ -20,33 +20,41 @@ import { ActiveProjects, Teams, TasksPerformance } from "sub-components";
 import ProjectsStatsData from "data/dashboard/ProjectsStatsData";
 
 const HomePage = () => {
-  
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [user2, setUser2] = useState([]);
+  const [usersByRole, setUsersByRole] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage] = useState(5);
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = usersByRole.slice(indexOfFirstUser, indexOfLastUser);
 
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (!userData) {
-      window.location.href = "http://localhost:3000/authentication/login";
-    } else {
-      setUser(JSON.parse(userData));
+  // const userData = localStorage.getItem("user");
+  // if (!userData) {
+  //   window.location.href = "http://localhost:3000/authentication/login";
+  // } else {
+  //   setUser(JSON.parse(userData));
+  // }
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get("http://localhost:5001/users");
+      console.log(response.data);
+      setUser2(response.data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get("http://localhost:5001/users");
-        setUser(response.data);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchUsers();
-  }, []);
-  if (!user) {
+    
+  
+  },[]);
+
+  if (loading) {
     return (
       <div className="container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
         <Skeleton height={40} count={1} className="mb-4" />
@@ -68,7 +76,7 @@ const HomePage = () => {
             <div>
               <div className="d-flex justify-content-between align-items-center">
                 <div className="mb-2 mb-lg-6">
-                  <h2 className="mb-0  text-white">Dashboard  Admin</h2>
+                  <h2 className="mb-0  text-white">Dashboard Admin</h2>
                 </div>
               </div>
             </div>
@@ -186,7 +194,7 @@ const HomePage = () => {
         <div class="table-responsive">
           <div className="bg-white p-4">
             <h4 className="mb-0">Total User</h4>
-            </div>
+          </div>
           <table class="table align-items-center table-flush">
             <thead class="thead-light">
               <tr>
@@ -197,14 +205,14 @@ const HomePage = () => {
               </tr>
             </thead>
             <tbody>
-              <tr key={user.id} className="bg-white dark:bg-gray-800">
-                <th className="px-6 py-4">1</th>
-                <th className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                  {user.name}
-                </th>
-                <td className="px-6 py-4">{user.email}</td>
-                <td className="px-6 py-4">{user.role}</td>
-              </tr>
+            {user2.map((user, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{user.name}</td>
+                    <td>{user.email}</td>
+                    <td>{user.role}</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
