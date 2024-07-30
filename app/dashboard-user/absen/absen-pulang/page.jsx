@@ -202,14 +202,14 @@ const AbsenPulang = () => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mx-auto">
-              <Nav.Link href="/dashboard-user/absen/geolocation">Geolocation</Nav.Link>
-              <Nav.Link href="/dashboard-user/absen">Absen Hadir</Nav.Link>
-              <Nav.Link href="/dashboard-user/absen/absen-pulang">Absen Pulang</Nav.Link>
+              <Nav.Link href="/dashboard-user/absen/geolocation" className="mx-3">Geolocation</Nav.Link>
+              <Nav.Link href="/dashboard-user/absen" className="mx-3">Absen Hadir</Nav.Link>
+              <Nav.Link href="/dashboard-user/absen/absen-pulang" active className="mx-3">Absen Pulang</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <div className="container d-flex justify-content-center bg-light dark:bg-dark mt-2 rounded">
+      <div className="container d-flex justify-content-center bg-light dark:bg-dark mt-7 mb-5 rounded">
         <div className="text-center">
           <Webcam
             audio={false}

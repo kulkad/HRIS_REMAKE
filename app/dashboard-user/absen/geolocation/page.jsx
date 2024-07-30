@@ -165,24 +165,28 @@ export default function Capture({ userName }) {
 
   return (
     <div>
-      <Navbar bg="dark" variant="dark" expand="lg" className="justify-content-center">
-        <Container>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="mx-auto">
-              <Nav.Link href="/dashboard-user/absen/geolocation">
-                Geolocation
-              </Nav.Link>
-              <Nav.Link href="/dashboard-user/absen">Absen Hadir</Nav.Link>
-              <Nav.Link href="/dashboard-user/absen/absen-pulang">
-                Absen Pulang
-              </Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+      
+<Navbar bg="dark" variant="dark" expand="lg" className="justify-content-center">
+  <Container>
+    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+    <Navbar.Collapse id="basic-navbar-nav">
+      <Nav className="mx-auto fs-5">
+        <Nav.Link href="/dashboard-user/absen/geolocation" className="mx-3" active >
+          Geolocation
+        </Nav.Link>
+        <Nav.Link href="/dashboard-user/absen" className="mx-3">
+          Absen Hadir
+        </Nav.Link>
+        <Nav.Link href="/dashboard-user/absen/absen-pulang" className="mx-3">
+          Absen Pulang
+        </Nav.Link>
+      </Nav>
+    </Navbar.Collapse>
+  </Container>
+</Navbar>
+
       <div className="container min-vh-100 d-flex flex-column align-items-center justify-content-center bg-light dark:bg-dark">
-        <h1 className="display-4 mt-2 font-bold mb-4 position-absolute top-0 start-0 ms-4 text-dark dark:text-white">
+        <h1 className="display-4 mt-7 font-bold mb-5 position-absolute top-0 start-0 ms-4 text-dark dark:text-white">
           {/* Geolocation */}
         </h1>
         {!photo && (
