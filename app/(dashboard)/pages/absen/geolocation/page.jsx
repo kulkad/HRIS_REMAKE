@@ -13,10 +13,11 @@ export default function Capture({ userName }) {
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [attendance, setAttendance] = useState("Hadir");
   const fileInputRef = useRef(null);
+  const [watchId, setWatchId] = useState(null);
 
   useEffect(() => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
+      const id = navigator.geolocation.watchPosition(
         (position) => {
           setLocation({
             latitude: position.coords.latitude,
@@ -24,12 +25,35 @@ export default function Capture({ userName }) {
           });
         },
         (error) => {
-          console.error("Error accessing geolocation: ", error);  
+          console.error("Error accessing geolocation: ", error);
         },
         { enableHighAccuracy: true }
       );
-    }
+      setWatchId(id);
 
+      // Stop watching position after 15 seconds
+      const timeoutId = setTimeout(() => {
+        navigator.geolocation.clearWatch(id);
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setLocation({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            });
+          },
+          (error) => {
+            console.error("Error accessing geolocation: ", error);
+          },
+          { enableHighAccuracy: true }
+        );
+      }, 15000);
+
+      // Clear the timeout if the component unmounts
+      return () => {
+        clearTimeout(timeoutId);
+        navigator.geolocation.clearWatch(id);
+      };
+    }
   }, []);
 
   const getFormattedDate = () => {
@@ -96,7 +120,7 @@ export default function Capture({ userName }) {
         context.font = "17px Arial";
         context.fillStyle = "white";
         const textX = logoX + logoWidth + 5;
-        const nama = userName; // Use the userName prop paras goblok
+        const nama = userName;
 
         context.fillText(`Nama: ${nama}`, textX, canvasRef.current.height - 130);
         const marginTop = 6;
@@ -168,16 +192,15 @@ export default function Capture({ userName }) {
       {!photo && (
         <div className="d-flex flex-column align-items-center position-relative">
           <Webcam
-          audio={false}
-          ref={webcamRef}
-          screenshotFormat="image/jpeg"
-          className="rounded-circle w-100"
-          videoConstraints={{
-            facingMode: "user",
-          }}
-          style={{ transform: "scaleX(-1)" }}
-        />
-          
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            className="rounded-circle w-100"
+            videoConstraints={{
+              facingMode: "user",
+            }}
+            style={{ transform: "scaleX(-1)" }}
+          />
           <button
             onClick={capturePhoto}
             className="btn btn-primary mt-4"

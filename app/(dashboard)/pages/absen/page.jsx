@@ -76,10 +76,13 @@ const FaceComparison = () => {
         continue;
       }
 
-      const img1 = new Image();
+      const img1 = document.createElement('img');
       img1.crossOrigin = "anonymous";
       img1.src = userPhoto.url_foto_absen;
-      await new Promise((resolve) => (img1.onload = resolve));
+
+      await new Promise((resolve) => {
+        img1.onload = resolve;
+      });
 
       const detection1 = await faceapi
         .detectSingleFace(img1, new faceapi.SsdMobilenetv1Options())
@@ -125,7 +128,21 @@ const FaceComparison = () => {
     }
   };
 
-  // Utility untuk menghitung jarak dua titik menggunakan Haversine formula
+  const getLocationFromIP = async () => {
+    try {
+      const response = await axios.get('https://ipapi.co/json/');
+      const { latitude, longitude } = response.data;
+      console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+      setLocation({ latitude, longitude });
+
+      const withinBounds = isWithinOfficeBounds(latitude, longitude, officeLat, officeLng, allowedRadius);
+      setIsWithinBounds(withinBounds);
+      console.log(`Within Bounds: ${withinBounds}`);
+    } catch (error) {
+      console.error("Error obtaining location from IP:", error);
+    }
+  };
+
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371e3; // jari-jari bumi dalam meter
     const φ1 = lat1 * (Math.PI / 180);
@@ -142,7 +159,6 @@ const FaceComparison = () => {
     return distance;
   };
 
-  // Fungsi untuk memeriksa apakah lokasi pengguna dalam batas kantor
   const isWithinOfficeBounds = (userLat, userLng, officeLat, officeLng, allowedRadius) => {
     const distance = calculateDistance(userLat, userLng, officeLat, officeLng);
     const withinBounds = distance <= allowedRadius;
@@ -164,10 +180,12 @@ const FaceComparison = () => {
         },
         (error) => {
           console.error('Error obtaining location:', error);
+          getLocationFromIP(); // Fallback to IP-based location
         }
       );
     } else {
-      console.log('Geolocation is not supported by this browser.');
+      console.log('Geolocation is not supported by this browser. Using IP-based location as fallback.');
+      getLocationFromIP(); // Fallback to IP-based location
     }
   }, []);
 
@@ -197,7 +215,7 @@ const FaceComparison = () => {
           style={{ transform: "scaleX(-1)" }}
         />
         <div>
-          <Image ref={imageRef2} className="d-none" alt="Captured Image" />
+          <img ref={imageRef2} className="d-none" alt="Captured Image" />
         </div>
         <button
           className="btn btn-primary mt-3"

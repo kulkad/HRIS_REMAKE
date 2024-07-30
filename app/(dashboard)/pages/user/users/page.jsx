@@ -5,7 +5,19 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Link from "next/link";
 import axios from "axios";
-import { Container, Col, Row, Form, Table, Pagination, DropdownButton, Dropdown, Card, Button, Modal } from "react-bootstrap";
+import {
+  Container,
+  Col,
+  Row,
+  Form,
+  Table,
+  Pagination,
+  DropdownButton,
+  Dropdown,
+  Card,
+  Button,
+  Modal,
+} from "react-bootstrap";
 import { EmojiSmile, PersonVcard, TrashFill } from "react-bootstrap-icons";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import Swal from "sweetalert2";
@@ -13,6 +25,7 @@ import Swal from "sweetalert2";
 const Users = () => {
   const [user, setUser] = useState(null);
   const [usersByRole, setUsersByRole] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
   const [role, setRole] = useState("All");
@@ -25,6 +38,11 @@ const Users = () => {
   const [confPassword, setConfPassword] = useState("");
   const [file, setFile] = useState("");
   const [preview, setPreview] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
 
   const openCreateModal = () => {
     setShowCreateModal(true);
@@ -86,7 +104,10 @@ const Users = () => {
   useEffect(() => {
     const fetchUsersByRole = async () => {
       try {
-        const endpoint = role === "All" ? "http://localhost:5001/users" : `http://localhost:5001/userbyrole/${role}`;
+        const endpoint =
+          role === "All"
+            ? "http://localhost:5001/users"
+            : `http://localhost:5001/userbyrole/${role}`;
         const response = await axios.get(endpoint, {
           withCredentials: true,
         });
@@ -98,6 +119,13 @@ const Users = () => {
 
     fetchUsersByRole();
   }, [role]);
+
+  useEffect(() => {
+    const filtered = usersByRole.filter((user) =>
+      user.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+  }, [searchQuery, usersByRole]);
 
   if (!user) {
     return (
@@ -113,7 +141,7 @@ const Users = () => {
 
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = usersByRole.slice(indexOfFirstUser, indexOfLastUser);
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -125,20 +153,23 @@ const Users = () => {
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Lanjutkan !"
+      confirmButtonText: "Lanjutkan !",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           await axios.delete(`http://localhost:5001/users/${userId}`);
-          const response = await axios.get(`http://localhost:5001/userbyrole/${role}`, {
-            withCredentials: true,
-          });
+          const response = await axios.get(
+            `http://localhost:5001/userbyrole/${role}`,
+            {
+              withCredentials: true,
+            }
+          );
           setUsersByRole(response.data);
           setSuccessMessage("User berhasil dihapus.");
           Swal.fire({
             title: "Deleted!",
             text: "User telah berhasil dihapus!.",
-            icon: "success"
+            icon: "success",
           });
         } catch (error) {
           console.error("Error deleting user:", error.message);
@@ -157,6 +188,13 @@ const Users = () => {
               <div className="mb-2 mb-lg-0">
                 <h3 className="mb-0 text-white">Data Pengguna</h3>
               </div>
+              <input
+                type="text"
+                placeholder="Cari Nama"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="form-control w-25"
+              />
               <div>
                 <Button onClick={openCreateModal} className="btn btn-white">
                   Tambah Data
@@ -182,7 +220,7 @@ const Users = () => {
               {successMessage && (
                 <p className="text-green-600">{successMessage}</p>
               )}
-              {usersByRole.length === 0 ? (
+              {filteredUsers.length === 0 ? (
                 <p className="text-center py-4">Tidak ada data</p>
               ) : (
                 <div className="d-none d-lg-block table-responsive">
@@ -204,8 +242,10 @@ const Users = () => {
                           <td className="d-flex justify-content-center">
                             <Link
                               href={`/pages/user/detailuser/${user.id}`}
-                              className="btn btn-info me-2 d-flex align-items-center justify-content-center text-white">
-                              <PersonVcard className="me-2 text-white" />Detail 
+                              className="btn btn-info me-2 d-flex align-items-center justify-content-center text-white"
+                            >
+                              <PersonVcard className="me-2 text-white" />
+                              Detail
                             </Link>
                             {role !== "All" && (
                               <Link
@@ -235,7 +275,7 @@ const Users = () => {
                   </Table>
                 </div>
               )}
-              {usersByRole.length > 0 && (
+              {filteredUsers.length > 0 && (
                 <div className="d-lg-none">
                   {currentUsers.map((user) => (
                     <Card key={user.id} className="mb-3">
@@ -243,26 +283,31 @@ const Users = () => {
                         <div className="d-flex justify-content-between align-items-center">
                           <div>
                             <Card.Title>{user.name}</Card.Title>
-                            <Card.Subtitle className="mb-2 text-muted">{user.email}</Card.Subtitle>
-                            <Card.Text>
-                              Role: {user.role}
-                            </Card.Text>
+                            <Card.Subtitle className="mb-2 text-muted">
+                              {user.email}
+                            </Card.Subtitle>
+                            <Card.Text>Role: {user.role}</Card.Text>
                           </div>
                           <Dropdown align="end">
-                            <Dropdown.Toggle 
-                              variant="link" 
-                              id={`dropdown-custom-components-${user.id}`} 
+                            <Dropdown.Toggle
+                              variant="link"
+                              id={`dropdown-custom-components-${user.id}`}
                               className="p-0 bg-transparent border-0"
                             >
                               <FaEllipsisVertical />
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                              <Dropdown.Item className="text-white" href={`/pages/user/detailuser/${user.id}`}>
+                              <Dropdown.Item
+                                className="text-white"
+                                href={`/pages/user/detailuser/${user.id}`}
+                              >
                                 <PersonVcard className="me-2" /> Detail
                               </Dropdown.Item>
                               {role !== "All" && (
-                                <Dropdown.Item href={`/pages/user/register/${user.id}?role=${user.role}`}>
+                                <Dropdown.Item
+                                  href={`/pages/user/register/${user.id}?role=${user.role}`}
+                                >
                                   {user.url_foto_absen == null ? (
                                     <>
                                       <EmojiSmile className="me-2" /> Daftar Muka
@@ -272,7 +317,9 @@ const Users = () => {
                                   )}
                                 </Dropdown.Item>
                               )}
-                              <Dropdown.Item onClick={() => confirmDelete(user.id)}>
+                              <Dropdown.Item
+                                onClick={() => confirmDelete(user.id)}
+                              >
                                 <TrashFill className="me-2" /> Delete
                               </Dropdown.Item>
                             </Dropdown.Menu>
@@ -286,7 +333,7 @@ const Users = () => {
 
               <Pagination className="d-flex justify-content-center mt-4">
                 {Array.from({
-                  length: Math.ceil(usersByRole.length / usersPerPage),
+                  length: Math.ceil(filteredUsers.length / usersPerPage),
                 }).map((_, index) => (
                   <Pagination.Item
                     key={index}
