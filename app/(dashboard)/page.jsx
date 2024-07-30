@@ -9,6 +9,7 @@ import { Fragment } from "react";
 import Link from "next/link";
 import { Container, Col, Row } from "react-bootstrap";
 
+
 // import widget/custom components
 import { StatRightTopIcon } from "widgets";
 
@@ -19,6 +20,8 @@ import { ActiveProjects, Teams, TasksPerformance } from "sub-components";
 import ProjectsStatsData from "data/dashboard/ProjectsStatsData";
 
 const HomePage = () => {
+  
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -30,6 +33,19 @@ const HomePage = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/users");
+        setUser(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
+  }, []);
   if (!user) {
     return (
       <div className="container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
@@ -181,7 +197,7 @@ const HomePage = () => {
               </tr>
             </thead>
             <tbody>
-              <tr key={user.uuid} className="bg-white dark:bg-gray-800">
+              <tr key={user.id} className="bg-white dark:bg-gray-800">
                 <th className="px-6 py-4">1</th>
                 <th className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                   {user.name}
