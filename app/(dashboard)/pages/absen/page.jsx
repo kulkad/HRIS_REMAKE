@@ -21,10 +21,14 @@ const FaceComparison = () => {
   const webcamRef = useRef(null);
   const imageRef2 = useRef(null);
 
-  const officeLat = -6.770397; // Latitude kantor
-  const officeLng = 108.461445; // Longitude kantor
-  // Untuk test terlebih dahulu
-  const allowedRadius = 10000; // Radius yang diizinkan dalam meter
+  // const officeLat = -6.770397; // Latitude kantor
+  // const officeLng = 108.461445; // Longitude kantor
+  // // Untuk test terlebih dahulu
+  // const allowedRadius = 10000; // Radius yang diizinkan dalam meter
+
+  const officeLat = -6.756357; // Latitude kantor
+  const officeLng = 108.474424; // Longitude kantor
+  const allowedRadius = 100; // Radius yang diizinkan dalam meter
 
   useEffect(() => {
     const loadModels = async () => {
@@ -50,7 +54,9 @@ const FaceComparison = () => {
       console.log("Foto pengguna berhasil diambil:", response.data);
     } catch (error) {
       console.error("Error mengambil foto pengguna: ", error);
-      alert("Gagal mengambil foto pengguna. Silakan periksa server dan endpoint.");
+      alert(
+        "Gagal mengambil foto pengguna. Silakan periksa server dan endpoint."
+      );
     }
   };
 
@@ -77,7 +83,7 @@ const FaceComparison = () => {
         continue;
       }
 
-      const img1 = document.createElement('img');
+      const img1 = document.createElement("img");
       img1.crossOrigin = "anonymous";
       img1.src = userPhoto.url_foto_absen;
 
@@ -227,15 +233,16 @@ const FaceComparison = () => {
               alert("Anda berada di luar area kantor. Absen tidak diizinkan.");
             }
           }}
+
+          // onClick={() => {
+          //   calculateSimilarity();
+          // }}
         >
           Absen
         </button>
         {similarity && (
           <p className="text-danger font-weight-bold mt-3">
-            Kemiripan wajah :{" "}
-            <span className="text-primary">
-              {similarity}
-            </span>
+            Kemiripan wajah : <span className="text-primary">{similarity}</span>
           </p>
         )}
         {absenSuccess && currentUser && (
