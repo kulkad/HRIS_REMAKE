@@ -9,11 +9,21 @@ export default function Capture({ userName }) {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   const overlayCanvasRef = useRef(null);
+  const [user, setUser] = useState();
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [attendance, setAttendance] = useState("Hadir");
   const fileInputRef = useRef(null);
   const [watchId, setWatchId] = useState(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (!userData) {
+      window.location.href = "http://localhost:3000/login";
+    } else {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -120,9 +130,13 @@ export default function Capture({ userName }) {
         context.font = "17px Arial";
         context.fillStyle = "white";
         const textX = logoX + logoWidth + 5;
-        const nama = userName;
+        const nama = user.name;
 
-        context.fillText(`Nama: ${nama}`, textX, canvasRef.current.height - 130);
+        context.fillText(
+          `Nama: ${nama}`,
+          textX,
+          canvasRef.current.height - 130
+        );
         const marginTop = 6;
         let currentTextY = canvasRef.current.height - 130 + 30 + marginTop;
 
@@ -172,7 +186,7 @@ export default function Capture({ userName }) {
     Swal.fire({
       title: "Berhasil!",
       text: "Datamu berhasil terkirim! Silahkan melanjutkan ke absen hadir!",
-      icon: "success"
+      icon: "success",
     });
   };
 
@@ -267,7 +281,12 @@ export default function Capture({ userName }) {
           </form>
         </div>
       )}
-      <canvas ref={canvasRef} className="d-none" width="480" height="320"></canvas>
+      <canvas
+        ref={canvasRef}
+        className="d-none"
+        width="480"
+        height="320"
+      ></canvas>
     </div>
   );
 }
