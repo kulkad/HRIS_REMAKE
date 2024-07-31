@@ -136,9 +136,9 @@ const QuickMenu = () => {
                             <div className=" dropdown-divider mt-2 mb-2"></div>
                         </BootstrapDropdown.Item>
                         <BootstrapDropdown.Item eventKey="2">
-                            <button className="text-inherit fs-6" onClick={handleEditModalOpen}>
+                            <a className="text-inherit fs-6" onClick={handleEditModalOpen} style={{ cursor: 'pointer' }}>
                                 <i className="fe fe-user me-2"></i> Edit Photo Profile
-                            </button>
+                            </a>
                         </BootstrapDropdown.Item>
                         <BootstrapDropdown.Item>
                             <Link href="/authentication/logout" className="text-inherit fs-6">
@@ -180,9 +180,9 @@ const QuickMenu = () => {
                             <div className=" dropdown-divider mt-3 mb-2"></div>
                         </BootstrapDropdown.Item>
                         <BootstrapDropdown.Item eventKey="2">
-                            <button className="text-inherit fs-6" onClick={handleEditModalOpen}>
+                            <a className="text-inherit fs-6" onClick={handleEditModalOpen} style={{ cursor: 'pointer' }}>
                                 <i className="fe fe-user me-2"></i> Edit Photo Profile
-                            </button>
+                            </a>
                         </BootstrapDropdown.Item>
                         <BootstrapDropdown.Item>
                             <Link href="/authentication/logout" className="text-inherit fs-6">
