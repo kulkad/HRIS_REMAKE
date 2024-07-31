@@ -8,7 +8,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Link from "next/link";
 // import node module libraries
 import { Fragment } from "react";
-import { Container, Col, Row, Form } from "react-bootstrap";
+import { Container, Col, Row, Form, Pagination } from "react-bootstrap";
 import { format } from "date-fns"; // import date-fns
 
 // import widget/custom components
@@ -27,6 +27,8 @@ const DataAbsen = () => {
   const [searchDate, setSearchDate] = useState("");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -69,6 +71,16 @@ const DataAbsen = () => {
     const matchesDate = searchDate === "" || format(new Date(item.tanggal), 'yyyy-MM-dd') === searchDate;
     return matchesName && matchesRole && matchesDate;
   });
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   if (!user) {
     return (
@@ -147,9 +159,9 @@ const DataAbsen = () => {
                       </td>
                     </tr>
                   ) : (
-                    filteredData.map((item, index) => (
+                    currentItems.map((item, index) => (
                       <tr key={item.id}>
-                        <td>{index + 1}</td>
+                        <td>{indexOfFirstItem + index + 1}</td>
                         <td className="table-user">
                           <b>{item.user.name}</b>
                         </td>
@@ -163,6 +175,24 @@ const DataAbsen = () => {
                   )}
                 </tbody>
               </table>
+            </div>
+            {/* Pagination */}
+            <div className="d-flex justify-content-center mt-4">
+              <Pagination>
+                <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
+                <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
+                {[...Array(totalPages)].map((_, pageIndex) => (
+                  <Pagination.Item
+                    key={pageIndex + 1}
+                    active={pageIndex + 1 === currentPage}
+                    onClick={() => handlePageChange(pageIndex + 1)}
+                  >
+                    {pageIndex + 1}
+                  </Pagination.Item>
+                ))}
+                <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
+                <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
+              </Pagination>
             </div>
           </div>
         </Row>
