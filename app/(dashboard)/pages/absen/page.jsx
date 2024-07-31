@@ -49,7 +49,9 @@ const FaceComparison = () => {
       console.log("Foto pengguna berhasil diambil:", response.data);
     } catch (error) {
       console.error("Error mengambil foto pengguna: ", error);
-      alert("Gagal mengambil foto pengguna. Silakan periksa server dan endpoint.");
+      alert(
+        "Gagal mengambil foto pengguna. Silakan periksa server dan endpoint."
+      );
     }
   };
 
@@ -84,7 +86,7 @@ const FaceComparison = () => {
         continue;
       }
 
-      const img1 = document.createElement('img');
+      const img1 = document.createElement("img");
       img1.crossOrigin = "anonymous";
       img1.src = userPhoto.url_foto_absen;
 
@@ -236,16 +238,20 @@ const FaceComparison = () => {
               alert("Anda berada di luar area kantor. Absen tidak diizinkan.");
             }
           }}
+
+          // onClick={() => {
+          //   calculateSimilarity();
+          // }}
         >
           Absen
         </button>
         {similarity && (
           <p className="text-danger font-weight-bold mt-3">
-            Kemiripan wajah :{" "}
-            <span className="text-primary">
-              {similarity}
-            </span>
-          </p>
+          Kemiripan wajah :{" "}
+          <span className="text-primary">
+            {similarity}
+          </span>
+        </p>
         )}
         {absenSuccess && currentUser && (
           <p className="text-success font-weight-bold mt-3">

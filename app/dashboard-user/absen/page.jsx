@@ -21,10 +21,13 @@ const FaceComparison = () => {
   const webcamRef = useRef(null);
   const imageRef2 = useRef(null);
 
-  const officeLat = -6.770397; // Latitude kantor
-  const officeLng = 108.461445; // Longitude kantor
+  const officeLat = -6.756357; // Latitude kantor
+  const officeLng = 108.474424; // Longitude kantor
   const allowedRadius = 100; // Radius yang diizinkan dalam meter
-
+  // const officeLat = -6.770397; // Latitude kantor
+  // const officeLng = 108.461445; // Longitude kantor
+  // const allowedRadius = 100; // Radius yang diizinkan dalam meter
+  
   useEffect(() => {
     const loadModels = async () => {
       const MODEL_URL = "/models";

@@ -78,7 +78,15 @@ const QuickMenu = () => {
     }
 
     if (!user) {
-        return <div>Please log in to view your profile.</div>;
+        return (
+            <div>
+                <Link href="/authentication/login">
+                    <button style={{ backgroundColor: 'blue', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '5px' }}>
+                        Login
+                    </button>
+                </Link>
+            </div>
+        );
     }
 
     const QuickMenuDesktop = () => {
