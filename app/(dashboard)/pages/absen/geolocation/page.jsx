@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Webcam from "react-webcam";
 import { FaRegImage } from "react-icons/fa6";
+import axios from "axios";
 import Swal from "sweetalert2";
 
 export default function Capture({ userName }) {
@@ -93,7 +94,7 @@ export default function Capture({ userName }) {
     });
   };
 
-  const capturePhoto = () => {
+  const capturePhoto = async () => {
     const imageSrc = webcamRef.current.getScreenshot();
     const context = canvasRef.current.getContext("2d");
     const img = new Image();
@@ -126,7 +127,7 @@ export default function Capture({ userName }) {
 
       const logoImg = new Image();
       logoImg.src = "/images/assets/gmt-ultra-full-extra-hd.png";
-      logoImg.onload = () => {
+      logoImg.onload = async () => {
         const logoWidth = 70;
         const logoHeight = 70;
         const logoX = 10;
@@ -160,6 +161,8 @@ export default function Capture({ userName }) {
 
         const image = canvasRef.current.toDataURL("image/png");
         setPhoto(image);
+        console.log("date", date);
+        console.log("time", time);
       };
     };
 
@@ -186,14 +189,28 @@ export default function Capture({ userName }) {
     }
   };
 
-  const submitData = () => {
-    console.log("Photo:", photo);
+  const submitData = async () => {
+    const date = new Date();
+    const formattedDate = date.toISOString().split("T")[0];
+    const formattedTime = date.toTimeString().split(" ")[0];
+
+    try {
+      await axios.post("http://localhost:5001/absen/geolocation", {
+        userId: user.id,
+        tanggal: formattedDate,
+        waktu_datang: formattedTime,
+        lat: location.latitude,
+        long: location.longitude,
+      });
+      Swal.fire({
+        title: "Berhasil!",
+        text: "Datamu berhasil terkirim! Silahkan melanjutkan ke absen hadir!",
+        icon: "success",
+      });
+    } catch (error) {
+      console.error("Error Kirim Data", error);
+    }
     console.log("Location:", location);
-    Swal.fire({
-      title: "Berhasil!",
-      text: "Datamu berhasil terkirim! Silahkan melanjutkan ke absen hadir!",
-      icon: "success",
-    });
   };
 
   const toggleAttendance = () => {

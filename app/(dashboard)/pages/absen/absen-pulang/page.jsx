@@ -36,6 +36,7 @@ const FaceComparison = () => {
     try {
       const response = await axios.get("http://localhost:5001/userfotoabsen");
       setUserPhotos(response.data);
+      console.log("user photos: ", response.data);
     } catch (error) {
       console.error("Error fetching user photos: ", error);
     }
@@ -94,13 +95,18 @@ const FaceComparison = () => {
       setAbsenSuccess(true);
       setCurrentUser(matchedUser);
       try {
-        await axios.post("http://localhost:5001/absen", {
-          userId: matchedUser.id,
-        });
+        await axios.patch(
+          `http://localhost:5001/absen/${matchedUser.id}`,
+          {
+            userId: matchedUser.id,
+          }
+        );
         setShowModal(true); // Show success modal
       } catch (error) {
         console.error("Error posting absen:", error);
-        setErrorMessage(`Gagal absen: ${error.response?.data?.msg || error.message}`);
+        setErrorMessage(
+          `Gagal absen: ${error.response?.data?.msg || error.message}`
+        );
         setShowErrorModal(true); // Show error modal
       }
     } else {
@@ -125,7 +131,7 @@ const FaceComparison = () => {
   return (
     <div className="container d-flex justify-content-center bg-light dark:bg-dark mt-2 rounded">
       <div className="text-center">
-      <Webcam
+        <Webcam
           audio={false}
           ref={webcamRef}
           screenshotFormat="image/jpeg"
@@ -146,10 +152,7 @@ const FaceComparison = () => {
         </button>
         {similarity && (
           <p className="text-danger font-weight-bold mt-3">
-            Kemiripan wajah :{" "}
-            <span className="text-primary">
-              {similarity}
-            </span>
+            Kemiripan wajah : <span className="text-primary">{similarity}</span>
           </p>
         )}
         {absenSuccess && currentUser && (
@@ -161,36 +164,56 @@ const FaceComparison = () => {
       </div>
 
       {/* Success Modal */}
-      <div className={`modal fade ${showModal ? 'show' : ''}`} style={{ display: showModal ? 'block' : 'none' }} tabIndex="-1" role="dialog">
+      <div
+        className={`modal fade ${showModal ? "show" : ""}`}
+        style={{ display: showModal ? "block" : "none" }}
+        tabIndex="-1"
+        role="dialog"
+      >
         <div className="modal-dialog" role="document">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">Absen Pulang</h5>
-              
             </div>
             <div className="modal-body">
               <p>Absen pulang berhasil!</p>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setShowModal(false)}
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
       </div>
 
       {/* Error Modal */}
-      <div className={`modal fade ${showErrorModal ? 'show' : ''}`} style={{ display: showErrorModal ? 'block' : 'none' }} tabIndex="-1" role="dialog">
+      <div
+        className={`modal fade ${showErrorModal ? "show" : ""}`}
+        style={{ display: showErrorModal ? "block" : "none" }}
+        tabIndex="-1"
+        role="dialog"
+      >
         <div className="modal-dialog" role="document">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">Absen Gagal</h5>
-              
             </div>
             <div className="modal-body">
               <p>{errorMessage}</p>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={() => setShowErrorModal(false)}>Close</button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setShowErrorModal(false)}
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>

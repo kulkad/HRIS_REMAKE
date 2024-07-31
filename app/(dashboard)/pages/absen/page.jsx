@@ -23,7 +23,6 @@ const FaceComparison = () => {
 
   const officeLat = -6.770397; // Latitude kantor
   const officeLng = 108.461445; // Longitude kantor
-  // Untuk test terlebih dahulu
   const allowedRadius = 10000; // Radius yang diizinkan dalam meter
 
   useEffect(() => {
@@ -50,7 +49,9 @@ const FaceComparison = () => {
       console.log("Foto pengguna berhasil diambil:", response.data);
     } catch (error) {
       console.error("Error mengambil foto pengguna: ", error);
-      alert("Gagal mengambil foto pengguna. Silakan periksa server dan endpoint.");
+      alert(
+        "Gagal mengambil foto pengguna. Silakan periksa server dan endpoint."
+      );
     }
   };
 
@@ -62,6 +63,14 @@ const FaceComparison = () => {
     const imageSrc = webcamRef.current.getScreenshot();
     setImage(imageSrc);
     imageRef.current.src = imageSrc;
+  };
+
+  const getCurrentTime24HourFormat = () => {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
   };
 
   const calculateSimilarity = async () => {
@@ -77,7 +86,7 @@ const FaceComparison = () => {
         continue;
       }
 
-      const img1 = document.createElement('img');
+      const img1 = document.createElement("img");
       img1.crossOrigin = "anonymous";
       img1.src = userPhoto.url_foto_absen;
 
@@ -116,8 +125,10 @@ const FaceComparison = () => {
       setCurrentUser(matchedUser);
       console.log("Absen berhasil untuk user:", matchedUser);
       try {
+        const currentTime = getCurrentTime24HourFormat();
         await axios.post("http://localhost:5001/absen", {
           userId: matchedUser.id,
+          waktu_datang: currentTime,
         });
         alert("Absen berhasil!");
       } catch (error) {
@@ -227,16 +238,20 @@ const FaceComparison = () => {
               alert("Anda berada di luar area kantor. Absen tidak diizinkan.");
             }
           }}
+
+          // onClick={() => {
+          //   calculateSimilarity();
+          // }}
         >
           Absen
         </button>
         {similarity && (
           <p className="text-danger font-weight-bold mt-3">
-            Kemiripan wajah :{" "}
-            <span className="text-primary">
-              {similarity}
-            </span>
-          </p>
+          Kemiripan wajah :{" "}
+          <span className="text-primary">
+            {similarity}
+          </span>
+        </p>
         )}
         {absenSuccess && currentUser && (
           <p className="text-success font-weight-bold mt-3">
