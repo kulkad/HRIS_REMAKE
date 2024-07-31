@@ -109,9 +109,9 @@ const FaceComparison = () => {
           detection1.descriptor,
           detection2.descriptor
         );
-        const similarityScore = (1 - distance).toFixed(2);
+        const similarityScore = ((1 - distance) * 100).toFixed(2); // Convert to percentage
 
-        if (similarityScore >= 0.6) {
+        if (similarityScore >= 60) { // 60% similarity threshold
           isAbsenSuccess = true;
           setSimilarity(similarityScore);
           matchedUser = userPhoto;
@@ -132,13 +132,20 @@ const FaceComparison = () => {
           lat: location.latitude,
           long: location.longitude,
         });
-        alert("Absen berhasil!");
+        Swal.fire({
+          title: "Berhasil!",
+          text: "Absen berhasil !",
+          icon: "success"
+        }).then(() => {
+          // Pindah halaman setelah alert ditutup
+          window.location.href = "/";
+        });
       } catch (error) {
         console.error("Error mengirim data absen:", error);
         alert(`Gagal absen: ${error.response?.data?.msg || error.message}`);
       }
     } else {
-      setSimilarity("Tidak dapat mendeteksi wajah");
+      setSimilarity("Tidak dapat mendeteksi wajah atau kemiripan di bawah 60%");
     }
   };
 
@@ -251,13 +258,13 @@ const FaceComparison = () => {
           <p className="text-danger font-weight-bold mt-3">
           Kemiripan wajah :{" "}
           <span className="text-primary">
-            {similarity}
+            {similarity}%
           </span>
         </p>
         )}
         {absenSuccess && currentUser && (
           <p className="text-success font-weight-bold mt-3">
-            Hai {currentUser.name}, absen berhasil! Silahkan melanjutkan
+            Hai {currentUser?.name}, absen berhasil! Silahkan melanjutkan
             aktifitas anda!
           </p>
         )}
