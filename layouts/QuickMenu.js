@@ -1,5 +1,11 @@
 import Link from 'next/link';
 import { Fragment, useState, useEffect } from 'react';
+import { IoMdImage } from "react-icons/io";
+import axios from "axios";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import Swal from "sweetalert2";
+import { Modal, Button, Form } from "react-bootstrap";
 import { useMediaQuery } from 'react-responsive';
 import {
     Image,
@@ -13,6 +19,7 @@ const QuickMenu = () => {
     const isDesktop = useMediaQuery({ query: '(min-width: 1224px)' });
 
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -64,6 +71,14 @@ const QuickMenu = () => {
 
     const toggleProfile = () => {
         setIsProfileOpen(!isProfileOpen);
+    };
+
+    const handleEditModalOpen = () => {
+        setIsEditModalOpen(true);
+    };
+
+    const handleEditModalClose = () => {
+        setIsEditModalOpen(false);
     };
 
     if (loading) {
@@ -121,8 +136,9 @@ const QuickMenu = () => {
                             <div className=" dropdown-divider mt-2 mb-2"></div>
                         </BootstrapDropdown.Item>
                         <BootstrapDropdown.Item eventKey="2">
-                            <Link href="/pages/user/profile/edit-foto" className="text-inherit fs-6">
-                                <i className="fe fe-user me-2"></i> Edit Photo Profile</Link>
+                            <button className="text-inherit fs-6" onClick={handleEditModalOpen}>
+                                <i className="fe fe-user me-2"></i> Edit Photo Profile
+                            </button>
                         </BootstrapDropdown.Item>
                         <BootstrapDropdown.Item>
                             <Link href="/authentication/logout" className="text-inherit fs-6">
@@ -164,8 +180,9 @@ const QuickMenu = () => {
                             <div className=" dropdown-divider mt-3 mb-2"></div>
                         </BootstrapDropdown.Item>
                         <BootstrapDropdown.Item eventKey="2">
-                            <Link href="/pages/user/profile/edit-foto" className="text-inherit fs-6">
-                                <i className="fe fe-user me-2"></i> Edit Photo Profile</Link>
+                            <button className="text-inherit fs-6" onClick={handleEditModalOpen}>
+                                <i className="fe fe-user me-2"></i> Edit Photo Profile
+                            </button>
                         </BootstrapDropdown.Item>
                         <BootstrapDropdown.Item>
                             <Link href="/authentication/logout" className="text-inherit fs-6">
@@ -180,7 +197,112 @@ const QuickMenu = () => {
     return (
         <Fragment>
             {hasMounted && isDesktop ? <QuickMenuDesktop /> : <QuickMenuMobile />}
+            <EditFotoProfile
+                show={isEditModalOpen}
+                onHide={handleEditModalClose}
+                user={user}
+            />
         </Fragment>
+    );
+};
+
+const EditFotoProfile = ({ show, onHide, user }) => {
+    const [file, setFile] = useState("");
+    const [preview, setPreview] = useState("");
+
+    useEffect(() => {
+        if (user) {
+            setPreview(user.profilePicture);
+        }
+    }, [user]);
+
+    const loadImage = (e) => {
+        const image = e.target.files[0];
+        setFile(image);
+        setPreview(URL.createObjectURL(image));
+    };
+
+    const saveFotoProfile = async (e) => {
+        e.preventDefault();
+        if (!file) {
+            alert("Please select a file first.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const response = await axios.patch(
+                `http://localhost:5001/updateuser/${user.id}`,
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+
+            setPreview(response.data.profilePicture);
+
+            Swal.fire({
+                title: "Berhasil!",
+                text: "Foto profil berhasil diperbarui!",
+                icon: "success"
+            }).then(() => {
+                window.location.href = "/";
+            });
+        } catch (error) {
+            console.error("Error details:", error);
+            if (error.response) {
+                console.error("Server responded with a status:", error.response.status);
+                console.error("Response data:", error.response.data);
+            }
+            alert("Gagal memperbarui foto profil. Silakan coba lagi.");
+        }
+    };
+
+    return (
+        <Modal show={show} onHide={onHide}>
+            <Modal.Header closeButton>
+                <Modal.Title>Edit Foto Profil</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form onSubmit={saveFotoProfile}>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Foto Profil</Form.Label>
+                        <div className="input-group">
+                            <span className="input-group-text">
+                                <IoMdImage />
+                            </span>
+                            <Form.Control
+                                id="user_avatar"
+                                onChange={loadImage}
+                                type="file"
+                            />
+                        </div>
+                    </Form.Group>
+
+                    {preview && (
+                        <div className="text-center my-3">
+                            <Image
+                                src={preview}
+                                alt="Preview Image"
+                                className="img-thumbnail rounded-circle"
+                                width={150}
+                                height={150}
+                            />
+                        </div>
+                    )}
+
+                    <div className="text-center">
+                        <Button type="submit" variant="success">
+                            Simpan
+                        </Button>
+                    </div>
+                </Form>
+            </Modal.Body>
+        </Modal>
     );
 };
 

@@ -7,13 +7,15 @@ import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Image from 'next/image';
-import Swal from "sweetalert2"; // Tambahkan import Swal
+import Swal from "sweetalert2";
+import { Modal, Button, Form } from "react-bootstrap";
 
 const EditFotoProfile = () => {
   const [user, setUser] = useState(null);
   const [file, setFile] = useState("");
   const [preview, setPreview] = useState("");
-  const [userId, setUserId] = useState(null); // Menggunakan state untuk menyimpan user ID
+  const [userId, setUserId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -22,8 +24,8 @@ const EditFotoProfile = () => {
     } else {
       const user = JSON.parse(userData);
       setUser(user);
-      setUserId(user.id); // Set user ID dari data pengguna yang login
-      setPreview(user.profilePicture); // Set preview ke foto profil saat ini
+      setUserId(user.id);
+      setPreview(user.profilePicture);
     }
   }, []);
 
@@ -47,11 +49,6 @@ const EditFotoProfile = () => {
     const formData = new FormData();
     formData.append("file", file);
 
-    // Debugging log
-    for (let pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
-    }
-
     try {
       const response = await axios.patch(
         `http://localhost:5001/updateuser/${userId}`,
@@ -63,22 +60,17 @@ const EditFotoProfile = () => {
         }
       );
 
-      console.log(response.data); // Debugging log
-      
-      // Update preview dengan path gambar baru dari respons backend
       setPreview(response.data.profilePicture);
 
-      // Tambahkan Swal.fire setelah berhasil menyimpan foto profil
       Swal.fire({
         title: "Berhasil!",
-        text: "Foto profil berhasil diperbarui !",
+        text: "Foto profil berhasil diperbarui!",
         icon: "success"
       }).then(() => {
-        // Pindah halaman setelah alert ditutup
         window.location.href = "/";
       });
     } catch (error) {
-      console.error("Error details:", error); // Detailed error log
+      console.error("Error details:", error);
       if (error.response) {
         console.error("Server responded with a status:", error.response.status);
         console.error("Response data:", error.response.data);
@@ -101,28 +93,48 @@ const EditFotoProfile = () => {
     );
   }
 
+  const handleModalOpen = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setFile("");
+    setPreview(user.profilePicture);
+  };
+
   return (
     <div className="container mt-5">
       <div className="card shadow-lg p-4">
         <div className="card-header d-flex align-items-center">
           <h1 className="h5">Edit Foto Profil</h1>
         </div>
-        <div className="card-body">
-          <form onSubmit={saveFotoProfile}>
-            <div className="mb-3">
-              <label className="form-label">Foto Profil</label>
+        <div className="card-body text-center">
+          <button className="btn btn-primary" onClick={handleModalOpen}>
+            Edit Foto Profil
+          </button>
+        </div>
+      </div>
+
+      <Modal show={isModalOpen} onHide={handleModalClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Foto Profil</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={saveFotoProfile}>
+            <Form.Group className="mb-3">
+              <Form.Label>Foto Profil</Form.Label>
               <div className="input-group">
                 <span className="input-group-text">
                   <IoMdImage />
                 </span>
-                <input
-                  className="form-control"
+                <Form.Control
                   id="user_avatar"
                   onChange={loadImage}
                   type="file"
                 />
               </div>
-            </div>
+            </Form.Group>
 
             {preview && (
               <div className="text-center my-3">
@@ -137,13 +149,13 @@ const EditFotoProfile = () => {
             )}
 
             <div className="text-center">
-            <button type="submit" className="btn btn-success">
-              Simpan
-            </button>
+              <Button type="submit" variant="success">
+                Simpan
+              </Button>
             </div>
-          </form>
-        </div>
-      </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };

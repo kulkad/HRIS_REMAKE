@@ -116,12 +116,7 @@ const HomePage = () => {
                       <h5 class="card-title text-uppercase text-muted mb-0">
                         Hadir
                       </h5>
-                      <span class="h2 font-weight-bold mb-0">95</span>
-                    </div>
-                    <div class="col-auto">
-                      <div class="icon icon-shape bg-gradient-orange text-white rounded-circle shadow">
-                        <i class="ni ni-chart-pie-35"></i>
-                      </div>
+                      <span class="h2 font-weight-bold mb-0">5</span>
                     </div>
                   </div>
                   <p class="mt-3 mb-0 text-sm">
