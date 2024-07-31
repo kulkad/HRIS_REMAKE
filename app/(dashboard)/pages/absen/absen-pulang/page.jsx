@@ -47,6 +47,7 @@ const FaceComparison = () => {
     fetchUserPhotos();
   }, []);
 
+  // Pengecekan jam
   const checkTime = () => {
     const now = new Date();
     const hour = now.getHours();
