@@ -57,7 +57,6 @@ const DetailUser = () => {
                   <td>{user.name}</td>
                   <td>{user.role}</td>
                   <td>{user.email}</td>
-                  <td>{user.gender}</td>
                 </tr>
               ))}
             </tbody>
@@ -69,7 +68,7 @@ const DetailUser = () => {
       {users.map((user) => (
         <div key={user.id} className="card shadow-lg mb-5 d-block d-sm-none">
           <div className="card-header">
-            <Link href="/profile">
+            <Link href="/">
               <div className="d-flex align-items-center text-decoration-none">
                 <IoIosArrowBack className="me-2" />
                 <span>DETAIL USER</span>
@@ -92,9 +91,6 @@ const DetailUser = () => {
             <div className="mt-3">
               <p className="mb-1">
                 <strong>Email: </strong>{user.email}
-              </p>
-              <p>
-                <strong>Gender: </strong>{user.gender}
               </p>
             </div>
           </div>

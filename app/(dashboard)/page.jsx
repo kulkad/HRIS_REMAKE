@@ -189,20 +189,23 @@ const HomePage = () => {
         </Row>
 
         <div class="table-responsive">
-          <div className="bg-white p-4">
-              <h4 className="mb-0">Total User : {users.length}</h4>
+          <div className="bg-white p-4 rounded">
+            <h4>Total User : {users.length}</h4>
           </div>
-          <table class="table align-items-center table-flush">
-            <thead class="thead-light">
-              <tr>
-                <th>No</th>
-                <th>Nama</th>
-                <th>Email</th>
-                <th>Role</th>
-              </tr>
-            </thead>
-            <tbody>
-            {currentUsers.map((user, index) => (
+
+          {/* Tabel untuk layar besar */}
+          <div className="d-none d-md-block">
+            <table class="table align-items-center table-flush mb-0">
+              <thead class="thead-light">
+                <tr>
+                  <th>No</th>
+                  <th>Nama</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentUsers.map((user, index) => (
                   <tr key={index}>
                     <td>{indexOfFirstUser + index + 1}</td>
                     <td>{user.name}</td>
@@ -210,8 +213,27 @@ const HomePage = () => {
                     <td>{user.role}</td>
                   </tr>
                 ))}
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Kartu untuk layar kecil */}
+          <div className="d-block d-md-none">
+            <div className="d-flex flex-wrap">
+              {currentUsers.map((user, index) => (
+                <Card key={index} className="m-2" style={{ width: '18rem' }}>
+                  <Card.Body>
+                    <Card.Title>User {indexOfFirstUser + index + 1}</Card.Title>
+                    <Card.Text>
+                      <strong>Nama:</strong> {user.name}<br />
+                      <strong>Email:</strong> {user.email}<br />
+                      <strong>Role:</strong> {user.role}
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="d-flex justify-content-center my-4">
