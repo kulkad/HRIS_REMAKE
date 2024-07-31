@@ -85,8 +85,14 @@ const Users = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      alert("Berhasil Tambah Data");
-      window.location.reload();
+      Swal.fire({
+        title: "Berhasil!",
+        text: "Berhasil menambahkan !",
+        icon: "success"
+      }).then(() => {
+        // Pindah halaman setelah alert ditutup
+        window.location.reload();
+      });
     } catch (error) {
       console.log(error);
     }

@@ -29,6 +29,7 @@ const QuickMenu = () => {
 
         const handleStorageChange = () => {
             fetchUserData();
+            setProfileImageUrl(getProfileImageUrl()); // Update profile image URL on storage change
         };
 
         window.addEventListener("storage", handleStorageChange);
@@ -114,7 +115,7 @@ const QuickMenu = () => {
                             <div className="lh-1 d-flex align-items-center">
                                 <Image alt="avatar" src={profileImageUrl} className="rounded-circle me-2" style={{ width: '30px', height: '30px' }} />
                                 <h5 className="mb-1">
-                                {user?.name || 'John Doe'}</h5>
+                                {user?.name}</h5>
                             </div>
                                 <Link href="/pages/user/detailuser" className="text-inherit fs-6 mt-4 text-center">Lihat Profile Saya</Link>
                             <div className=" dropdown-divider mt-2 mb-2"></div>

@@ -8,6 +8,9 @@ import { FaLock } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { MdOutlineAlternateEmail } from "react-icons/md";
+import { RiCheckDoubleLine } from "react-icons/ri";
+import { FiLock } from "react-icons/fi";
 
 const Login = () => {
   const router = useRouter();
@@ -73,17 +76,16 @@ const Login = () => {
               <Form.Group className="mb-3" controlId="email">
                 <Form.Label>Email</Form.Label>
                 <div className="input-group">
-                  <div className="input-group-prepend">
-                    <span className="input-group-text">
-                      <MdEmail />
-                    </span>
-                  </div>
+                  <span className="input-group-text d-flex align-items-center justify-content-center rounded">
+                    <MdOutlineAlternateEmail />
+                  </span>
                   <Form.Control
                     type="email"
                     placeholder="Enter address here"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    className="rounded"
                   />
                 </div>
               </Form.Group>
@@ -91,35 +93,32 @@ const Login = () => {
               <Form.Group className="mb-3" controlId="password">
                 <Form.Label>Password</Form.Label>
                 <div className="input-group">
-                  <div className="input-group-prepend">
-                    <span className="input-group-text">
-                      <FaLock />
+                    <span className="input-group-text d-flex align-items-center justify-content-center rounded">
+                    <FiLock />
                     </span>
-                  </div>
                   <Form.Control
                     type="password"
                     placeholder="**************"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    className="rounded"
                   />
-                </div>
+                  </div>
               </Form.Group>
-
               <Form.Group className="mb-3" controlId="confPassword">
                 <Form.Label>Konfirmasi Password</Form.Label>
                 <div className="input-group">
-                  <div className="input-group-prepend">
-                    <span className="input-group-text">
-                      <FaLock />
+                    <span className="input-group-text d-flex align-items-center justify-content-center rounded">
+                    <RiCheckDoubleLine />
                     </span>
-                  </div>
                   <Form.Control
                     type="password"
-                    placeholder="Confirmation password"
+                    placeholder="**************"
                     value={confPassword}
                     onChange={(e) => setConfPassword(e.target.value)}
                     required
+                    className="rounded"
                   />
                 </div>
               </Form.Group>

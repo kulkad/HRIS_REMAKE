@@ -7,6 +7,7 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
+import Swal from "sweetalert2";
 
 const DaftarAbsen = () => {
   const { id } = useParams(); // Mengambil ID dari URL
@@ -70,11 +71,23 @@ const DaftarAbsen = () => {
 
       console.log(updateResponse.data);
       setAbsenSuccess(true); // Set success message
-      alert("Berhasil Daftar Absen");
-      window.location.href = "/"; // Redirect setelah berhasil
+      Swal.fire({
+        title: "Berhasil!",
+        text: "Berhasil mendaftarkan wajah !",
+        icon: "success"
+      }).then(() => {
+        // Pindah halaman setelah alert ditutup
+        window.location.href = "/";
+      });
     } catch (error) {
       console.error("Error submitting data:", error.message);
-      alert("Gagal mengirim data, silakan coba lagi."); // Pesan error
+      Swal.fire({
+        title: "Berhasil!",
+        text: "Gagal mendaftarkan wajah !",
+        icon: "error"
+      }).then(() =>{
+        window.location.href = "/pages/user/register";
+      });
     }
   };
 
@@ -149,8 +162,8 @@ const DaftarAbsen = () => {
         </p>
       )}
       {absenSuccess && (
-        <p className="text-primary font-weight-bold">
-          Absen berhasil! Silahkan melanjutkan aktifitas anda!
+        <p className="text-primary font-weight-bold text-center">
+          
         </p>
       )}
     </div>
