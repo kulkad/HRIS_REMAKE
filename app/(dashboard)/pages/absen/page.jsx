@@ -16,7 +16,7 @@ const FaceComparison = () => {
   const [userPhotos, setUserPhotos] = useState([]);
   const [absenSuccess, setAbsenSuccess] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [isWithinBounds, setIsWithinBounds] = useState(false);
   const webcamRef = useRef(null);
   const imageRef2 = useRef(null);
@@ -129,6 +129,8 @@ const FaceComparison = () => {
         await axios.post("http://localhost:5001/absen", {
           userId: matchedUser.id,
           waktu_datang: currentTime,
+          lat: location.latitude,
+          long: location.longitude,
         });
         alert("Absen berhasil!");
       } catch (error) {

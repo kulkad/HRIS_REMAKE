@@ -17,6 +17,7 @@ const FaceComparison = () => {
   const [showModal, setShowModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isAfterFour, setIsAfterFour] = useState(false);
   const webcamRef = useRef(null);
   const imageRef2 = useRef(null);
 
@@ -44,6 +45,18 @@ const FaceComparison = () => {
 
   useEffect(() => {
     fetchUserPhotos();
+  }, []);
+
+  const checkTime = () => {
+    const now = new Date();
+    const hour = now.getHours();
+    if (hour >= 16) {
+      setIsAfterFour(true);
+    }
+  };
+
+  useEffect(() => {
+    checkTime();
   }, []);
 
   const capture = (setImage, imageRef) => {
@@ -147,9 +160,15 @@ const FaceComparison = () => {
         <button
           className="btn text-primary btn-primary mt-3 text-white"
           onClick={calculateSimilarity}
+          disabled={!isAfterFour}
         >
           Absen pulang
         </button>
+        {!isAfterFour && (
+          <p className="text-danger font-weight-bold mt-3">
+            Anda hanya dapat absen pulang setelah jam 4 sore.
+          </p>
+        )}
         {similarity && (
           <p className="text-danger font-weight-bold mt-3">
             Kemiripan wajah : <span className="text-primary">{similarity}</span>
