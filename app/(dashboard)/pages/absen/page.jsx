@@ -23,7 +23,6 @@ const FaceComparison = () => {
 
   const officeLat = -6.770397; // Latitude kantor
   const officeLng = 108.461445; // Longitude kantor
-  // Untuk test terlebih dahulu
   const allowedRadius = 10000; // Radius yang diizinkan dalam meter
 
   useEffect(() => {
@@ -62,6 +61,14 @@ const FaceComparison = () => {
     const imageSrc = webcamRef.current.getScreenshot();
     setImage(imageSrc);
     imageRef.current.src = imageSrc;
+  };
+
+  const getCurrentTime24HourFormat = () => {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
   };
 
   const calculateSimilarity = async () => {
@@ -116,8 +123,10 @@ const FaceComparison = () => {
       setCurrentUser(matchedUser);
       console.log("Absen berhasil untuk user:", matchedUser);
       try {
+        const currentTime = getCurrentTime24HourFormat();
         await axios.post("http://localhost:5001/absen", {
           userId: matchedUser.id,
+          waktu_datang: currentTime,
         });
         alert("Absen berhasil!");
       } catch (error) {
