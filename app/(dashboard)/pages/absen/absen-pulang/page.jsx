@@ -47,7 +47,7 @@ const FaceComparison = () => {
     fetchUserPhotos();
   }, []);
 
-  // Pengecekan jam
+  // Pengecekan jam, tidak bisa absen pulang sebelum jam 4 sore
   const checkTime = () => {
     const now = new Date();
     const hour = now.getHours();
@@ -109,12 +109,9 @@ const FaceComparison = () => {
       setAbsenSuccess(true);
       setCurrentUser(matchedUser);
       try {
-        await axios.patch(
-          `http://localhost:5001/absen/${matchedUser.id}`,
-          {
-            userId: matchedUser.id,
-          }
-        );
+        await axios.patch(`http://localhost:5001/absen/${matchedUser.id}`, {
+          userId: matchedUser.id,
+        });
         setShowModal(true); // Show success modal
       } catch (error) {
         console.error("Error posting absen:", error);
@@ -145,41 +142,64 @@ const FaceComparison = () => {
   return (
     <div className="container d-flex justify-content-center bg-light dark:bg-dark mt-2 rounded">
       <div className="text-center">
-        <Webcam
-          audio={false}
-          ref={webcamRef}
-          screenshotFormat="image/jpeg"
-          className="rounded-circle w-100"
-          videoConstraints={{
-            facingMode: "user",
-          }}
-          style={{ transform: "scaleX(-1)" }}
-        />
-        <div>
-          <img ref={imageRef2} className="d-none" alt="Captured Image" />
-        </div>
-        <button
-          className="btn text-primary btn-primary mt-3 text-white"
-          onClick={calculateSimilarity}
-          disabled={!isAfterFour}
-        >
-          Absen pulang
-        </button>
-        {!isAfterFour && (
-          <p className="text-danger font-weight-bold mt-3">
-            Anda hanya dapat absen pulang setelah jam 4 sore.
-          </p>
-        )}
-        {similarity && (
-          <p className="text-danger font-weight-bold mt-3">
-            Kemiripan wajah : <span className="text-primary">{similarity}</span>
-          </p>
-        )}
-        {absenSuccess && currentUser && (
-          <p className="text-success font-weight-bold mt-3">
-            Hai {currentUser.name}, absen pulang berhasil! Silahkan melanjutkan
-            aktifitas anda!
-          </p>
+        {isAfterFour ? (
+          <>
+            <Webcam
+              audio={false}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              className="rounded-circle w-100"
+              videoConstraints={{
+                facingMode: "user",
+              }}
+              style={{ transform: "scaleX(-1)" }}
+            />
+            <div>
+              <img ref={imageRef2} className="d-none" alt="Captured Image" />
+            </div>
+            <button
+              className="btn text-primary btn-primary mt-3 text-white"
+              onClick={calculateSimilarity}
+            >
+              Absen pulang
+            </button>
+            {similarity && (
+              <p className="text-danger font-weight-bold mt-3">
+                Kemiripan wajah :{" "}
+                <span className="text-primary">{similarity}</span>
+              </p>
+            )}
+            {absenSuccess && currentUser && (
+              <p className="text-success font-weight-bold mt-3">
+                Hai {currentUser.name}, absen pulang berhasil! Silahkan
+                melanjutkan aktifitas anda!
+              </p>
+            )}
+          </>
+        ) : (
+          <>
+            <h2>Berikan alasan pulang lebih cepat</h2>
+            <div className="mt-4 w-100 d-flex justify-content-center">
+              <form className="w-100">
+                <div className="d-flex align-items-center">
+                  <div className="form-group me-2">
+                    <textarea
+                      id="chat"
+                      rows="1"
+                      className="form-control me-2"
+                      placeholder="Keterangan..."
+                    ></textarea>
+                  </div>
+                  <button type="submit" className="btn btn-primary">
+                    Kirim
+                  </button>
+                </div>
+              </form>
+            </div>
+            <p className="text-danger font-weight-bold mt-3">
+              Anda hanya dapat absen pulang setelah jam 4 sore.
+            </p>
+          </>
         )}
       </div>
 
