@@ -32,6 +32,7 @@ const Users = () => {
   const [roleId, setRoleId] = useState(null); // Added state for roleId
   const [successMessage, setSuccessMessage] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false); // Tambahkan state untuk showEditModal
 
   const [nama_role, setNama_role] = useState("");
   const [jam_pulang, setJam_pulang] = useState("");
@@ -50,6 +51,22 @@ const Users = () => {
     setNama_role("");
     setJam_pulang("");
     setDenda("");
+  };
+
+  const openEditModal = (role) => {
+    setNama_role(role.nama_role);
+    setJam_pulang(role.jam_pulang);
+    setDenda(role.denda_telat);
+    setRoleId(role.id);
+    setShowEditModal(true);
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setNama_role("");
+    setJam_pulang("");
+    setDenda("");
+    setRoleId(null);
   };
 
   const loadImage = (e) => {
@@ -92,7 +109,7 @@ const Users = () => {
     formData.append("denda_telat", denda);
 
     try {
-      await axios.post("http://localhost:5001/roles", formData, {
+      await axios.patch(`http://localhost:5001/roles/${roleId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -179,7 +196,7 @@ const Users = () => {
         try {
           await axios.delete(`http://localhost:5001/roles/${id}`);
           const response = await axios.get(
-            `http://localhost:5001/roles/${id}`,
+            `http://localhost:5001/roles`,
             {
               withCredentials: true,
             }
@@ -276,7 +293,7 @@ const Users = () => {
                           <td className="d-flex justify-content-center">
                             <Button
                               variant="warning"
-                              onClick={() => openEditModal(user)}
+                              onClick={() => openEditModal(role)}
                               className="d-flex align-items-center justify-content-center me-2"
                             >
                               Edit
