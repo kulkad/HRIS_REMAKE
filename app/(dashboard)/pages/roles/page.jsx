@@ -18,7 +18,7 @@ import {
   Button,
   Modal,
 } from "react-bootstrap";
-import { EmojiSmile, PersonVcard, TrashFill } from "react-bootstrap-icons";
+import { EmojiSmile, TrashFill } from "react-bootstrap-icons";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import Swal from "sweetalert2";
 
@@ -268,29 +268,6 @@ const Users = () => {
                               : "Role tidak tersedia"}
                           </td>
                           <td className="d-flex justify-content-center">
-                            <Link
-                              href={`/pages/user/detailuser/${user.id}`}
-                              className="btn btn-info me-2 d-flex align-items-center justify-content-center text-white"
-                            >
-                              <PersonVcard className="me-2 text-white" />
-                              Detail
-                            </Link>
-                            {role !== "All" && (
-                              <Link
-                                href={`/pages/user/register/${user.id}?role=${
-                                  user.role ? user.role.nama_role : ""
-                                }`}
-                                className="btn btn-primary me-2 d-flex align-items-center justify-content-center"
-                              >
-                                {user.url_foto_absen == null ? (
-                                  <>
-                                    <EmojiSmile className="me-2" /> Daftar Wajah
-                                  </>
-                                ) : (
-                                  <span>Wajah Sudah Terdaftar</span>
-                                )}
-                              </Link>
-                            )}
                             <Button
                               variant="danger"
                               onClick={() => confirmDelete(user.id)}
@@ -333,28 +310,6 @@ const Users = () => {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                              <Dropdown.Item
-                                className="text-white"
-                                href={`/pages/user/detailuser/${user.id}`}
-                              >
-                                <PersonVcard className="me-2" /> Detail
-                              </Dropdown.Item>
-                              {role !== "All" && (
-                                <Dropdown.Item
-                                  href={`/pages/user/register/${user.id}?role=${
-                                    user.role ? user.role.nama_role : ""
-                                  }`}
-                                >
-                                  {user.url_foto_absen == null ? (
-                                    <>
-                                      <EmojiSmile className="me-2" /> Daftar
-                                      Muka
-                                    </>
-                                  ) : (
-                                    <span>Muka Sudah Terdaftar</span>
-                                  )}
-                                </Dropdown.Item>
-                              )}
                               <Dropdown.Item
                                 onClick={() => confirmDelete(user.id)}
                               >
