@@ -24,12 +24,13 @@ import Swal from "sweetalert2";
 
 const Users = () => {
   const [user, setUser] = useState(null);
-  const [usersByRole, setUsersByRole] = useState([]);
+  const [usersByRole, setUsersByRole] = useState([]); // Pastikan diinisialisasi sebagai array
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
   const [role, setRole] = useState("All");
-  const [roleId, setRoleId] = useState(null); // Added state for roleId
+  const [roleId, setRoleId] = useState(null); // Tambahkan state untuk roleId
+  const [roles, setRoles] = useState([]); // Tambahkan state untuk daftar peran
   const [successMessage, setSuccessMessage] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -71,7 +72,7 @@ const Users = () => {
     formData.append("file", file);
     formData.append("name", name);
     formData.append("email", email);
-    formData.append("roleId", roleId); // Use roleId
+    formData.append("roleId", roleId); // Gunakan roleId
     formData.append("password", password);
     formData.append("confPassword", confPassword);
 
@@ -114,7 +115,7 @@ const Users = () => {
         const endpoint =
           role === "All"
             ? "http://localhost:5001/users"
-            : `http://localhost:5001/userbyrole/${roleId}`; // Changed to use roleId
+            : `http://localhost:5001/userbyrole/${roleId}`; // Ganti dengan roleId
         const response = await axios.get(endpoint, {
           withCredentials: true,
         });
@@ -122,16 +123,31 @@ const Users = () => {
         setUsersByRole(response.data);
       } catch (error) {
         console.error("Error fetching users:", error.message);
+      }
+    };
+
+    fetchUsersByRole();
+  }, [role, roleId]); // Tambahkan roleId ke dependencies
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/roles", {
+          withCredentials: true,
+        });
+        setRoles(response.data);
+      } catch (error) {
+        console.error("Error fetching roles:", error.message);
         Swal.fire({
           title: "Error!",
-          text: `Error fetching users: ${error.message}`,
+          text: `Error fetching roles: ${error.message}`,
           icon: "error",
         });
       }
     };
 
-    fetchUsersByRole();
-  }, [role, roleId]); // Added roleId to dependencies
+    fetchRoles();
+  }, []);
 
   useEffect(() => {
     const filtered = usersByRole.filter((user) =>
@@ -194,13 +210,18 @@ const Users = () => {
   const handleRoleSelect = (selectedRole) => {
     setRole(selectedRole);
     const selectedRoleId =
-      usersByRole.find((user) => user.role.nama_role === selectedRole)
-        ?.roleId || null;
+      roles.find((role) => role.nama_role === selectedRole)?.id || null;
     setRoleId(selectedRoleId);
   };
 
   const uniqueRoles = [
-    ...new Set(usersByRole.map((user) => user.role ? user.role.nama_role : null).filter(role => role !== null)),
+    ...new Set(
+      Array.isArray(usersByRole)
+        ? usersByRole.map((user) =>
+            user.role ? user.role.nama_role : null
+          ).filter((role) => role !== null)
+        : []
+    ),
   ]; // Dapatkan peran unik
 
   return (
@@ -221,9 +242,11 @@ const Users = () => {
                 className="form-control w-25"
               />
               <div>
-                <Button onClick={openCreateModal} className="btn btn-white">
-                  Tambah Data
-                </Button>
+                {role !== "All" && (
+                  <Button onClick={openCreateModal} className="btn btn-white">
+                    Tambah Data
+                  </Button>
+                )}
               </div>
             </div>
           </Col>
@@ -232,12 +255,12 @@ const Users = () => {
               <DropdownButton
                 id="dropdown-role-selector"
                 title={role === "All" ? "Semua" : role}
-                onSelect={handleRoleSelect}
+                onSelect={handleRoleSelect} // Gunakan handleRoleSelect
               >
                 <Dropdown.Item eventKey="All">Semua</Dropdown.Item>
-                {uniqueRoles.map((roleName, index) => (
-                  <Dropdown.Item key={index} eventKey={roleName}>
-                    {roleName}
+                {roles.map((role, index) => (
+                  <Dropdown.Item key={index} eventKey={role.nama_role}>
+                    {role.nama_role}
                   </Dropdown.Item>
                 ))}
               </DropdownButton>
@@ -247,7 +270,7 @@ const Users = () => {
                 <p className="text-green-600">{successMessage}</p>
               )}
               {filteredUsers.length === 0 ? (
-                <p className="text-center py-4">Tidak ada data</p>
+                <p className="text-center py-4">Belum ada data, silahkan tambahkan data</p>
               ) : (
                 <div className="d-none d-lg-block table-responsive">
                   <Table hover className="table text-center">
