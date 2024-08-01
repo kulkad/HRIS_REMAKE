@@ -55,7 +55,7 @@ const Settings = () => {
         <div className="form-group">
           <label>Logo :</label>
           <input
-            type="file"
+            type="file" 
             name="logo"
             value={formState.logo}
             onChange={handleChange}
