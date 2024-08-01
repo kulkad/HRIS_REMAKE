@@ -1,6 +1,8 @@
 import { v4 as uuid } from 'uuid';
 
 import { BsPersonLinesFill } from "react-icons/bs";
+import { IoSettingsSharp } from "react-icons/io5";
+import { FaUsers } from "react-icons/fa6";
 /**
  *  All Dashboard Routes
  *
@@ -59,6 +61,32 @@ export const DashboardMenu = [{
         title: 'Data Pengguna',
         icon: <BsPersonLinesFill style={{ marginRight: '6px' }} />,
         link: '/pages/user/users'
+    },
+
+    {
+        id: uuid(),
+        title: 'Settings',
+        grouptitle: true
+    },
+
+    {
+        id: uuid(),
+        title: 'Settings',
+        icon: <IoSettingsSharp  style={{ marginRight: '6px' }} />,
+        link: '/pages/settings'
+    },
+
+    {
+        id: uuid(),
+        title: 'Role',
+        grouptitle: true
+    },
+
+    {
+        id: uuid(),
+        title: 'Role',
+        icon: <FaUsers  style={{ marginRight: '6px' }} />,
+        link: '/pages/roles'
     },
 
 ];
