@@ -172,7 +172,7 @@ const Users = () => {
         try {
           await axios.delete(`http://localhost:5001/users/${userId}`);
           const response = await axios.get(
-            `http://localhost:5001/userbyrole/${role}`,
+            `http://localhost:5001/roles/${role}`,
             {
               withCredentials: true,
             }
@@ -193,9 +193,15 @@ const Users = () => {
 
   const handleRoleSelect = (selectedRole) => {
     setRole(selectedRole);
-    const selectedRoleId = usersByRole.find(user => user.role.nama_role === selectedRole)?.roleId || null;
+    const selectedRoleId =
+      usersByRole.find((user) => user.role.nama_role === selectedRole)
+        ?.roleId || null;
     setRoleId(selectedRoleId);
   };
+
+  const uniqueRoles = [
+    ...new Set(usersByRole.map((user) => user.role.nama_role)),
+  ]; // Dapatkan peran unik
 
   return (
     <Fragment>
@@ -229,13 +235,11 @@ const Users = () => {
                 onSelect={handleRoleSelect}
               >
                 <Dropdown.Item eventKey="All">Semua</Dropdown.Item>
-                {usersByRole.map((user, index) =>
-                  user.role && user.role.nama_role ? (
-                    <Dropdown.Item key={index} eventKey={user.role.nama_role}>
-                      {user.role.nama_role}
-                    </Dropdown.Item>
-                  ) : null
-                )}
+                {uniqueRoles.map((roleName, index) => (
+                  <Dropdown.Item key={index} eventKey={roleName}>
+                    {roleName}
+                  </Dropdown.Item>
+                ))}
               </DropdownButton>
             </Form>
             <div className="bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
@@ -260,7 +264,11 @@ const Users = () => {
                         <tr key={user.id}>
                           <td>{user.name}</td>
                           <td>{user.email}</td>
-                          <td>{user.role ? user.role.nama_role : 'Role tidak tersedia'}</td>
+                          <td>
+                            {user.role
+                              ? user.role.nama_role
+                              : "Role tidak tersedia"}
+                          </td>
                           <td className="d-flex justify-content-center">
                             <Link
                               href={`/pages/user/detailuser/${user.id}`}
@@ -271,7 +279,9 @@ const Users = () => {
                             </Link>
                             {role !== "All" && (
                               <Link
-                                href={`/pages/user/register/${user.id}?role=${user.role ? user.role.nama_role : ''}`}
+                                href={`/pages/user/register/${user.id}?role=${
+                                  user.role ? user.role.nama_role : ""
+                                }`}
                                 className="btn btn-primary me-2 d-flex align-items-center justify-content-center"
                               >
                                 {user.url_foto_absen == null ? (
@@ -309,7 +319,10 @@ const Users = () => {
                               {user.email}
                             </Card.Subtitle>
                             <Card.Text>
-                              Role: {user.role ? user.role.nama_role : 'Role tidak tersedia'}
+                              Role:{" "}
+                              {user.role
+                                ? user.role.nama_role
+                                : "Role tidak tersedia"}
                             </Card.Text>
                           </div>
                           <Dropdown align="end">
@@ -330,7 +343,9 @@ const Users = () => {
                               </Dropdown.Item>
                               {role !== "All" && (
                                 <Dropdown.Item
-                                  href={`/pages/user/register/${user.id}?role=${user.role ? user.role.nama_role : ''}`}
+                                  href={`/pages/user/register/${user.id}?role=${
+                                    user.role ? user.role.nama_role : ""
+                                  }`}
                                 >
                                   {user.url_foto_absen == null ? (
                                     <>
