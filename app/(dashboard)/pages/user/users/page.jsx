@@ -200,7 +200,7 @@ const Users = () => {
   };
 
   const uniqueRoles = [
-    ...new Set(usersByRole.map((user) => user.role.nama_role)),
+    ...new Set(usersByRole.map((user) => user.role ? user.role.nama_role : null).filter(role => role !== null)),
   ]; // Dapatkan peran unik
 
   return (

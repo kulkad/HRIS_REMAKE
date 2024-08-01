@@ -24,7 +24,7 @@ import Swal from "sweetalert2";
 
 const Users = () => {
   const [user, setUser] = useState(null);
-  const [usersByRole, setUsersByRole] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
@@ -33,13 +33,9 @@ const Users = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confPassword, setConfPassword] = useState("");
-  const [file, setFile] = useState("");
-  const [preview, setPreview] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [nama_role, setNama_role] = useState("");
+  const [jam_pulang, setJam_pulang] = useState("");
+  const [denda, setDenda] = useState("");
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -51,12 +47,9 @@ const Users = () => {
 
   const closeCreateModal = () => {
     setShowCreateModal(false);
-    setName("");
-    setEmail("");
-    setPassword("");
-    setConfPassword("");
-    setFile("");
-    setPreview("");
+    setNama_role("");
+    setJam_pulang("");
+    setDenda("");
   };
 
   const loadImage = (e) => {
@@ -68,20 +61,12 @@ const Users = () => {
   const saveData = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("file", file);
-    formData.append("name", name);
-    formData.append("email", email);
-    formData.append("roleId", roleId); // Use roleId
-    formData.append("password", password);
-    formData.append("confPassword", confPassword);
-
-    if (password !== confPassword) {
-      alert("Password dan Konfirmasi Password Tidak Cocok");
-      return;
-    }
+    formData.append("nama_role", nama_role);
+    formData.append("jam_pulang", jam_pulang);
+    formData.append("denda_telat", denda);
 
     try {
-      await axios.post("http://localhost:5001/users", formData, {
+      await axios.post("http://localhost:5001/roles", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -111,15 +96,11 @@ const Users = () => {
   useEffect(() => {
     const fetchUsersByRole = async () => {
       try {
-        const endpoint =
-          role === "All"
-            ? "http://localhost:5001/users"
-            : `http://localhost:5001/userbyrole/${roleId}`; // Changed to use roleId
-        const response = await axios.get(endpoint, {
+        const response = await axios.get("http://localhost:5001/roles", {
           withCredentials: true,
         });
         console.log(response.data);
-        setUsersByRole(response.data);
+        setRoles(response.data);
       } catch (error) {
         console.error("Error fetching users:", error.message);
         Swal.fire({
@@ -131,14 +112,14 @@ const Users = () => {
     };
 
     fetchUsersByRole();
-  }, [role, roleId]); // Added roleId to dependencies
+  }, []);
 
-  useEffect(() => {
-    const filtered = usersByRole.filter((user) =>
-      user.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredUsers(filtered);
-  }, [searchQuery, usersByRole]);
+  // useEffect(() => {
+  //   const filtered = usersByRole.filter((user) =>
+  //     user.name.toLowerCase().includes(searchQuery.toLowerCase())
+  //   );
+  //   setFilteredUsers(filtered);
+  // }, [searchQuery, usersByRole]);
 
   if (!user) {
     return (
@@ -158,7 +139,7 @@ const Users = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const confirmDelete = async (userId) => {
+  const confirmDelete = async (id) => {
     Swal.fire({
       title: "Apakah kamu yakin ingin menghapus ?",
       text: "User yang dihapus tidak akan bisa dikembalikan !",
@@ -170,19 +151,22 @@ const Users = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`http://localhost:5001/users/${userId}`);
+          await axios.delete(`http://localhost:5001/roles/${id}`);
           const response = await axios.get(
-            `http://localhost:5001/userbyrole/${role}`,
+            `http://localhost:5001/roles/${id}`,
             {
               withCredentials: true,
             }
           );
-          setUsersByRole(response.data);
+          setRoles(response.data);
           setSuccessMessage("User berhasil dihapus.");
           Swal.fire({
             title: "Deleted!",
             text: "User telah berhasil dihapus!.",
             icon: "success",
+          }).then(() => {
+            // Pindah halaman setelah alert ditutup
+            window.location.reload();
           });
         } catch (error) {
           console.error("Error deleting user:", error.message);
@@ -191,13 +175,13 @@ const Users = () => {
     });
   };
 
-  const handleRoleSelect = (selectedRole) => {
-    setRole(selectedRole);
-    const selectedRoleId =
-      usersByRole.find((user) => user.role.nama_role === selectedRole)
-        ?.roleId || null;
-    setRoleId(selectedRoleId);
-  };
+  // const handleRoleSelect = (selectedRole) => {
+  //   setRole(selectedRole);
+  //   const selectedRoleId =
+  //     usersByRole.find((user) => user.role.nama_role === selectedRole)
+  //       ?.roleId || null;
+  //   setRoleId(selectedRoleId);
+  // };
 
   return (
     <Fragment>
@@ -209,13 +193,13 @@ const Users = () => {
               <div className="mb-2 mb-lg-0">
                 <h3 className="mb-0 text-white">Role</h3>
               </div>
-              <input
+              {/* <input
                 type="text"
                 placeholder="Cari Role"
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className="form-control w-25"
-              />
+              /> */}
               <div>
                 <Button onClick={openCreateModal} className="btn btn-white">
                   Tambah Role
@@ -224,7 +208,7 @@ const Users = () => {
             </div>
           </Col>
           <Col lg={12} md={12} xs={12}>
-            <Form className="d-flex justify-content-end my-3">
+            {/* <Form className="d-flex justify-content-end my-3">
               <DropdownButton
                 id="dropdown-role-selector"
                 title={role === "All" ? "Semua" : role}
@@ -239,12 +223,12 @@ const Users = () => {
                   ) : null
                 )}
               </DropdownButton>
-            </Form>
+            </Form> */}
             <div className="bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
               {successMessage && (
                 <p className="text-green-600">{successMessage}</p>
               )}
-              {filteredUsers.length === 0 ? (
+              {roles.length === 0 ? (
                 <p className="text-center py-4">Tidak ada data</p>
               ) : (
                 <div className="d-none d-lg-block table-responsive">
@@ -258,19 +242,15 @@ const Users = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {currentUsers.map((user) => (
-                        <tr key={user.id}>
-                          <td>{user.name}</td>
-                          <td>{user.email}</td>
-                          <td>
-                            {user.role
-                              ? user.role.nama_role
-                              : "Role tidak tersedia"}
-                          </td>
+                      {roles.map((role) => (
+                        <tr key={role.id}>
+                          <td>{role.nama_role}</td>
+                          <td>{role.jam_pulang}</td>
+                          <td>{role.denda_telat}</td>
                           <td className="d-flex justify-content-center">
                             <Button
                               variant="danger"
-                              onClick={() => confirmDelete(user.id)}
+                              onClick={() => confirmDelete(role.id)}
                               className="d-flex align-items-center justify-content-center"
                             >
                               <TrashFill className="me-2" /> Delete
@@ -282,28 +262,23 @@ const Users = () => {
                   </Table>
                 </div>
               )}
-              {filteredUsers.length > 0 && (
+              {roles.length > 0 && (
                 <div className="d-lg-none">
-                  {currentUsers.map((user) => (
-                    <Card key={user.id} className="mb-3">
+                  {roles.map((role) => (
+                    <Card key={role.id} className="mb-3">
                       <Card.Body>
                         <div className="d-flex justify-content-between align-items-center">
                           <div>
-                            <Card.Title>{user.name}</Card.Title>
+                            <Card.Title>{role.nama_role}</Card.Title>
                             <Card.Subtitle className="mb-2 text-muted">
-                              {user.email}
+                              {role.jam_pulang}
                             </Card.Subtitle>
-                            <Card.Text>
-                              Role:{" "}
-                              {user.role
-                                ? user.role.nama_role
-                                : "Role tidak tersedia"}
-                            </Card.Text>
+                            <Card.Text>{role.denda}</Card.Text>
                           </div>
                           <Dropdown align="end">
                             <Dropdown.Toggle
                               variant="link"
-                              id={`dropdown-custom-components-${user.id}`}
+                              id={`dropdown-custom-components-${role.id}`}
                               className="p-0 bg-transparent border-0"
                             >
                               <FaEllipsisVertical />
@@ -311,7 +286,7 @@ const Users = () => {
 
                             <Dropdown.Menu>
                               <Dropdown.Item
-                                onClick={() => confirmDelete(user.id)}
+                                onClick={() => confirmDelete(role.id)}
                               >
                                 <TrashFill className="me-2" /> Delete
                               </Dropdown.Item>
@@ -326,7 +301,7 @@ const Users = () => {
 
               <Pagination className="d-flex justify-content-center mt-4">
                 {Array.from({
-                  length: Math.ceil(filteredUsers.length / usersPerPage),
+                  length: Math.ceil(roles.length / usersPerPage),
                 }).map((_, index) => (
                   <Pagination.Item
                     key={index}
@@ -348,47 +323,28 @@ const Users = () => {
         <Modal.Body>
           <Form onSubmit={saveData}>
             <Form.Group className="mb-3">
-              <Form.Label>Nama</Form.Label>
+              <Form.Label>Nama Role</Form.Label>
               <Form.Control
                 type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={nama_role}
+                onChange={(e) => setNama_role(e.target.value)}
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Email</Form.Label>
+              <Form.Label>Jam Pulang</Form.Label>
               <Form.Control
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="time"
+                value={jam_pulang}
+                onChange={(e) => setJam_pulang(e.target.value)}
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Password</Form.Label>
+              <Form.Label>Denda</Form.Label>
               <Form.Control
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                type="text"
+                value={denda}
+                onChange={(e) => setDenda(e.target.value)}
               />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Konfirmasi Password</Form.Label>
-              <Form.Control
-                type="password"
-                value={confPassword}
-                onChange={(e) => setConfPassword(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Foto</Form.Label>
-              <Form.Control type="file" onChange={loadImage} />
-              {preview && (
-                <img
-                  src={preview}
-                  alt="Preview"
-                  className="img-thumbnail mt-3"
-                />
-              )}
             </Form.Group>
             <Button variant="primary" type="submit">
               Simpan
