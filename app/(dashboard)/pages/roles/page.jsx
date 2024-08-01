@@ -1,67 +1,448 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect, Fragment } from "react";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import Link from "next/link";
+import axios from "axios";
+import {
+  Container,
+  Col,
+  Row,
+  Form,
+  Table,
+  Pagination,
+  DropdownButton,
+  Dropdown,
+  Card,
+  Button,
+  Modal,
+} from "react-bootstrap";
+import { EmojiSmile, PersonVcard, TrashFill } from "react-bootstrap-icons";
+import { FaEllipsisVertical } from "react-icons/fa6";
+import Swal from "sweetalert2";
 
-const styles = {
-  container: {
-    padding: "2rem",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-    marginTop: "1rem",
-  },
-  th: {
-    backgroundColor: "#007bff",
-    color: "white",
-    textAlign: "left",
-    border: "1px solid #ddd",
-    padding: "8px",
-  },
-  td: {
-    border: "1px solid #ddd",
-    padding: "8px",
-  },
-  trEven: {
-    backgroundColor: "#f2f2f2",
-  },
-  trHover: {
-    ":hover": {
-      backgroundColor: "#ddd",
-    },
-  },
-};
+const Users = () => {
+  const [user, setUser] = useState(null);
+  const [usersByRole, setUsersByRole] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage] = useState(5);
+  const [role, setRole] = useState("All");
+  const [roleId, setRoleId] = useState(null); // Added state for roleId
+  const [successMessage, setSuccessMessage] = useState("");
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
-const Roles = () => {
-  const [roles, setRoles] = useState([
-    { id: 1, name: "Manager", exitTime: "17:00", fine: "Rp 50,000" },
-    { id: 2, name: "Staff", exitTime: "18:00", fine: "Rp 30,000" },
-    { id: 3, name: "Intern", exitTime: "17:30", fine: "Rp 10,000" },
-  ]);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confPassword, setConfPassword] = useState("");
+  const [file, setFile] = useState("");
+  const [preview, setPreview] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const openCreateModal = () => {
+    setShowCreateModal(true);
+  };
+
+  const closeCreateModal = () => {
+    setShowCreateModal(false);
+    setName("");
+    setEmail("");
+    setPassword("");
+    setConfPassword("");
+    setFile("");
+    setPreview("");
+  };
+
+  const loadImage = (e) => {
+    const image = e.target.files[0];
+    setFile(image);
+    setPreview(URL.createObjectURL(image));
+  };
+
+  const saveData = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("roleId", roleId); // Use roleId
+    formData.append("password", password);
+    formData.append("confPassword", confPassword);
+
+    if (password !== confPassword) {
+      alert("Password dan Konfirmasi Password Tidak Cocok");
+      return;
+    }
+
+    try {
+      await axios.post("http://localhost:5001/users", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      Swal.fire({
+        title: "Berhasil!",
+        text: "Berhasil menambahkan !",
+        icon: "success",
+      }).then(() => {
+        // Pindah halaman setelah alert ditutup
+        window.location.reload();
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (!userData) {
+      window.location.href = "http://localhost:3000/authentication/login";
+    } else {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchUsersByRole = async () => {
+      try {
+        const endpoint =
+          role === "All"
+            ? "http://localhost:5001/users"
+            : `http://localhost:5001/userbyrole/${roleId}`; // Changed to use roleId
+        const response = await axios.get(endpoint, {
+          withCredentials: true,
+        });
+        console.log(response.data);
+        setUsersByRole(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error.message);
+        Swal.fire({
+          title: "Error!",
+          text: `Error fetching users: ${error.message}`,
+          icon: "error",
+        });
+      }
+    };
+
+    fetchUsersByRole();
+  }, [role, roleId]); // Added roleId to dependencies
+
+  useEffect(() => {
+    const filtered = usersByRole.filter((user) =>
+      user.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+  }, [searchQuery, usersByRole]);
+
+  if (!user) {
+    return (
+      <div className="w-full bg-white dark:bg-slate-900 dark:text-white max-w-md mx-auto rounded-lg shadow-md overflow-hidden md:max-w-2xl p-4">
+        <Skeleton height={40} count={1} className="mb-4" />
+        <Skeleton height={20} count={1} className="mb-4" />
+        <Skeleton height={20} count={1} className="mb-4" />
+        <Skeleton height={50} width={150} className="mb-4" />
+        <Skeleton height={50} width={150} className="mb-4" />
+      </div>
+    );
+  }
+
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const confirmDelete = async (userId) => {
+    Swal.fire({
+      title: "Apakah kamu yakin ingin menghapus ?",
+      text: "User yang dihapus tidak akan bisa dikembalikan !",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Lanjutkan !",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.delete(`http://localhost:5001/users/${userId}`);
+          const response = await axios.get(
+            `http://localhost:5001/userbyrole/${role}`,
+            {
+              withCredentials: true,
+            }
+          );
+          setUsersByRole(response.data);
+          setSuccessMessage("User berhasil dihapus.");
+          Swal.fire({
+            title: "Deleted!",
+            text: "User telah berhasil dihapus!.",
+            icon: "success",
+          });
+        } catch (error) {
+          console.error("Error deleting user:", error.message);
+        }
+      }
+    });
+  };
+
+  const handleRoleSelect = (selectedRole) => {
+    setRole(selectedRole);
+    const selectedRoleId =
+      usersByRole.find((user) => user.role.nama_role === selectedRole)
+        ?.roleId || null;
+    setRoleId(selectedRoleId);
+  };
 
   return (
-    <div style={styles.container}>
-      <h2>Roles</h2>
-      <table style={styles.table}>
-        <thead>
-          <tr>
-            <th style={styles.th}>Nama Role</th>
-            <th style={styles.th}>Jam Pulang</th>
-            <th style={styles.th}>Denda</th>
-          </tr>
-        </thead>
-        <tbody>
-          {roles.map((role, index) => (
-            <tr key={role.id} style={index % 2 === 0 ? styles.trEven : null}>
-              <td style={styles.td}>{role.name}</td>
-              <td style={styles.td}>{role.exitTime}</td>
-              <td style={styles.td}>{role.fine}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Fragment>
+      <div className="bg-primary pt-10 pb-21"></div>
+      <Container fluid className="mt-n22 px-6">
+        <Row>
+          <Col lg={12} md={12} xs={12}>
+            <div className="d-flex justify-content-between align-items-center mx-5">
+              <div className="mb-2 mb-lg-0">
+                <h3 className="mb-0 text-white">Role</h3>
+              </div>
+              <input
+                type="text"
+                placeholder="Cari Role"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="form-control w-25"
+              />
+              <div>
+                <Button onClick={openCreateModal} className="btn btn-white">
+                  Tambah Role
+                </Button>
+              </div>
+            </div>
+          </Col>
+          <Col lg={12} md={12} xs={12}>
+            <Form className="d-flex justify-content-end my-3">
+              <DropdownButton
+                id="dropdown-role-selector"
+                title={role === "All" ? "Semua" : role}
+                onSelect={handleRoleSelect}
+              >
+                <Dropdown.Item eventKey="All">Semua</Dropdown.Item>
+                {usersByRole.map((user, index) =>
+                  user.role && user.role.nama_role ? (
+                    <Dropdown.Item key={index} eventKey={user.role.nama_role}>
+                      {user.role.nama_role}
+                    </Dropdown.Item>
+                  ) : null
+                )}
+              </DropdownButton>
+            </Form>
+            <div className="bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
+              {successMessage && (
+                <p className="text-green-600">{successMessage}</p>
+              )}
+              {filteredUsers.length === 0 ? (
+                <p className="text-center py-4">Tidak ada data</p>
+              ) : (
+                <div className="d-none d-lg-block table-responsive">
+                  <Table hover className="table text-center">
+                    <thead className="table-light">
+                      <tr>
+                        <th>Nama role </th>
+                        <th>Jam pulang </th>
+                        <th>Denda </th>
+                        <th>Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {currentUsers.map((user) => (
+                        <tr key={user.id}>
+                          <td>{user.name}</td>
+                          <td>{user.email}</td>
+                          <td>
+                            {user.role
+                              ? user.role.nama_role
+                              : "Role tidak tersedia"}
+                          </td>
+                          <td className="d-flex justify-content-center">
+                            <Link
+                              href={`/pages/user/detailuser/${user.id}`}
+                              className="btn btn-info me-2 d-flex align-items-center justify-content-center text-white"
+                            >
+                              <PersonVcard className="me-2 text-white" />
+                              Detail
+                            </Link>
+                            {role !== "All" && (
+                              <Link
+                                href={`/pages/user/register/${user.id}?role=${
+                                  user.role ? user.role.nama_role : ""
+                                }`}
+                                className="btn btn-primary me-2 d-flex align-items-center justify-content-center"
+                              >
+                                {user.url_foto_absen == null ? (
+                                  <>
+                                    <EmojiSmile className="me-2" /> Daftar Wajah
+                                  </>
+                                ) : (
+                                  <span>Wajah Sudah Terdaftar</span>
+                                )}
+                              </Link>
+                            )}
+                            <Button
+                              variant="danger"
+                              onClick={() => confirmDelete(user.id)}
+                              className="d-flex align-items-center justify-content-center"
+                            >
+                              <TrashFill className="me-2" /> Delete
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                </div>
+              )}
+              {filteredUsers.length > 0 && (
+                <div className="d-lg-none">
+                  {currentUsers.map((user) => (
+                    <Card key={user.id} className="mb-3">
+                      <Card.Body>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div>
+                            <Card.Title>{user.name}</Card.Title>
+                            <Card.Subtitle className="mb-2 text-muted">
+                              {user.email}
+                            </Card.Subtitle>
+                            <Card.Text>
+                              Role:{" "}
+                              {user.role
+                                ? user.role.nama_role
+                                : "Role tidak tersedia"}
+                            </Card.Text>
+                          </div>
+                          <Dropdown align="end">
+                            <Dropdown.Toggle
+                              variant="link"
+                              id={`dropdown-custom-components-${user.id}`}
+                              className="p-0 bg-transparent border-0"
+                            >
+                              <FaEllipsisVertical />
+                            </Dropdown.Toggle>
+
+                            <Dropdown.Menu>
+                              <Dropdown.Item
+                                className="text-white"
+                                href={`/pages/user/detailuser/${user.id}`}
+                              >
+                                <PersonVcard className="me-2" /> Detail
+                              </Dropdown.Item>
+                              {role !== "All" && (
+                                <Dropdown.Item
+                                  href={`/pages/user/register/${user.id}?role=${
+                                    user.role ? user.role.nama_role : ""
+                                  }`}
+                                >
+                                  {user.url_foto_absen == null ? (
+                                    <>
+                                      <EmojiSmile className="me-2" /> Daftar
+                                      Muka
+                                    </>
+                                  ) : (
+                                    <span>Muka Sudah Terdaftar</span>
+                                  )}
+                                </Dropdown.Item>
+                              )}
+                              <Dropdown.Item
+                                onClick={() => confirmDelete(user.id)}
+                              >
+                                <TrashFill className="me-2" /> Delete
+                              </Dropdown.Item>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              <Pagination className="d-flex justify-content-center mt-4">
+                {Array.from({
+                  length: Math.ceil(filteredUsers.length / usersPerPage),
+                }).map((_, index) => (
+                  <Pagination.Item
+                    key={index}
+                    active={index + 1 === currentPage}
+                    onClick={() => paginate(index + 1)}
+                  >
+                    {index + 1}
+                  </Pagination.Item>
+                ))}
+              </Pagination>
+            </div>
+          </Col>
+        </Row>
+      </Container>
+      <Modal show={showCreateModal} onHide={closeCreateModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Tambah Data Baru</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={saveData}>
+            <Form.Group className="mb-3">
+              <Form.Label>Nama</Form.Label>
+              <Form.Control
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Konfirmasi Password</Form.Label>
+              <Form.Control
+                type="password"
+                value={confPassword}
+                onChange={(e) => setConfPassword(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Foto</Form.Label>
+              <Form.Control type="file" onChange={loadImage} />
+              {preview && (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="img-thumbnail mt-3"
+                />
+              )}
+            </Form.Group>
+            <Button variant="primary" type="submit">
+              Simpan
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
+    </Fragment>
   );
 };
 
-export default Roles;
+export default Users;
