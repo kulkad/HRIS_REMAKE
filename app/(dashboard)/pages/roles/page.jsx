@@ -84,6 +84,32 @@ const Users = () => {
     }
   };
 
+  const updateData = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("nama_role", nama_role);
+    formData.append("jam_pulang", jam_pulang);
+    formData.append("denda_telat", denda);
+
+    try {
+      await axios.post("http://localhost:5001/roles", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      Swal.fire({
+        title: "Berhasil!",
+        text: "Berhasil mengupdate !",
+        icon: "success",
+      }).then(() => {
+        // Pindah halaman setelah alert ditutup
+        window.location.reload();
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
@@ -249,6 +275,13 @@ const Users = () => {
                           <td>{role.denda_telat}</td>
                           <td className="d-flex justify-content-center">
                             <Button
+                              variant="warning"
+                              onClick={() => openEditModal(user)}
+                              className="d-flex align-items-center justify-content-center me-2"
+                            >
+                              Edit
+                            </Button>
+                            <Button
                               variant="danger"
                               onClick={() => confirmDelete(role.id)}
                               className="d-flex align-items-center justify-content-center"
@@ -322,6 +355,42 @@ const Users = () => {
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={saveData}>
+            <Form.Group className="mb-3">
+              <Form.Label>Nama Role</Form.Label>
+              <Form.Control
+                type="text"
+                value={nama_role}
+                onChange={(e) => setNama_role(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Jam Pulang</Form.Label>
+              <Form.Control
+                type="time"
+                value={jam_pulang}
+                onChange={(e) => setJam_pulang(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Denda</Form.Label>
+              <Form.Control
+                type="text"
+                value={denda}
+                onChange={(e) => setDenda(e.target.value)}
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit">
+              Simpan
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
+      <Modal show={showEditModal} onHide={closeEditModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Data Role</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={updateData}>
             <Form.Group className="mb-3">
               <Form.Label>Nama Role</Form.Label>
               <Form.Control
