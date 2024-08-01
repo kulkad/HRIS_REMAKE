@@ -32,6 +32,8 @@ const Users = () => {
   const [roleId, setRoleId] = useState(null); // Added state for roleId
   const [successMessage, setSuccessMessage] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -57,6 +59,16 @@ const Users = () => {
     setConfPassword("");
     setFile("");
     setPreview("");
+  };
+
+  const openEditModal = (user) => {
+    setSelectedUser(user);
+    setShowEditModal(true);
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setSelectedUser(null);
   };
 
   const loadImage = (e) => {
@@ -89,6 +101,44 @@ const Users = () => {
       Swal.fire({
         title: "Berhasil!",
         text: "Berhasil menambahkan !",
+        icon: "success",
+      }).then(() => {
+        // Pindah halaman setelah alert ditutup
+        window.location.reload();
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const updateData = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("roleId", roleId); // Use roleId
+    formData.append("password", password);
+    formData.append("confPassword", confPassword);
+
+    if (password !== confPassword) {
+      alert("Password dan Konfirmasi Password Tidak Cocok");
+      return;
+    }
+
+    try {
+      await axios.put(
+        `http://localhost:5001/users/${selectedUser.id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      Swal.fire({
+        title: "Berhasil!",
+        text: "Berhasil mengupdate !",
         icon: "success",
       }).then(() => {
         // Pindah halaman setelah alert ditutup
@@ -269,6 +319,13 @@ const Users = () => {
                           </td>
                           <td className="d-flex justify-content-center">
                             <Button
+                              variant="warning"
+                              onClick={() => openEditModal(user)}
+                              className="d-flex align-items-center justify-content-center me-2"
+                            >
+                              Edit
+                            </Button>
+                            <Button
                               variant="danger"
                               onClick={() => confirmDelete(user.id)}
                               className="d-flex align-items-center justify-content-center"
@@ -311,6 +368,11 @@ const Users = () => {
 
                             <Dropdown.Menu>
                               <Dropdown.Item
+                                onClick={() => openEditModal(user)}
+                              >
+                                Edit
+                              </Dropdown.Item>
+                              <Dropdown.Item
                                 onClick={() => confirmDelete(user.id)}
                               >
                                 <TrashFill className="me-2" /> Delete
@@ -347,6 +409,61 @@ const Users = () => {
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={saveData}>
+            <Form.Group className="mb-3">
+              <Form.Label>Nama</Form.Label>
+              <Form.Control
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Konfirmasi Password</Form.Label>
+              <Form.Control
+                type="password"
+                value={confPassword}
+                onChange={(e) => setConfPassword(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Foto</Form.Label>
+              <Form.Control type="file" onChange={loadImage} />
+              {preview && (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="img-thumbnail mt-3"
+                />
+              )}
+            </Form.Group>
+            <Button variant="primary" type="submit">
+              Simpan
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
+      <Modal show={showEditModal} onHide={closeEditModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Data Role</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={updateData}>
             <Form.Group className="mb-3">
               <Form.Label>Nama</Form.Label>
               <Form.Control
