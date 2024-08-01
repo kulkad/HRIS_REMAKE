@@ -44,7 +44,7 @@ const Settings = () => {
           />
         </div>
         <div className="form-group">
-          <label>Sidebar Color:</label>
+          <label>Warna Sidebar:</label>
           <input
             type="color"
             name="sidebarColor"
@@ -53,7 +53,7 @@ const Settings = () => {
           />
         </div>
         <div className="form-group">
-          <label>Logo URL:</label>
+          <label>Logo :</label>
           <input
             type="file"
             name="logo"
@@ -62,7 +62,7 @@ const Settings = () => {
           />
         </div>
         <div className="form-group">
-          <label>Company Name:</label>
+          <label>Nama Perusahaan :</label>
           <input
             type="text"
             name="companyName"
