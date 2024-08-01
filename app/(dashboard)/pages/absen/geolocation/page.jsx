@@ -197,6 +197,7 @@ export default function Capture({ userName }) {
     try {
       await axios.post("http://localhost:5001/absen/geolocation", {
         userId: user.id,
+       // photo: photo,
         tanggal: formattedDate,
         waktu_datang: formattedTime,
         lat: location.latitude,

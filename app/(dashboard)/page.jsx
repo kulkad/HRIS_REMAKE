@@ -28,6 +28,7 @@ const HomePage = () => {
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+  console.log(currentUsers);
 
   const totalPages = Math.ceil(users.length / usersPerPage);
 
@@ -205,7 +206,7 @@ const HomePage = () => {
                     <td>{indexOfFirstUser + index + 1}</td>
                     <td>{user.name}</td>
                     <td>{user.email}</td>
-                    <td>{user.role}</td>
+                    <td>{user.role.nama_role}</td>
                   </tr>
                 ))}
               </tbody>
@@ -215,7 +216,7 @@ const HomePage = () => {
           {/* Kartu untuk layar kecil */}
           <div className="d-block d-md-none">
             <div className="d-flex flex-wrap">
-              {currentUsers.map((user, index) => (
+              {/* {currentUsers.map((user, index) => (
                 <Card key={index} className="m-2" style={{ width: '18rem' }}>
                   <Card.Body>
                     <Card.Title>User {indexOfFirstUser + index + 1}</Card.Title>
@@ -226,7 +227,7 @@ const HomePage = () => {
                     </Card.Text>
                   </Card.Body>
                 </Card>
-              ))}
+              ))} */}
             </div>
           </div>
         </div>

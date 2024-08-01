@@ -29,6 +29,7 @@ const Users = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
   const [role, setRole] = useState("All");
+  const [roleId, setRoleId] = useState(null); // Added state for roleId
   const [successMessage, setSuccessMessage] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -70,7 +71,7 @@ const Users = () => {
     formData.append("file", file);
     formData.append("name", name);
     formData.append("email", email);
-    formData.append("role", role);
+    formData.append("roleId", roleId); // Use roleId
     formData.append("password", password);
     formData.append("confPassword", confPassword);
 
@@ -88,7 +89,7 @@ const Users = () => {
       Swal.fire({
         title: "Berhasil!",
         text: "Berhasil menambahkan !",
-        icon: "success"
+        icon: "success",
       }).then(() => {
         // Pindah halaman setelah alert ditutup
         window.location.reload();
@@ -113,18 +114,24 @@ const Users = () => {
         const endpoint =
           role === "All"
             ? "http://localhost:5001/users"
-            : `http://localhost:5001/userbyrole/${role}`;
+            : `http://localhost:5001/userbyrole/${roleId}`; // Changed to use roleId
         const response = await axios.get(endpoint, {
           withCredentials: true,
         });
+        console.log(response.data);
         setUsersByRole(response.data);
       } catch (error) {
         console.error("Error fetching users:", error.message);
+        Swal.fire({
+          title: "Error!",
+          text: `Error fetching users: ${error.message}`,
+          icon: "error",
+        });
       }
     };
 
     fetchUsersByRole();
-  }, [role]);
+  }, [role, roleId]); // Added roleId to dependencies
 
   useEffect(() => {
     const filtered = usersByRole.filter((user) =>
@@ -184,6 +191,12 @@ const Users = () => {
     });
   };
 
+  const handleRoleSelect = (selectedRole) => {
+    setRole(selectedRole);
+    const selectedRoleId = usersByRole.find(user => user.role.nama_role === selectedRole)?.roleId || null;
+    setRoleId(selectedRoleId);
+  };
+
   return (
     <Fragment>
       <div className="bg-primary pt-10 pb-21"></div>
@@ -213,13 +226,16 @@ const Users = () => {
               <DropdownButton
                 id="dropdown-role-selector"
                 title={role === "All" ? "Semua" : role}
-                onSelect={(e) => setRole(e)}
+                onSelect={handleRoleSelect}
               >
                 <Dropdown.Item eventKey="All">Semua</Dropdown.Item>
-                <Dropdown.Item eventKey="Manager">Manager</Dropdown.Item>
-                <Dropdown.Item eventKey="Karyawan">Karyawan</Dropdown.Item>
-                <Dropdown.Item eventKey="Magang">Magang</Dropdown.Item>
-                <Dropdown.Item eventKey="Pkl">Pkl</Dropdown.Item>
+                {usersByRole.map((user, index) =>
+                  user.role && user.role.nama_role ? (
+                    <Dropdown.Item key={index} eventKey={user.role.nama_role}>
+                      {user.role.nama_role}
+                    </Dropdown.Item>
+                  ) : null
+                )}
               </DropdownButton>
             </Form>
             <div className="bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
@@ -244,7 +260,7 @@ const Users = () => {
                         <tr key={user.id}>
                           <td>{user.name}</td>
                           <td>{user.email}</td>
-                          <td>{user.role}</td>
+                          <td>{user.role ? user.role.nama_role : 'Role tidak tersedia'}</td>
                           <td className="d-flex justify-content-center">
                             <Link
                               href={`/pages/user/detailuser/${user.id}`}
@@ -255,7 +271,7 @@ const Users = () => {
                             </Link>
                             {role !== "All" && (
                               <Link
-                                href={`/pages/user/register/${user.id}?role=${user.role}`}
+                                href={`/pages/user/register/${user.id}?role=${user.role ? user.role.nama_role : ''}`}
                                 className="btn btn-primary me-2 d-flex align-items-center justify-content-center"
                               >
                                 {user.url_foto_absen == null ? (
@@ -292,7 +308,9 @@ const Users = () => {
                             <Card.Subtitle className="mb-2 text-muted">
                               {user.email}
                             </Card.Subtitle>
-                            <Card.Text>Role: {user.role}</Card.Text>
+                            <Card.Text>
+                              Role: {user.role ? user.role.nama_role : 'Role tidak tersedia'}
+                            </Card.Text>
                           </div>
                           <Dropdown align="end">
                             <Dropdown.Toggle
@@ -312,11 +330,12 @@ const Users = () => {
                               </Dropdown.Item>
                               {role !== "All" && (
                                 <Dropdown.Item
-                                  href={`/pages/user/register/${user.id}?role=${user.role}`}
+                                  href={`/pages/user/register/${user.id}?role=${user.role ? user.role.nama_role : ''}`}
                                 >
                                   {user.url_foto_absen == null ? (
                                     <>
-                                      <EmojiSmile className="me-2" /> Daftar Muka
+                                      <EmojiSmile className="me-2" /> Daftar
+                                      Muka
                                     </>
                                   ) : (
                                     <span>Muka Sudah Terdaftar</span>
@@ -396,7 +415,11 @@ const Users = () => {
               <Form.Label>Foto</Form.Label>
               <Form.Control type="file" onChange={loadImage} />
               {preview && (
-                <img src={preview} alt="Preview" className="img-thumbnail mt-3" />
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="img-thumbnail mt-3"
+                />
               )}
             </Form.Group>
             <Button variant="primary" type="submit">
