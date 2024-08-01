@@ -13,11 +13,14 @@ const FaceComparison = () => {
   const [image2, setImage2] = useState(null);
   const [userPhotos, setUserPhotos] = useState([]);
   const [absenSuccess, setAbsenSuccess] = useState(false);
+  const [alasanSuccess, setAlasanSuccess] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isAfterFour, setIsAfterFour] = useState(false);
+  const [showReasonField, setShowReasonField] = useState(false);
+  const [reason, setReason] = useState("");
   const webcamRef = useRef(null);
   const imageRef2 = useRef(null);
 
@@ -47,12 +50,10 @@ const FaceComparison = () => {
     fetchUserPhotos();
   }, []);
 
-  // Pengecekan jam, tidak bisa absen pulang sebelum jam 4 sore
   const checkTime = () => {
     const now = new Date();
     const hour = now.getHours();
-    // Ini boleh di ganti ganti buat testing
-    if (hour >= 9) {
+    if (hour >= 16) {
       setIsAfterFour(true);
     }
   };
@@ -133,6 +134,36 @@ const FaceComparison = () => {
     }
   };
 
+  const handleAbsenClick = () => {
+    if (isAfterFour) {
+      calculateSimilarity();
+    } else {
+      alert("Belum saatnya pulang. Berikan alasan mengapa pulang lebih dahulu.");
+      setShowReasonField(true);
+    }
+  };
+
+  const handleSubmitReason = async (event) => {
+    event.preventDefault();
+    if (currentUser) {
+      try {
+        await axios.patch(`http://localhost:5001/absen/${currentUser.id}`, {
+          userId: currentUser.id,
+          reason: reason,
+        });
+        setAlasanSuccess(true);
+        setShowModal(true); // Show success modal
+      } catch (error) {
+        console.error("Error posting reason:", error);
+        setErrorMessage(
+          `Gagal mengirim alasan: ${error.response?.data?.msg || error.message}`
+        );
+        setShowErrorModal(true); // Show error modal
+      }
+    }
+    console.log('fungsi jalan')
+  };
+
   if (initializing) {
     return (
       <div className="container bg-white dark:bg-dark text-light dark:text-white rounded shadow p-4">
@@ -148,55 +179,55 @@ const FaceComparison = () => {
   return (
     <div className="container d-flex justify-content-center bg-light dark:bg-dark mt-2 rounded">
       <div className="text-center">
-        {isAfterFour ? (
-          <>
-            <Webcam
-              audio={false}
-              ref={webcamRef}
-              screenshotFormat="image/jpeg"
-              className="rounded-circle w-100"
-              videoConstraints={{
-                facingMode: "user",
-              }}
-              style={{ transform: "scaleX(-1)" }}
-            />
-            <div>
-              <img ref={imageRef2} className="d-none" alt="Captured Image" />
-            </div>
-            <button
-              className="btn text-primary btn-primary mt-3 text-white"
-              onClick={calculateSimilarity}
-            >
-              Absen pulang
-            </button>
-            {similarity && (
-              <p className="text-danger font-weight-bold mt-3">
-                Kemiripan wajah :{" "}
-                <span className="text-primary">{similarity}</span>
-              </p>
-            )}
-            {absenSuccess && currentUser && (
-              <p className="text-success font-weight-bold mt-3">
-                Hai {currentUser.name}, absen pulang berhasil! Silahkan
-                melanjutkan aktifitas anda!
-              </p>
-            )}
-          </>
-        ) : (
+        <Webcam
+          audio={false}
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          className="rounded-circle w-100"
+          videoConstraints={{
+            facingMode: "user",
+          }}
+          style={{ transform: "scaleX(-1)" }}
+        />
+        <div>
+          <img ref={imageRef2} className="d-none" alt="Captured Image" />
+        </div>
+        <button
+          className="btn text-primary btn-primary mt-3 text-white"
+          onClick={handleAbsenClick}
+        >
+          Absen pulang
+        </button>
+        {similarity && (
+          <p className="text-danger font-weight-bold mt-3">
+            Kemiripan wajah :{" "}
+            <span className="text-primary">{similarity}</span>
+          </p>
+        )}
+        {absenSuccess && currentUser && (
+          <p className="text-success font-weight-bold mt-3">
+            Hai {currentUser.name}, absen pulang berhasil! Silahkan
+            melanjutkan aktifitas anda!
+          </p>
+        )}
+        {!isAfterFour && showReasonField && (
           <>
             <h2>Berikan alasan pulang lebih cepat</h2>
-            <div className="mt-4 w-100 d-flex justify-content-center">
-              <form className="w-100">
+            <div className="d-flex flex-column align-items-center mt-4">
+              <form className="w-50" onSubmit={handleSubmitReason}>
                 <div className="d-flex align-items-center">
                   <div className="form-group me-2">
                     <textarea
-                      id="chat"
+                      id="reason"
                       rows="1"
                       className="form-control me-2"
                       placeholder="Keterangan..."
+                      value={reason}
+                      onChange={(e) => setReason(e.target.value)}
                     ></textarea>
                   </div>
-                  <button type="submit" className="btn btn-primary">
+                  <button type="submit" className="btn btn-primary"
+                  onClick={handleSubmitReason}>
                     Kirim
                   </button>
                 </div>
@@ -222,7 +253,7 @@ const FaceComparison = () => {
               <h5 className="modal-title">Absen Pulang</h5>
             </div>
             <div className="modal-body">
-              <p>Absen pulang berhasil!</p>
+              <p>{absenSuccess ? "Absen pulang berhasil!" : "Alasan terkirim!"}</p>
             </div>
             <div className="modal-footer">
               <button
@@ -247,7 +278,7 @@ const FaceComparison = () => {
         <div className="modal-dialog" role="document">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 h5 className="modal-title">Absen Gagal</h5>
+              <h5 className="modal-title">Absen Gagal</h5>
             </div>
             <div className="modal-body">
               <p>{errorMessage}</p>
