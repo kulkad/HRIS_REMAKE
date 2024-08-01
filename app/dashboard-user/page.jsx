@@ -27,8 +27,14 @@ const DashboardUser = () => {
       window.location.href = "http://localhost:3000/authentication/login";
     } else {
       setUser(JSON.parse(userData));
-      // Redirect to Geolocation page
-      window.location.href = "/dashboard-user/absen/geolocation";
+      const currentHour = new Date().getHours();
+      if (currentHour === 8) {
+        // Redirect to absen hadir page at 08:00
+        window.location.href = "/dashboard-user/absen";
+      } else if (currentHour === 16) {
+        // Redirect to absen pulang page at 16:00
+        window.location.href = "/dashboard-user/absen/absen-pulang";
+      }
     }
   }, []);
 
