@@ -51,7 +51,8 @@ const FaceComparison = () => {
   const checkTime = () => {
     const now = new Date();
     const hour = now.getHours();
-    if (hour >= 16) {
+    // Ini boleh di ganti ganti buat testing
+    if (hour >= 9) {
       setIsAfterFour(true);
     }
   };
@@ -74,6 +75,11 @@ const FaceComparison = () => {
     let matchedUser = null;
 
     for (let userPhoto of userPhotos) {
+      if (!userPhoto.url_foto_absen) {
+        console.error("User photo URL is null or undefined:", userPhoto);
+        continue;
+      }
+
       const img1 = new Image();
       img1.crossOrigin = "anonymous";
       img1.src = userPhoto.url_foto_absen;
@@ -241,7 +247,7 @@ const FaceComparison = () => {
         <div className="modal-dialog" role="document">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">Absen Gagal</h5>
+              <h5 h5 className="modal-title">Absen Gagal</h5>
             </div>
             <div className="modal-body">
               <p>{errorMessage}</p>

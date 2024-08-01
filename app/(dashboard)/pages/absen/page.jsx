@@ -136,9 +136,6 @@ const FaceComparison = () => {
           title: "Berhasil!",
           text: "Absen berhasil !",
           icon: "success"
-        }).then(() => {
-          // Pindah halaman setelah alert ditutup
-          window.location.href = "/";
         });
       } catch (error) {
         console.error("Error mengirim data absen:", error);
