@@ -62,6 +62,18 @@ export const DashboardMenu = [{
         icon: <BsPersonLinesFill style={{ marginRight: '6px' }} />,
         link: '/pages/user/users'
     },
+    {
+        id: uuid(),
+        title: 'Role',
+        grouptitle: true
+    },
+
+    {
+        id: uuid(),
+        title: 'Role',
+        icon: <FaUsers  style={{ marginRight: '6px' }} />,
+        link: '/pages/roles'
+    },
 
     {
         id: uuid(),
@@ -76,18 +88,6 @@ export const DashboardMenu = [{
         link: '/pages/settings'
     },
 
-    {
-        id: uuid(),
-        title: 'Role',
-        grouptitle: true
-    },
-
-    {
-        id: uuid(),
-        title: 'Role',
-        icon: <FaUsers  style={{ marginRight: '6px' }} />,
-        link: '/pages/roles'
-    },
 
 ];
 

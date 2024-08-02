@@ -216,18 +216,18 @@ const HomePage = () => {
           {/* Kartu untuk layar kecil */}
           <div className="d-block d-md-none">
             <div className="d-flex flex-wrap">
-              {/* {currentUsers.map((user, index) => (
+              {currentUsers.map((user, index) => (
                 <Card key={index} className="m-2" style={{ width: '18rem' }}>
                   <Card.Body>
                     <Card.Title>User {indexOfFirstUser + index + 1}</Card.Title>
                     <Card.Text>
                       <strong>Nama:</strong> {user.name}<br />
                       <strong>Email:</strong> {user.email}<br />
-                      <strong>Role:</strong> {user.role}
+                      <strong>Role:</strong> {user.role.nama_role}
                     </Card.Text>
                   </Card.Body>
                 </Card>
-              ))} */}
+              ))}
             </div>
           </div>
         </div>
