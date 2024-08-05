@@ -38,7 +38,14 @@ const Login = () => {
       });
       console.log("Respons dari backend:", response.data);
       localStorage.setItem("user", JSON.stringify(response.data));
-      router.push("/"); // Navigasi ke halaman utama setelah login
+      
+      const { role } = response.data;
+      if (role != "Karyawan" && role != "Manager" && role != "Admin") {
+        router.push("/dashboard-user");
+      }
+      if (role === "Karyawan" || role === "Manager" || role === "Admin") {
+        router.push("/");
+      }
     } catch (err) {
       console.error("Kesalahan saat login:", err);
       if (err.response) {
