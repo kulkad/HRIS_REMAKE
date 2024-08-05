@@ -138,7 +138,9 @@ const FaceComparison = () => {
     if (isAfterFour) {
       calculateSimilarity();
     } else {
-      alert("Belum saatnya pulang. Berikan alasan mengapa pulang lebih dahulu.");
+      alert(
+        "Belum saatnya pulang. Berikan alasan mengapa pulang lebih dahulu."
+      );
       setShowReasonField(true);
     }
   };
@@ -161,7 +163,7 @@ const FaceComparison = () => {
         setShowErrorModal(true); // Show error modal
       }
     }
-    console.log('fungsi jalan')
+    console.log("fungsi jalan");
   };
 
   if (initializing) {
@@ -200,14 +202,13 @@ const FaceComparison = () => {
         </button>
         {similarity && (
           <p className="text-danger font-weight-bold mt-3">
-            Kemiripan wajah :{" "}
-            <span className="text-primary">{similarity}</span>
+            Kemiripan wajah : <span className="text-primary">{similarity}</span>
           </p>
         )}
         {absenSuccess && currentUser && (
           <p className="text-success font-weight-bold mt-3">
-            Hai {currentUser.name}, absen pulang berhasil! Silahkan
-            melanjutkan aktifitas anda!
+            Hai {currentUser.name}, absen pulang berhasil! Silahkan melanjutkan
+            aktifitas anda!
           </p>
         )}
         {!isAfterFour && showReasonField && (
@@ -226,8 +227,11 @@ const FaceComparison = () => {
                       onChange={(e) => setReason(e.target.value)}
                     ></textarea>
                   </div>
-                  <button type="submit" className="btn btn-primary"
-                  onClick={handleSubmitReason}>
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    onClick={handleSubmitReason}
+                  >
                     Kirim
                   </button>
                 </div>
@@ -253,7 +257,9 @@ const FaceComparison = () => {
               <h5 className="modal-title">Absen Pulang</h5>
             </div>
             <div className="modal-body">
-              <p>{absenSuccess ? "Absen pulang berhasil!" : "Alasan terkirim!"}</p>
+              <p>
+                {absenSuccess ? "Absen pulang berhasil!" : "Alasan terkirim!"}
+              </p>
             </div>
             <div className="modal-footer">
               <button
