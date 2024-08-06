@@ -7,6 +7,7 @@ import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Swal from "sweetalert2";
+import { Navbar, Nav, Container } from "react-bootstrap"; // Import Navbar dan komponen lainnya dari react-bootstrap
 import Image from "next/image";
 
 const FaceComparison = () => {
@@ -67,9 +68,9 @@ const FaceComparison = () => {
 
   const getCurrentTime24HourFormat = () => {
     const now = new Date();
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    const seconds = now.getSeconds().toString().padStart(2, '0');
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = now.getMinutes().toString().padStart(2, "0");
+    const seconds = now.getSeconds().toString().padStart(2, "0");
     return `${hours}:${minutes}:${seconds}`;
   };
 
@@ -111,7 +112,8 @@ const FaceComparison = () => {
         );
         const similarityScore = ((1 - distance) * 100).toFixed(2); // Convert to percentage
 
-        if (similarityScore >= 60) { // 60% similarity threshold
+        if (similarityScore >= 60) {
+          // 60% similarity threshold
           isAbsenSuccess = true;
           setSimilarity(similarityScore);
           matchedUser = userPhoto;
@@ -135,7 +137,7 @@ const FaceComparison = () => {
         Swal.fire({
           title: "Berhasil!",
           text: "Absen berhasil !",
-          icon: "success"
+          icon: "success",
         });
       } catch (error) {
         console.error("Error mengirim data absen:", error);
@@ -148,12 +150,18 @@ const FaceComparison = () => {
 
   const getLocationFromIP = async () => {
     try {
-      const response = await axios.get('https://ipapi.co/json/');
+      const response = await axios.get("https://ipapi.co/json/");
       const { latitude, longitude } = response.data;
       console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
       setLocation({ latitude, longitude });
 
-      const withinBounds = isWithinOfficeBounds(latitude, longitude, officeLat, officeLng, allowedRadius);
+      const withinBounds = isWithinOfficeBounds(
+        latitude,
+        longitude,
+        officeLat,
+        officeLng,
+        allowedRadius
+      );
       setIsWithinBounds(withinBounds);
       console.log(`Within Bounds: ${withinBounds}`);
     } catch (error) {
@@ -168,8 +176,9 @@ const FaceComparison = () => {
     const Δφ = (lat2 - lat1) * (Math.PI / 180);
     const Δλ = (lon2 - lon1) * (Math.PI / 180);
 
-    const a = Math.sin(Δφ / 2) ** 2 +
-              Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+    const a =
+      Math.sin(Δφ / 2) ** 2 +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     const distance = R * c; // hasil dalam meter
@@ -177,7 +186,13 @@ const FaceComparison = () => {
     return distance;
   };
 
-  const isWithinOfficeBounds = (userLat, userLng, officeLat, officeLng, allowedRadius) => {
+  const isWithinOfficeBounds = (
+    userLat,
+    userLng,
+    officeLat,
+    officeLng,
+    allowedRadius
+  ) => {
     const distance = calculateDistance(userLat, userLng, officeLat, officeLng);
     const withinBounds = distance <= allowedRadius;
     console.log(`User is within bounds: ${withinBounds}`); // Log hasil perhitungan bounds
@@ -192,17 +207,25 @@ const FaceComparison = () => {
           console.log(`Latitude: ${latitude}, Longitude: ${longitude}`); // Log lokasi pengguna
           setLocation({ latitude, longitude });
 
-          const withinBounds = isWithinOfficeBounds(latitude, longitude, officeLat, officeLng, allowedRadius);
+          const withinBounds = isWithinOfficeBounds(
+            latitude,
+            longitude,
+            officeLat,
+            officeLng,
+            allowedRadius
+          );
           setIsWithinBounds(withinBounds);
           console.log(`Within Bounds: ${withinBounds}`); // Log hasil perhitungan bounds
         },
         (error) => {
-          console.error('Error obtaining location:', error);
+          console.error("Error obtaining location:", error);
           getLocationFromIP(); // Fallback to IP-based location
         }
       );
     } else {
-      console.log('Geolocation is not supported by this browser. Using IP-based location as fallback.');
+      console.log(
+        "Geolocation is not supported by this browser. Using IP-based location as fallback."
+      );
       getLocationFromIP(); // Fallback to IP-based location
     }
   }, []);
@@ -220,58 +243,74 @@ const FaceComparison = () => {
   }
 
   return (
-    <div className="container d-flex justify-content-center bg-light dark:bg-dark mt-2 rounded">
-      <div className="text-center">
-        <Webcam
-          audio={false}
-          ref={webcamRef}
-          screenshotFormat="image/jpeg"
-          className="rounded-circle w-100"
-          videoConstraints={{
-            facingMode: "user",
-          }}
-          style={{ transform: "scaleX(-1)" }}
-        />
-        <div>
-          <img ref={imageRef2} className="d-none" alt="Captured Image" />
+    <>
+      <Navbar
+        bg="dark"
+        variant="dark"
+        expand="lg"
+        className="justify-content-between"
+      >
+        <Container>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="mx-auto">
+              <Nav.Link href="/dashboard-user/absen">Absen Hadir</Nav.Link>
+              <Nav.Link href="/dashboard-user/absen/absen-pulang">
+                Absen Pulang
+              </Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+      <div className="container d-flex justify-content-center bg-light dark:bg-dark mt-2 rounded">
+        <div className="text-center">
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            className="rounded-circle w-100"
+            videoConstraints={{
+              facingMode: "user",
+            }}
+            style={{ transform: "scaleX(-1)" }}
+          />
+          <div>
+            <img ref={imageRef2} className="d-none" alt="Captured Image" />
+          </div>
+          <button
+            className="btn btn-primary mt-3"
+            onClick={() => {
+              if (isWithinBounds) {
+                calculateSimilarity();
+              } else {
+                alert(
+                  "Anda berada di luar area kantor. Absen tidak diizinkan."
+                );
+              }
+            }}
+          >
+            Absen
+          </button>
+          {similarity && (
+            <p className="text-danger font-weight-bold mt-3">
+              Kemiripan wajah :{" "}
+              <span className="text-primary">{similarity}%</span>
+            </p>
+          )}
+          {absenSuccess && currentUser && (
+            <p className="text-success font-weight-bold mt-3">
+              Hai {currentUser?.name}, absen berhasil! Silahkan melanjutkan
+              aktifitas anda!
+            </p>
+          )}
+          {!isWithinBounds && (
+            <p className="text-danger font-weight-bold mt-3">
+              Anda berada di luar area kantor. Absen tidak diizinkan.
+            </p>
+          )}
         </div>
-        <button
-          className="btn btn-primary mt-3"
-          onClick={() => {
-            if (isWithinBounds) {
-              calculateSimilarity();
-            } else {
-              alert("Anda berada di luar area kantor. Absen tidak diizinkan.");
-            }
-          }}
-
-          // onClick={() => {
-          //   calculateSimilarity();
-          // }}
-        >
-          Absen
-        </button>
-        {similarity && (
-          <p className="text-danger font-weight-bold mt-3">
-          Kemiripan wajah :{" "}
-          <span className="text-primary">
-            {similarity}%
-          </span>
-        </p>
-        )}
-        {absenSuccess && currentUser && (
-          <p className="text-success font-weight-bold mt-3">
-            Hai {currentUser?.name}, absen berhasil! Silahkan melanjutkan
-            aktifitas anda!
-          </p>
-        )}
-        {!isWithinBounds && (
-          <p className="text-danger font-weight-bold mt-3">
-            Anda berada di luar area kantor. Absen tidak diizinkan.
-          </p>
-        )}
       </div>
-    </div>
+    </>
   );
 };
 
