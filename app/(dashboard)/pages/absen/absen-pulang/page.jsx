@@ -6,6 +6,7 @@ import Webcam from "react-webcam";
 import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import Swal from "sweetalert2";
 
 const FaceComparison = () => {
   const [initializing, setInitializing] = useState(true);
@@ -101,9 +102,9 @@ const FaceComparison = () => {
           detection1.descriptor,
           detection2.descriptor
         );
-        const similarityScore = (1 - distance).toFixed(2);
+        const similarityScore = Math.min((1 - distance) * 100, 100).toFixed(2);
 
-        if (similarityScore >= 0.6) {
+        if (similarityScore >= 60) {
           isAbsenSuccess = true;
           setSimilarity(similarityScore);
           matchedUser = userPhoto;
@@ -115,32 +116,55 @@ const FaceComparison = () => {
     if (isAbsenSuccess && matchedUser) {
       setAbsenSuccess(true);
       setCurrentUser(matchedUser);
-      try {
-        await axios.patch(`http://localhost:5001/absen/${matchedUser.id}`, {
-          userId: matchedUser.id,
-        });
-        setShowModal(true); // Show success modal
-      } catch (error) {
-        console.error("Error posting absen:", error);
-        setErrorMessage(
-          `Gagal absen: ${error.response?.data?.msg || error.message}`
-        );
-        setShowErrorModal(true); // Show error modal
+      if (isAfterFour) {
+        try {
+          await axios.patch(`http://localhost:5001/absen/${matchedUser.id}`, {
+            userId: matchedUser.id,
+          });
+          Swal.fire({
+            title: 'Absen Pulang',
+            text: `Hai ${matchedUser.name}, absen pulang berhasil! Hati-hati saat sedang perjalanan pulang ya!`,
+            icon: 'success',
+            confirmButtonText: 'Close'
+          }).then(() => {
+            window.location.reload(); // Refresh the page
+          });
+        } catch (error) {
+          console.error("Error posting absen:", error);
+          Swal.fire({
+            title: 'Absen Gagal',
+            text: `Gagal absen: ${error.response?.data?.msg || error.message}`,
+            icon: 'error',
+            confirmButtonText: 'Close'
+          });
+        }
       }
     } else {
-      setSimilarity("Tidak dapat mendeteksi kedua wajah");
-      setErrorMessage("Tidak dapat mendeteksi kedua wajah");
-      setShowErrorModal(true); // Show error modal
+      setSimilarity("Tidak dapat mendeteksi wajah");
+      Swal.fire({
+        title: 'Absen Gagal',
+        text: "Tidak dapat mendeteksi wajah",
+        icon: 'error',
+        confirmButtonText: 'Close'
+      });
     }
   };
 
   const handleAbsenClick = () => {
     calculateSimilarity();
     if (!isAfterFour) {
-      setShowReasonField(true);
-      alert(
-        "Belum saatnya pulang. Berikan alasan mengapa pulang lebih dahulu."
-      );
+      Swal.fire({
+        title: 'Belum saatnya pulang',
+        text: 'Belum saatnya untuk pulang. Berikan alasan mengapa kamu harus pulang terlebih dahulu.',
+        icon: 'warning',
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        confirmButtonText: 'Lanjut'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setShowReasonField(true);
+        }
+      });
     }
   };
 
@@ -153,13 +177,22 @@ const FaceComparison = () => {
           reason: reason,
         });
         setAlasanSuccess(true);
-        setShowModal(true); // Show success modal
+        Swal.fire({
+          title: 'Absen pulang dan Alasan terkirim !',
+          text: `Hai ${currentUser.name}, Absen pulang dan Alasan telah terkirim!`,
+          icon: 'success',
+          confirmButtonText: 'Close'
+        }).then(() => {
+          window.location.reload(); // Refresh the page
+        });
       } catch (error) {
         console.error("Error posting reason:", error);
-        setErrorMessage(
-          `Gagal mengirim alasan: ${error.response?.data?.msg || error.message}`
-        );
-        setShowErrorModal(true); // Show error modal
+        Swal.fire({
+          title: 'Gagal Mengirim Alasan',
+          text: `Gagal mengirim alasan: ${error.response?.data?.msg || error.message}`,
+          icon: 'error',
+          confirmButtonText: 'Close'
+        });
       }
     }
     console.log("fungsi jalan");
@@ -201,18 +234,12 @@ const FaceComparison = () => {
         </button>
         {similarity && (
           <p className="text-danger font-weight-bold mt-3">
-            Kemiripan wajah : <span className="text-primary">{similarity}</span>
-          </p>
-        )}
-        {absenSuccess && currentUser && (
-          <p className="text-success font-weight-bold mt-3">
-            Hai {currentUser.name}, absen pulang berhasil! Silahkan melanjutkan
-            aktifitas anda!
+            Kemiripan wajah : <span className="text-primary">{similarity}%</span>
           </p>
         )}
         {!isAfterFour && showReasonField && (
           <>
-            <h2>Berikan alasan pulang lebih cepat</h2>
+            <h3 className="mb-10 text-lg text-danger font-weight-bold">Berikan alasan pulang lebih cepat</h3>
             <div className="d-flex flex-column align-items-center mt-4">
               <form className="w-50" onSubmit={handleSubmitReason}>
                 <div className="d-flex align-items-center">
@@ -241,66 +268,6 @@ const FaceComparison = () => {
             </p>
           </>
         )}
-      </div>
-
-      {/* Success Modal */}
-      {(isAfterFour || alasanSuccess) && (
-        <div
-          className={`modal fade ${showModal ? "show" : ""}`}
-          style={{ display: showModal ? "block" : "none" }}
-          tabIndex="-1"
-          role="dialog"
-        >
-          <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Absen Pulang</h5>
-              </div>
-              <div className="modal-body">
-                <p>
-                  {absenSuccess ? "Absen pulang berhasil!" : "Alasan terkirim!"}
-                </p>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowModal(false)}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Error Modal */}
-      <div
-        className={`modal fade ${showErrorModal ? "show" : ""}`}
-        style={{ display: showErrorModal ? "block" : "none" }}
-        tabIndex="-1"
-        role="dialog"
-      >
-        <div className="modal-dialog" role="document">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Absen Gagal</h5>
-            </div>
-            <div className="modal-body">
-              <p>{errorMessage}</p>
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setShowErrorModal(false)}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
