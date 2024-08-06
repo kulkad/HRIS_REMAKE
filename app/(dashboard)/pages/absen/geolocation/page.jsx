@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Webcam from "react-webcam";
 import axios from "axios";
 import Swal from "sweetalert2";
+import Compressor from 'compressorjs';
 
 export default function Capture({ userName }) {
   const webcamRef = useRef(null);
@@ -167,7 +168,31 @@ export default function Capture({ userName }) {
         context.fillText(`Waktu: ${time}`, textX, currentTextY);
 
         const image = canvasRef.current.toDataURL("image/png");
-        setPhoto(image);
+
+        // Convert base64 to Blob
+        const byteString = atob(image.split(',')[1]);
+        const mimeString = image.split(',')[0].split(':')[1].split(';')[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+        const blob = new Blob([ab], { type: mimeString });
+
+        // Compress the image before setting it to state
+        new Compressor(blob, {
+          quality: 0.6, // Adjust the quality as needed
+          success(result) {
+            const reader = new FileReader();
+            reader.readAsDataURL(result);
+            reader.onloadend = () => {
+              setPhoto(reader.result);
+            };
+          },
+          error(err) {
+            console.error(err.message);
+          },
+        });
       };
     };
 
@@ -202,15 +227,20 @@ export default function Capture({ userName }) {
     const formattedTime = date.toTimeString().split(" ")[0];
   
     try {
-      const response = await axios.post("http://localhost:5001/absen/geolocation", {
-        userId: user.id,
-        photo: photo,
-        tanggal: formattedDate,
-        waktu_datang: formattedTime,
-        lat: location.latitude,
-        long: location.longitude,
-        keterangan: keterangan,
-        alasan: alasan,
+      const formData = new FormData();
+      formData.append("userId", user.id);
+      formData.append("foto", photo);
+      formData.append("tanggal", formattedDate);
+      formData.append("waktu_datang", formattedTime);
+      formData.append("lat", location.latitude);
+      formData.append("long", location.longitude);
+      formData.append("keterangan", keterangan);
+      formData.append("alasan", alasan);
+
+      const response = await axios.post("http://localhost:5001/absen/geolocation", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       });
       Swal.fire({
         title: "Berhasil!",
