@@ -23,7 +23,7 @@ const FaceComparison = () => {
 
   const officeLat = -6.770397; // Latitude kantor
   const officeLng = 108.461445; // Longitude kantor
-  const allowedRadius = 100; // Radius yang diizinkan dalam meter
+  const allowedRadius = 10000; // Radius yang diizinkan dalam meter
 
   useEffect(() => {
     const loadModels = async () => {
@@ -162,7 +162,7 @@ const FaceComparison = () => {
   };
 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371e3; // jari-jari bumi dalam meter
+    const R = 6371e3; // jari-jari bumi dalam meterpi
     const φ1 = lat1 * (Math.PI / 180);
     const φ2 = lat2 * (Math.PI / 180);
     const Δφ = (lat2 - lat1) * (Math.PI / 180);
