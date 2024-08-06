@@ -2,19 +2,18 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Webcam from "react-webcam";
-import { FaRegImage } from "react-icons/fa6";
 import axios from "axios";
 import Swal from "sweetalert2";
 
 export default function Capture({ userName }) {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
-  const overlayCanvasRef = useRef(null);
   const [user, setUser] = useState();
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState({ latitude: null, longitude: null });
-  const [attendance, setAttendance] = useState("Hadir");
-  const fileInputRef = useRef(null);
+  const [keterangan, setKeterangan] = useState("Izin");
+  const [alasan, setAlasan] = useState("");
+
   const [watchId, setWatchId] = useState(null);
 
   useEffect(() => {
@@ -72,6 +71,14 @@ export default function Capture({ userName }) {
       };
     }
   }, []);
+
+  const handleKeteranganChange = (event) => {
+    setKeterangan(event.target.value);
+  };
+
+  const handleAlasanChange = (event) => {
+    setAlasan(event.target.value);
+  };
 
   const getFormattedDate = () => {
     const now = new Date();
@@ -161,8 +168,6 @@ export default function Capture({ userName }) {
 
         const image = canvasRef.current.toDataURL("image/png");
         setPhoto(image);
-        console.log("date", date);
-        console.log("time", time);
       };
     };
 
@@ -189,19 +194,23 @@ export default function Capture({ userName }) {
     }
   };
 
-  const submitData = async () => {
+  const submitData = async (e) => {
+    e.preventDefault();
+    
     const date = new Date();
     const formattedDate = date.toISOString().split("T")[0];
     const formattedTime = date.toTimeString().split(" ")[0];
-
+  
     try {
-      await axios.post("http://localhost:5001/absen/geolocation", {
+      const response = await axios.post("http://localhost:5001/absen/geolocation", {
         userId: user.id,
-       // photo: photo,
+        photo: photo,
         tanggal: formattedDate,
         waktu_datang: formattedTime,
         lat: location.latitude,
         long: location.longitude,
+        keterangan: keterangan,
+        alasan: alasan,
       });
       Swal.fire({
         title: "Berhasil!",
@@ -212,14 +221,6 @@ export default function Capture({ userName }) {
       console.error("Error Kirim Data", error);
     }
     console.log("Location:", location);
-  };
-
-  const toggleAttendance = () => {
-    setAttendance((prev) => (prev === "Hadir" ? "Tidak Hadir" : "Hadir"));
-  };
-
-  const handleFileUploadClick = () => {
-    fileInputRef.current.click();
   };
 
   return (
@@ -259,52 +260,36 @@ export default function Capture({ userName }) {
             <button onClick={retakePhoto} className="btn btn-secondary">
               Retake Photo
             </button>
-            <button onClick={submitData} className="btn btn-success">
-              Kirim Data
-            </button>
           </div>
         </div>
       )}
-      <button
-        onClick={toggleAttendance}
-        className={`btn mt-4 ${
-          attendance === "Hadir" ? "btn-success" : "btn-danger"
-        }`}
-      >
-        {attendance === "Hadir" ? "Hadir" : "Tidak Hadir"}
-      </button>
-      {attendance === "Tidak Hadir" && (
-        <div className="mt-4 w-100 d-flex justify-content-center">
-          <form className="w-100">
-            <div className="d-flex align-items-center">
-              <div className="form-group me-2">
-                <select className="form-select">
-                  <option>Izin</option>
-                  <option>Sakit</option>
-                  <option>Lainnya</option>
-                </select>
-              </div>
-              <button
-                type="button"
-                className="btn btn-outline-secondary me-2"
-                onClick={handleFileUploadClick}
+      <div className="mt-4 w-100 d-flex justify-content-center">
+        <form className="w-100" onSubmit={submitData}>
+          <div className="d-flex align-items-center">
+            <div className="form-group me-2">
+              <select
+                className="form-select"
+                value={keterangan}
+                onChange={handleKeteranganChange}
               >
-                <input type="file" className="d-none" ref={fileInputRef} />
-                <FaRegImage size={24} />
-              </button>
-              <textarea
-                id="chat"
-                rows="1"
-                className="form-control me-2"
-                placeholder="Keterangan..."
-              ></textarea>
-              <button type="submit" className="btn btn-primary">
-                Kirim
-              </button>
+                <option value="Izin">Izin</option>
+                <option value="Sakit">Sakit</option>
+              </select>
             </div>
-          </form>
-        </div>
-      )}
+            <textarea
+              id="chat"
+              rows="1"
+              className="form-control me-2"
+              placeholder="Keterangan..."
+              value={alasan}
+              onChange={handleAlasanChange}
+            ></textarea>
+            <button type="submit" className="btn btn-success">
+              Kirim Data
+            </button>
+          </div>
+        </form>
+      </div>
       <canvas
         ref={canvasRef}
         className="d-none"
