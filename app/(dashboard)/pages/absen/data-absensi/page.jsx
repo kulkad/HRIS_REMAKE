@@ -11,15 +11,6 @@ import { Fragment } from "react";
 import { Container, Col, Row, Form, Pagination } from "react-bootstrap";
 import { format } from "date-fns"; // import date-fns
 
-// import widget/custom components
-import { StatRightTopIcon } from "widgets";
-
-// import sub components
-import { ActiveProjects, Teams, TasksPerformance } from "sub-components";
-
-// import required data files
-import ProjectsStatsData from "data/dashboard/ProjectsStatsData";
-
 const DataAbsen = () => {
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -44,6 +35,7 @@ const DataAbsen = () => {
       try {
         const response = await axios.get("http://localhost:5001/absens");
         setData(response.data);
+        console.log("role", response.data)
       } catch (error) {
         console.error("Error fetching absens:", error);
       } finally {
@@ -166,7 +158,7 @@ const DataAbsen = () => {
                           <b>{item.user.name}</b>
                         </td>
                         <td>
-                          <span className="text-muted">{item.user.role}</span>
+                          <span className="text-muted">{item.user.role.nama_role}</span>
                         </td>
                         <td>{item.tanggal}</td>
                         <td>{item.waktu_datang}</td>
