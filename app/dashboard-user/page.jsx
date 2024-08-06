@@ -69,20 +69,6 @@ const DashboardUser = () => {
               Absen Pulang
             </Nav.Link>
           </Nav>
-          <Link href="/authentication/logout">
-            <Button
-              style={{
-                backgroundColor: 'red',
-                color: 'white',
-                padding: '10px 20px',
-                border: 'none',
-                borderRadius: '5px',
-                marginLeft: '20px',
-              }}
-            >
-              Logout
-            </Button>
-          </Link>
         </Navbar.Collapse>
       </Container>
     </Navbar>

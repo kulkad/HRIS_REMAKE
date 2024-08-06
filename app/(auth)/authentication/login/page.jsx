@@ -38,14 +38,18 @@ const Login = () => {
       });
       console.log("Respons dari backend:", response.data);
       localStorage.setItem("user", JSON.stringify(response.data));
-      
-      const { role } = response.data;
-      if (role != "Karyawan" && role != "Manager" && role != "Admin") {
-        router.push("/dashboard-user");
+
+      const userRole = response.data.roleId;
+      console.log("User Role ID:", userRole);
+
+      if (userRole === 4 || userRole === 16 || userRole === 13) {
+        console.log("Redirecting to /");
+        router.push('/');
+      } else {
+        console.log("Redirecting to /dashboard-user");
+        router.push('/dashboard-user');
       }
-      if (role === "Karyawan" || role === "Manager" || role === "Admin") {
-        router.push("/");
-      }
+    
     } catch (err) {
       console.error("Kesalahan saat login:", err);
       if (err.response) {

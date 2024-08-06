@@ -7,7 +7,7 @@ import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Swal from "sweetalert2";
-import { Navbar, Nav, Container, Card, Row, Col } from "react-bootstrap";
+import Image from "next/image";
 
 const FaceComparison = () => {
   const [initializing, setInitializing] = useState(true);
@@ -16,18 +16,15 @@ const FaceComparison = () => {
   const [userPhotos, setUserPhotos] = useState([]);
   const [absenSuccess, setAbsenSuccess] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [isWithinBounds, setIsWithinBounds] = useState(false);
   const webcamRef = useRef(null);
   const imageRef2 = useRef(null);
 
-  const officeLat = -6.756357; // Latitude kantor
-  const officeLng = 108.474424; // Longitude kantor
+  const officeLat = -6.770397; // Latitude kantor
+  const officeLng = 108.461445; // Longitude kantor
   const allowedRadius = 100; // Radius yang diizinkan dalam meter
-  // const officeLat = -6.770397; // Latitude kantor
-  // const officeLng = 108.461445; // Longitude kantor
-  // const allowedRadius = 100; // Radius yang diizinkan dalam meter
-  
+
   useEffect(() => {
     const loadModels = async () => {
       const MODEL_URL = "/models";
@@ -68,6 +65,14 @@ const FaceComparison = () => {
     imageRef.current.src = imageSrc;
   };
 
+  const getCurrentTime24HourFormat = () => {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+  };
+
   const calculateSimilarity = async () => {
     capture(setImage2, imageRef2);
 
@@ -81,10 +86,13 @@ const FaceComparison = () => {
         continue;
       }
 
-      const img1 = new Image();
+      const img1 = document.createElement("img");
       img1.crossOrigin = "anonymous";
       img1.src = userPhoto.url_foto_absen;
-      await new Promise((resolve) => (img1.onload = resolve));
+
+      await new Promise((resolve) => {
+        img1.onload = resolve;
+      });
 
       const detection1 = await faceapi
         .detectSingleFace(img1, new faceapi.SsdMobilenetv1Options())
@@ -101,9 +109,9 @@ const FaceComparison = () => {
           detection1.descriptor,
           detection2.descriptor
         );
-        const similarityScore = (1 - distance).toFixed(2);
+        const similarityScore = ((1 - distance) * 100).toFixed(2); // Convert to percentage
 
-        if (similarityScore >= 0.6) {
+        if (similarityScore >= 60) { // 60% similarity threshold
           isAbsenSuccess = true;
           setSimilarity(similarityScore);
           matchedUser = userPhoto;
@@ -117,20 +125,42 @@ const FaceComparison = () => {
       setCurrentUser(matchedUser);
       console.log("Absen berhasil untuk user:", matchedUser);
       try {
+        const currentTime = getCurrentTime24HourFormat();
         await axios.post("http://localhost:5001/absen", {
           userId: matchedUser.id,
+          waktu_datang: currentTime,
+          lat: location.latitude,
+          long: location.longitude,
         });
-        alert("Absen berhasil!");
+        Swal.fire({
+          title: "Berhasil!",
+          text: "Absen berhasil !",
+          icon: "success"
+        });
       } catch (error) {
         console.error("Error mengirim data absen:", error);
         alert(`Gagal absen: ${error.response?.data?.msg || error.message}`);
       }
     } else {
-      setSimilarity("Tidak dapat mendeteksi wajah");
+      setSimilarity("Tidak dapat mendeteksi wajah atau kemiripan di bawah 60%");
     }
   };
 
-  // Utility untuk menghitung jarak dua titik menggunakan Haversine formula
+  const getLocationFromIP = async () => {
+    try {
+      const response = await axios.get('https://ipapi.co/json/');
+      const { latitude, longitude } = response.data;
+      console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+      setLocation({ latitude, longitude });
+
+      const withinBounds = isWithinOfficeBounds(latitude, longitude, officeLat, officeLng, allowedRadius);
+      setIsWithinBounds(withinBounds);
+      console.log(`Within Bounds: ${withinBounds}`);
+    } catch (error) {
+      console.error("Error obtaining location from IP:", error);
+    }
+  };
+
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371e3; // jari-jari bumi dalam meter
     const φ1 = lat1 * (Math.PI / 180);
@@ -138,24 +168,20 @@ const FaceComparison = () => {
     const Δφ = (lat2 - lat1) * (Math.PI / 180);
     const Δλ = (lon2 - lon1) * (Math.PI / 180);
 
-    const a =
-      Math.sin(Δφ / 2) ** 2 +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+    const a = Math.sin(Δφ / 2) ** 2 +
+              Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    return R * c; // hasil dalam meter
+    const distance = R * c; // hasil dalam meter
+    console.log(`Distance: ${distance.toFixed(2)} meters`); // Log untuk memeriksa jarak
+    return distance;
   };
 
-  // Fungsi untuk memeriksa apakah lokasi pengguna dalam batas kantor
-  const isWithinOfficeBounds = (
-    userLat,
-    userLng,
-    officeLat,
-    officeLng,
-    allowedRadius
-  ) => {
+  const isWithinOfficeBounds = (userLat, userLng, officeLat, officeLng, allowedRadius) => {
     const distance = calculateDistance(userLat, userLng, officeLat, officeLng);
-    return distance <= allowedRadius;
+    const withinBounds = distance <= allowedRadius;
+    console.log(`User is within bounds: ${withinBounds}`); // Log hasil perhitungan bounds
+    return withinBounds;
   };
 
   useEffect(() => {
@@ -163,23 +189,21 @@ const FaceComparison = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
+          console.log(`Latitude: ${latitude}, Longitude: ${longitude}`); // Log lokasi pengguna
           setLocation({ latitude, longitude });
 
-          const withinBounds = isWithinOfficeBounds(
-            latitude,
-            longitude,
-            officeLat,
-            officeLng,
-            allowedRadius
-          );
+          const withinBounds = isWithinOfficeBounds(latitude, longitude, officeLat, officeLng, allowedRadius);
           setIsWithinBounds(withinBounds);
+          console.log(`Within Bounds: ${withinBounds}`); // Log hasil perhitungan bounds
         },
         (error) => {
-          console.error("Error obtaining location:", error);
+          console.error('Error obtaining location:', error);
+          getLocationFromIP(); // Fallback to IP-based location
         }
       );
     } else {
-      console.log("Geolocation is not supported by this browser.");
+      console.log('Geolocation is not supported by this browser. Using IP-based location as fallback.');
+      getLocationFromIP(); // Fallback to IP-based location
     }
   }, []);
 
@@ -196,68 +220,56 @@ const FaceComparison = () => {
   }
 
   return (
-    <div>
-      <Navbar bg="dark" variant="dark" expand="lg" className="justify-content-center">
-        <Container>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="mx-auto">
-              <Nav.Link href="/dashboard-user/absen/geolocation" className="mx-3">Geolocation</Nav.Link>
-              <Nav.Link href="/dashboard-user/absen" active className="mx-3" >Absen Hadir</Nav.Link>
-              <Nav.Link href="/dashboard-user/absen/absen-pulang" className="mx-3">
-                Absen Pulang
-              </Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-      <div className="container d-flex justify-content-center bg-light dark:bg-dark mt-7 mb-5 rounded">
-        <div className="text-center">
-          <Webcam
-            audio={false}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            className="rounded-circle w-100"
-            videoConstraints={{
-              facingMode: "user",
-            }}
-            style={{ transform: "scaleX(-1)" }}
-          />
-          <div>
-            <img ref={imageRef2} className="d-none" alt="Captured Image" />
-          </div>
-          <button
-            className="btn btn-primary mt-3"
-            onClick={() => {
-              if (isWithinBounds) {
-                calculateSimilarity();
-              } else {
-                alert(
-                  "Anda berada di luar area kantor. Absen tidak diizinkan."
-                );
-              }
-            }}
-          >
-            Absen
-          </button>
-          {similarity && (
-            <p className="text-danger font-weight-bold mt-3">
-              Kemiripan wajah :{" "}
-              <span className="text-primary">{similarity}</span>
-            </p>
-          )}
-          {absenSuccess && currentUser && (
-            <p className="text-success font-weight-bold mt-3">
-              Hai {currentUser.name}, absen berhasil! Silahkan melanjutkan
-              aktifitas anda!
-            </p>
-          )}
-          {!isWithinBounds && (
-            <p className="text-danger font-weight-bold mt-3">
-              Anda berada di luar area kantor. Absen tidak diizinkan.
-            </p>
-          )}
+    <div className="container d-flex justify-content-center bg-light dark:bg-dark mt-2 rounded">
+      <div className="text-center">
+        <Webcam
+          audio={false}
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          className="rounded-circle w-100"
+          videoConstraints={{
+            facingMode: "user",
+          }}
+          style={{ transform: "scaleX(-1)" }}
+        />
+        <div>
+          <img ref={imageRef2} className="d-none" alt="Captured Image" />
         </div>
+        <button
+          className="btn btn-primary mt-3"
+          onClick={() => {
+            if (isWithinBounds) {
+              calculateSimilarity();
+            } else {
+              alert("Anda berada di luar area kantor. Absen tidak diizinkan.");
+            }
+          }}
+
+          // onClick={() => {
+          //   calculateSimilarity();
+          // }}
+        >
+          Absen
+        </button>
+        {similarity && (
+          <p className="text-danger font-weight-bold mt-3">
+          Kemiripan wajah :{" "}
+          <span className="text-primary">
+            {similarity}%
+          </span>
+        </p>
+        )}
+        {absenSuccess && currentUser && (
+          <p className="text-success font-weight-bold mt-3">
+            Hai {currentUser?.name}, absen berhasil! Silahkan melanjutkan
+            aktifitas anda!
+          </p>
+        )}
+        {!isWithinBounds && (
+          <p className="text-danger font-weight-bold mt-3">
+            Anda berada di luar area kantor. Absen tidak diizinkan.
+          </p>
+        )}
       </div>
     </div>
   );
