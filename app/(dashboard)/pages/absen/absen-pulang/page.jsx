@@ -135,14 +135,14 @@ const FaceComparison = () => {
   };
 
   const handleAbsenClick = () => {
-    if (isAfterFour) {
-      calculateSimilarity();
-    } else {
+    calculateSimilarity();
+    if (!isAfterFour) {
       alert(
         "Belum saatnya pulang. Berikan alasan mengapa pulang lebih dahulu."
       );
       setShowReasonField(true);
     }
+    
   };
 
   const handleSubmitReason = async (event) => {
