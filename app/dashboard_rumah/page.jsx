@@ -28,7 +28,7 @@ const DashboardUser = () => {
     } else {
       setUser(JSON.parse(userData));
       // Redirect to absen hadir page on loading dashboard user
-      window.location.href = "/dashboard-user/absen";
+      window.location.href = "/dashboard_rumah/geolocation";
     }
   }, []);
 
@@ -55,9 +55,9 @@ const DashboardUser = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mx-auto">
-            <Nav.Link href="/dashboard-user/absen">Absen Hadir</Nav.Link>
-            <Nav.Link href="/dashboard-user/absen/absen-pulang">
-              Absen Pulang
+            <Nav.Link href="/dashboard_rumah/geolocation">Geolocation</Nav.Link>
+            <Nav.Link href="/dashboard_rumah/keterangan">
+              <Kbd></Kbd>eterangan
             </Nav.Link>
           </Nav>
         </Navbar.Collapse>
