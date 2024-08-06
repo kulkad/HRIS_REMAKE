@@ -137,12 +137,11 @@ const FaceComparison = () => {
   const handleAbsenClick = () => {
     calculateSimilarity();
     if (!isAfterFour) {
+      setShowReasonField(true);
       alert(
         "Belum saatnya pulang. Berikan alasan mengapa pulang lebih dahulu."
       );
-      setShowReasonField(true);
     }
-    
   };
 
   const handleSubmitReason = async (event) => {
@@ -245,34 +244,36 @@ const FaceComparison = () => {
       </div>
 
       {/* Success Modal */}
-      <div
-        className={`modal fade ${showModal ? "show" : ""}`}
-        style={{ display: showModal ? "block" : "none" }}
-        tabIndex="-1"
-        role="dialog"
-      >
-        <div className="modal-dialog" role="document">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Absen Pulang</h5>
-            </div>
-            <div className="modal-body">
-              <p>
-                {absenSuccess ? "Absen pulang berhasil!" : "Alasan terkirim!"}
-              </p>
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setShowModal(false)}
-              >
-                Close
-              </button>
+      {(isAfterFour || alasanSuccess) && (
+        <div
+          className={`modal fade ${showModal ? "show" : ""}`}
+          style={{ display: showModal ? "block" : "none" }}
+          tabIndex="-1"
+          role="dialog"
+        >
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Absen Pulang</h5>
+              </div>
+              <div className="modal-body">
+                <p>
+                  {absenSuccess ? "Absen pulang berhasil!" : "Alasan terkirim!"}
+                </p>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowModal(false)}
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Error Modal */}
       <div
