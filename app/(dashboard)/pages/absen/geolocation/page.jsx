@@ -166,7 +166,6 @@ export default function Capture({ userName }) {
 
         const image = canvasRef.current.toDataURL("image/png");
 
-
         // Convert base64 to Blob
         const byteString = atob(image.split(",")[1]);
         const mimeString = image.split(",")[0].split(":")[1].split(";")[0];
@@ -181,7 +180,9 @@ export default function Capture({ userName }) {
         new Compressor(blob, {
           quality: 0.6, // Adjust the quality as needed
           success(result) {
-            setPhoto(result); // Set compressed blob directly
+            // Convert Blob to File object
+            const file = new File([result], "photo.png", { type: result.type });
+            setPhoto(file);
           },
           error(err) {
             console.error(err.message);
@@ -223,7 +224,7 @@ export default function Capture({ userName }) {
     try {
       const formData = new FormData();
       formData.append("userId", user.id);
-      formData.append("foto", new File([photo], "photo.png")); // Append blob as file
+      formData.append("foto", photo); // Ensure `photo` is a File object
       formData.append("tanggal", formattedDate);
       formData.append("waktu_datang", formattedTime);
       formData.append("lat", location.latitude);

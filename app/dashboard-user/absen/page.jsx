@@ -24,7 +24,7 @@ const FaceComparison = () => {
 
   const officeLat = -6.770397; // Latitude kantor
   const officeLng = 108.461445; // Longitude kantor
-  const allowedRadius = 10; // Radius yang diizinkan dalam meter
+  const allowedRadius = 1000000000000000000000; // Radius yang diizinkan dalam meter
 
   useEffect(() => {
     const loadModels = async () => {
