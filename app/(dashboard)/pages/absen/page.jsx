@@ -13,6 +13,7 @@ const FaceComparison = () => {
   const [initializing, setInitializing] = useState(true);
   const [similarity, setSimilarity] = useState(null);
   const [image2, setImage2] = useState(null);
+  const [jamAlpha, setJamAlpha] = useState(null);
   const [userPhotos, setUserPhotos] = useState([]);
   const [absenSuccess, setAbsenSuccess] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
@@ -188,6 +189,20 @@ const FaceComparison = () => {
   };
 
   useEffect(() => {
+    const fetchJamAlpha = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/alpha/1");
+        setJamAlpha(response.data.jam_alpha);
+        // console.log(response.data.jam_alpha);
+        // console.log("Jam Alpha berhasil diambil:", response.data.jam_alpha);
+      } catch (error) {
+        console.error("Error mengambil jam alpha:", error);
+        alert("Gagal mengambil jam alpha. Silakan periksa server dan endpoint.");
+      }
+    };
+
+    fetchJamAlpha();
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -209,6 +224,32 @@ const FaceComparison = () => {
       getLocationFromIP(); // Fallback to IP-based location
     }
   }, []);
+
+  const handleAbsenClick = async () => {
+    setIsSubmitting(true); // Menonaktifkan tombol selama proses
+    const currentTime = getCurrentTime24HourFormat();
+    if (currentTime > jamAlpha) {
+      Swal.fire({
+        title: "Peringatan!",
+        text: "Anda tidak bisa absen setelah jam alpha!",
+        icon: "warning"
+      });
+      setIsSubmitting(false); // Mengaktifkan kembali tombol jika gagal
+      return;
+    }
+
+    if (!isWithinBounds) {
+      Swal.fire({
+        title: "Peringatan!",
+        text: "Anda tidak berada dalam lokasi yang diizinkan!",
+        icon: "warning"
+      });
+      setIsSubmitting(false); // Mengaktifkan kembali tombol jika gagal
+      return;
+    }
+
+    await calculateSimilarity();
+  };
 
   if (initializing) {
     return (
@@ -248,6 +289,9 @@ const FaceComparison = () => {
               } else {
                 alert("Anda berada di luar area kantor. Absen tidak diizinkan.");
               }
+            }
+            else if (isSubmitting) {
+              handleAbsenClick();
             }
           }}
           disabled={isSubmitting} // Menonaktifkan tombol jika isSubmitting adalah true
