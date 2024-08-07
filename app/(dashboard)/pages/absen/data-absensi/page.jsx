@@ -35,7 +35,6 @@ const DataAbsen = () => {
       try {
         const response = await axios.get("http://localhost:5001/absens");
         setData(response.data);
-        console.log("role", response.data)
       } catch (error) {
         console.error("Error fetching absens:", error);
       } finally {

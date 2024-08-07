@@ -41,7 +41,6 @@ const FaceComparison = () => {
     try {
       const response = await axios.get("http://localhost:5001/userfotoabsen");
       setUserPhotos(response.data);
-      console.log("user photos: ", response.data);
     } catch (error) {
       console.error("Error fetching user photos: ", error);
     }
@@ -195,7 +194,6 @@ const FaceComparison = () => {
         });
       }
     }
-    console.log("fungsi jalan");
   };
 
   if (initializing) {

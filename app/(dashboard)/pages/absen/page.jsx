@@ -46,9 +46,9 @@ const FaceComparison = () => {
     try {
       const response = await axios.get("http://localhost:5001/userfotoabsen");
       setUserPhotos(response.data);
-      console.log("Foto pengguna berhasil diambil:", response.data);
+      console.log("Foto pengguna berhasil diambil");
     } catch (error) {
-      console.error("Error mengambil foto pengguna: ", error);
+      console.error("Error mengambil foto pengguna");
       alert(
         "Gagal mengambil foto pengguna. Silakan periksa server dan endpoint."
       );
@@ -123,7 +123,7 @@ const FaceComparison = () => {
     if (isAbsenSuccess && matchedUser) {
       setAbsenSuccess(true);
       setCurrentUser(matchedUser);
-      console.log("Absen berhasil untuk user:", matchedUser);
+      // console.log("Absen berhasil untuk user:", matchedUser);
       try {
         const currentTime = getCurrentTime24HourFormat();
         await axios.post("http://localhost:5001/absen", {
@@ -150,12 +150,12 @@ const FaceComparison = () => {
     try {
       const response = await axios.get('https://ipapi.co/json/');
       const { latitude, longitude } = response.data;
-      console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+      // console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
       setLocation({ latitude, longitude });
 
       const withinBounds = isWithinOfficeBounds(latitude, longitude, officeLat, officeLng, allowedRadius);
       setIsWithinBounds(withinBounds);
-      console.log(`Within Bounds: ${withinBounds}`);
+      // console.log(`Within Bounds: ${withinBounds}`);
     } catch (error) {
       console.error("Error obtaining location from IP:", error);
     }
@@ -173,14 +173,14 @@ const FaceComparison = () => {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     const distance = R * c; // hasil dalam meter
-    console.log(`Distance: ${distance.toFixed(2)} meters`); // Log untuk memeriksa jarak
+   // console.log(`Distance: ${distance.toFixed(2)} meters`); // Log untuk memeriksa jarak
     return distance;
   };
 
   const isWithinOfficeBounds = (userLat, userLng, officeLat, officeLng, allowedRadius) => {
     const distance = calculateDistance(userLat, userLng, officeLat, officeLng);
     const withinBounds = distance <= allowedRadius;
-    console.log(`User is within bounds: ${withinBounds}`); // Log hasil perhitungan bounds
+    //console.log(`User is within bounds: ${withinBounds}`); // Log hasil perhitungan bounds
     return withinBounds;
   };
 
@@ -189,12 +189,12 @@ const FaceComparison = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          console.log(`Latitude: ${latitude}, Longitude: ${longitude}`); // Log lokasi pengguna
+          //console.log(`Latitude: ${latitude}, Longitude: ${longitude}`); // Log lokasi pengguna
           setLocation({ latitude, longitude });
 
           const withinBounds = isWithinOfficeBounds(latitude, longitude, officeLat, officeLng, allowedRadius);
           setIsWithinBounds(withinBounds);
-          console.log(`Within Bounds: ${withinBounds}`); // Log hasil perhitungan bounds
+          //console.log(`Within Bounds: ${withinBounds}`); // Log hasil perhitungan bounds
         },
         (error) => {
           console.error('Error obtaining location:', error);

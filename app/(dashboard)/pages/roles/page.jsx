@@ -142,7 +142,7 @@ const Users = () => {
         const response = await axios.get("http://localhost:5001/roles", {
           withCredentials: true,
         });
-        console.log(response.data);
+        //console.log(response.data);
         setRoles(response.data);
       } catch (error) {
         console.error("Error fetching users:", error.message);
