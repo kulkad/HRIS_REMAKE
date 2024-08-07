@@ -28,7 +28,6 @@ const HomePage = () => {
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
-  console.log(currentUsers);
 
   const totalPages = Math.ceil(users.length / usersPerPage);
 
@@ -39,7 +38,6 @@ const HomePage = () => {
   const fetchUsers = async () => {
     try {
       const response = await axios.get("http://localhost:5001/users");
-      console.log(response.data);
       setUsers(response.data); // Update state with fetched users
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -91,7 +89,9 @@ const HomePage = () => {
                       <h5 class="card-title text-uppercase text-muted mb-0">
                         Total User
                       </h5>
-                      <span class="h2 font-weight-bold mb-0">{users.length}</span>
+                      <span class="h2 font-weight-bold mb-0">
+                        {users.length}
+                      </span>
                     </div>
                     <div class="col-auto">
                       <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
@@ -217,12 +217,14 @@ const HomePage = () => {
           <div className="d-block d-md-none">
             <div className="d-flex flex-wrap">
               {currentUsers.map((user, index) => (
-                <Card key={index} className="m-2" style={{ width: '18rem' }}>
+                <Card key={index} className="m-2" style={{ width: "18rem" }}>
                   <Card.Body>
                     <Card.Title>User {indexOfFirstUser + index + 1}</Card.Title>
                     <Card.Text>
-                      <strong>Nama:</strong> {user.name}<br />
-                      <strong>Email:</strong> {user.email}<br />
+                      <strong>Nama:</strong> {user.name}
+                      <br />
+                      <strong>Email:</strong> {user.email}
+                      <br />
                       <strong>Role:</strong> {user.role.nama_role}
                     </Card.Text>
                   </Card.Body>
@@ -234,8 +236,14 @@ const HomePage = () => {
 
         <div className="d-flex justify-content-center my-4">
           <Pagination>
-            <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
-            <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
+            <Pagination.First
+              onClick={() => handlePageChange(1)}
+              disabled={currentPage === 1}
+            />
+            <Pagination.Prev
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            />
             {[...Array(totalPages)].map((_, index) => (
               <Pagination.Item
                 key={index}
@@ -245,8 +253,14 @@ const HomePage = () => {
                 {index + 1}
               </Pagination.Item>
             ))}
-            <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
-            <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
+            <Pagination.Next
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            />
+            <Pagination.Last
+              onClick={() => handlePageChange(totalPages)}
+              disabled={currentPage === totalPages}
+            />
           </Pagination>
         </div>
 

@@ -119,7 +119,6 @@ const Users = () => {
         const response = await axios.get(endpoint, {
           withCredentials: true,
         });
-        console.log(response.data);
         setUsersByRole(response.data);
       } catch (error) {
         console.error("Error fetching users:", error.message);
@@ -187,12 +186,9 @@ const Users = () => {
       if (result.isConfirmed) {
         try {
           await axios.delete(`http://localhost:5001/users/${userId}`);
-          const response = await axios.get(
-            `http://localhost:5001/roles/${role}`,
-            {
-              withCredentials: true,
-            }
-          );
+          const response = await axios.get(`http://localhost:5001/roles/`, {
+            withCredentials: true,
+          });
           setUsersByRole(response.data);
           setSuccessMessage("User berhasil dihapus.");
           Swal.fire({
@@ -217,9 +213,9 @@ const Users = () => {
   const uniqueRoles = [
     ...new Set(
       Array.isArray(usersByRole)
-        ? usersByRole.map((user) =>
-            user.role ? user.role.nama_role : null
-          ).filter((role) => role !== null)
+        ? usersByRole
+            .map((user) => (user.role ? user.role.nama_role : null))
+            .filter((role) => role !== null)
         : []
     ),
   ]; // Dapatkan peran unik
@@ -270,7 +266,9 @@ const Users = () => {
                 <p className="text-green-600">{successMessage}</p>
               )}
               {filteredUsers.length === 0 ? (
-                <p className="text-center py-4">Belum ada data, silahkan tambahkan data</p>
+                <p className="text-center py-4">
+                  Belum ada data, silahkan tambahkan data
+                </p>
               ) : (
                 <div className="d-none d-lg-block table-responsive">
                   <Table hover className="table text-center">
