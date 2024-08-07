@@ -62,31 +62,7 @@ const Users = () => {
     setPreview(URL.createObjectURL(image));
   };
 
-  const saveData = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("nama_role", nama_role);
-    formData.append("jam_pulang", jam_pulang);
-    formData.append("denda_telat", denda);
-
-    try {
-      await axios.post("http://localhost:5001/roles", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      Swal.fire({
-        title: "Berhasil!",
-        text: "Berhasil menambahkan !",
-        icon: "success",
-      }).then(() => {
-        window.location.reload();
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
+ // Dari sini
   const updateData = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -140,7 +116,7 @@ const Users = () => {
 
 //     fetchUsersByRole();
 //   }, []);
-
+// Sampe sini
   if (!user) {
     return (
       <div className="w-full bg-white dark:bg-slate-900 dark:text-white max-w-md mx-auto rounded-lg shadow-md overflow-hidden md:max-w-2xl p-4">

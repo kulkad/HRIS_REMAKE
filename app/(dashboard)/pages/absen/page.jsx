@@ -18,6 +18,7 @@ const FaceComparison = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [isWithinBounds, setIsWithinBounds] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const webcamRef = useRef(null);
   const imageRef2 = useRef(null);
 
@@ -144,6 +145,8 @@ const FaceComparison = () => {
     } else {
       setSimilarity("Tidak dapat mendeteksi wajah atau kemiripan di bawah 60%");
     }
+
+    setIsSubmitting(false); // Mengaktifkan kembali tombol setelah proses selesai
   };
 
   const getLocationFromIP = async () => {
@@ -238,26 +241,26 @@ const FaceComparison = () => {
         <button
           className="btn btn-primary mt-3"
           onClick={() => {
-            if (isWithinBounds) {
-              calculateSimilarity();
-            } else {
-              alert("Anda berada di luar area kantor. Absen tidak diizinkan.");
+            if (!isSubmitting) {
+              if (isWithinBounds) {
+                setIsSubmitting(true); // Menonaktifkan tombol setelah diklik
+                calculateSimilarity();
+              } else {
+                alert("Anda berada di luar area kantor. Absen tidak diizinkan.");
+              }
             }
           }}
-
-          // onClick={() => {
-          //   calculateSimilarity();
-          // }}
+          disabled={isSubmitting} // Menonaktifkan tombol jika isSubmitting adalah true
         >
-          Absen
+          {isSubmitting ? "Sedang memproses..." : "Absen"}
         </button>
         {similarity && (
           <p className="text-danger font-weight-bold mt-3">
-          Kemiripan wajah :{" "}
-          <span className="text-primary">
-            {similarity}%
-          </span>
-        </p>
+            Kemiripan wajah :{" "}
+            <span className="text-primary">
+              {similarity}%
+            </span>
+          </p>
         )}
         {absenSuccess && currentUser && (
           <p className="text-success font-weight-bold mt-3">
