@@ -13,6 +13,7 @@ const FaceComparison = () => {
   const [initializing, setInitializing] = useState(true);
   const [similarity, setSimilarity] = useState(null);
   const [image2, setImage2] = useState(null);
+  const [jamAlpha, setJamAlpha] = useState(null);
   const [userPhotos, setUserPhotos] = useState([]);
   const [absenSuccess, setAbsenSuccess] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
@@ -190,8 +191,9 @@ const FaceComparison = () => {
   useEffect(() => {
     const fetchJamAlpha = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/alpha");
+        const response = await axios.get("http://localhost:5001/alpha/{$id}");
         setJamAlpha(response.data.jam_alpha);
+        console.log(response.data.jam_alpha);
         // console.log("Jam Alpha berhasil diambil:", response.data.jam_alpha);
       } catch (error) {
         console.error("Error mengambil jam alpha:", error);
