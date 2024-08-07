@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { BsPersonLinesFill } from "react-icons/bs";
 import { IoSettingsSharp } from "react-icons/io5";
 import { FaUsers } from "react-icons/fa6";
+import { FaUserXmark } from "react-icons/fa6";
 /**
  *  All Dashboard Routes
  *
@@ -72,7 +73,18 @@ export const DashboardMenu = [{
         icon: <FaUsers  style={{ marginRight: '6px' }} />,
         link: '/pages/roles'
     },
+    {
+        id: uuid(),
+        title: 'alpha',
+        grouptitle: true
+    },
 
+    {
+        id: uuid(),
+        title: 'Alpha',
+        icon: <FaUserXmark  style={{ marginRight: '6px' }} />,
+        link: '/pages/alpha'
+    },
     {
         id: uuid(),
         title: 'Settings',

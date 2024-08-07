@@ -183,7 +183,7 @@ export default function Capture({ userName }) {
                 Geolocation
               </Nav.Link>
               <Nav.Link href="/dashboard_rumah/keterangan" className="mx-3">
-                keterangan
+                Keterangan
               </Nav.Link>
             </Nav>
           </Navbar.Collapse>

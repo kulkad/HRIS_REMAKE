@@ -1,5 +1,5 @@
 "use client";
-
+// Test paras commit
 import React, { useState, useRef, useEffect } from "react";
 import * as faceapi from "face-api.js";
 import Webcam from "react-webcam";
@@ -7,39 +7,34 @@ import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Swal from "sweetalert2";
-import { Navbar, Nav, Container, Modal, Button, Form } from "react-bootstrap";
+import { Navbar, Container, Nav } from 'react-bootstrap';
 
-const AbsenPulang = () => {
+
+const FaceComparison = () => {
   const [initializing, setInitializing] = useState(true);
   const [similarity, setSimilarity] = useState(null);
   const [image2, setImage2] = useState(null);
   const [userPhotos, setUserPhotos] = useState([]);
   const [absenSuccess, setAbsenSuccess] = useState(false);
+  const [alasanSuccess, setAlasanSuccess] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [location, setLocation] = useState(null);
-  const [isWithinBounds, setIsWithinBounds] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isAfterFour, setIsAfterFour] = useState(false);
+  const [showReasonField, setShowReasonField] = useState(false);
+  const [reason, setReason] = useState("");
   const webcamRef = useRef(null);
   const imageRef2 = useRef(null);
-
-  const officeLat = -6.770397; // Latitude kantor
-  const officeLng = 108.461445; // Longitude kantor
-  const allowedRadius = 100; // Radius yang diizinkan dalam meter
 
   useEffect(() => {
     const loadModels = async () => {
       const MODEL_URL = "/models";
-      try {
-        await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-        await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-        await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-        await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
-        setInitializing(false);
-      } catch (error) {
-        console.error("Error loading models:", error);
-      }
+      await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+      await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+      await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+      await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+      setInitializing(false);
     };
     loadModels();
   }, []);
@@ -48,14 +43,26 @@ const AbsenPulang = () => {
     try {
       const response = await axios.get("http://localhost:5001/userfotoabsen");
       setUserPhotos(response.data);
+      console.log("user photos: ", response.data);
     } catch (error) {
       console.error("Error fetching user photos: ", error);
-      alert("Gagal mengambil foto pengguna. Silakan periksa server dan endpoint.");
     }
   };
 
   useEffect(() => {
     fetchUserPhotos();
+  }, []);
+
+  const checkTime = () => {
+    const now = new Date();
+    const hour = now.getHours();
+    if (hour >= 16) {
+      setIsAfterFour(true);
+    }
+  };
+
+  useEffect(() => {
+    checkTime();
   }, []);
 
   const capture = (setImage, imageRef) => {
@@ -97,9 +104,9 @@ const AbsenPulang = () => {
           detection1.descriptor,
           detection2.descriptor
         );
-        const similarityScore = (1 - distance).toFixed(2);
+        const similarityScore = Math.min((1 - distance) * 100, 100).toFixed(2);
 
-        if (similarityScore >= 0.6) {
+        if (similarityScore >= 60) {
           isAbsenSuccess = true;
           setSimilarity(similarityScore);
           matchedUser = userPhoto;
@@ -111,81 +118,91 @@ const AbsenPulang = () => {
     if (isAbsenSuccess && matchedUser) {
       setAbsenSuccess(true);
       setCurrentUser(matchedUser);
-      try {
-        await axios.post("http://localhost:5001/absen", {
-          userId: matchedUser.id,
-        });
-        setShowModal(true);
-      } catch (error) {
-        console.error("Error posting absen:", error);
-        setErrorMessage(
-          `Gagal absen: ${error.response?.data?.msg || error.message}`
-        );
-        setShowErrorModal(true);
+      if (isAfterFour) {
+        try {
+          await axios.patch(`http://localhost:5001/absen/${matchedUser.id}`, {
+            userId: matchedUser.id,
+          });
+          Swal.fire({
+            title: 'Absen Pulang',
+            text: `Hai ${matchedUser.name}, absen pulang berhasil! Hati-hati saat sedang perjalanan pulang ya!`,
+            icon: 'success',
+            confirmButtonText: 'Close'
+          }).then(() => {
+            window.location.reload(); // Refresh the page
+          });
+        } catch (error) {
+          console.error("Error posting absen:", error);
+          Swal.fire({
+            title: 'Absen Gagal',
+            text: `Gagal absen: ${error.response?.data?.msg || error.message}`,
+            icon: 'error',
+            confirmButtonText: 'Close'
+          });
+        }
       }
     } else {
       setSimilarity("Tidak dapat mendeteksi wajah");
-      setErrorMessage("Tidak dapat mendeteksi wajah");
-      setShowErrorModal(true);
+      Swal.fire({
+        title: 'Absen Gagal',
+        text: "Tidak dapat mendeteksi wajah",
+        icon: 'error',
+        confirmButtonText: 'Close'
+      });
     }
   };
 
-  // Utility untuk menghitung jarak dua titik menggunakan Haversine formula
-  const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371e3; // jari-jari bumi dalam meter
-    const φ1 = lat1 * (Math.PI / 180);
-    const φ2 = lat2 * (Math.PI / 180);
-    const Δφ = (lat2 - lat1) * (Math.PI / 180);
-    const Δλ = (lon2 - lon1) * (Math.PI / 180);
-
-    const a =
-      Math.sin(Δφ / 2) ** 2 +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c; // hasil dalam meter
-  };
-
-  // Fungsi untuk memeriksa apakah lokasi pengguna dalam batas kantor
-  const isWithinOfficeBounds = (
-    userLat,
-    userLng,
-    officeLat,
-    officeLng,
-    allowedRadius
-  ) => {
-    const distance = calculateDistance(userLat, userLng, officeLat, officeLng);
-    return distance <= allowedRadius;
-  };
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setLocation({ latitude, longitude });
-
-          const withinBounds = isWithinOfficeBounds(
-            latitude,
-            longitude,
-            officeLat,
-            officeLng,
-            allowedRadius
-          );
-          setIsWithinBounds(withinBounds);
-        },
-        (error) => {
-          console.error("Error obtaining location:", error);
+  const handleAbsenClick = () => {
+    calculateSimilarity();
+    if (!isAfterFour) {
+      Swal.fire({
+        title: 'Belum saatnya pulang',
+        text: 'Belum saatnya untuk pulang. Berikan alasan mengapa kamu harus pulang terlebih dahulu.',
+        icon: 'warning',
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        confirmButtonText: 'Lanjut'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setShowReasonField(true);
         }
-      );
-    } else {
-      console.log("Geolocation is not supported by this browser.");
+      });
     }
-  }, []);
+  };
+
+  const handleSubmitReason = async (event) => {
+    event.preventDefault();
+    if (currentUser) {
+      try {
+        await axios.patch(`http://localhost:5001/absen/${currentUser.id}`, {
+          userId: currentUser.id,
+          reason: reason,
+        });
+        setAlasanSuccess(true);
+        Swal.fire({
+          title: 'Absen pulang dan Alasan terkirim !',
+          text: `Hai ${currentUser.name}, Absen pulang dan Alasan telah terkirim!`,
+          icon: 'success',
+          confirmButtonText: 'Close'
+        }).then(() => {
+          window.location.reload(); // Refresh the page
+        });
+      } catch (error) {
+        console.error("Error posting reason:", error);
+        Swal.fire({
+          title: 'Gagal Mengirim Alasan',
+          text: `Gagal mengirim alasan: ${error.response?.data?.msg || error.message}`,
+          icon: 'error',
+          confirmButtonText: 'Close'
+        });
+      }
+    }
+    console.log("fungsi jalan");
+  };
 
   if (initializing) {
     return (
-      <div className="container bg-white dark:bg-slate-900 dark:text-white rounded-lg shadow-md overflow-hidden p-4">
+      <div className="container bg-white dark:bg-dark text-light dark:text-white rounded shadow p-4">
         <Skeleton height={40} count={1} className="mb-4" />
         <Skeleton height={20} count={1} className="mb-4" />
         <Skeleton height={20} count={1} className="mb-4" />
@@ -196,20 +213,26 @@ const AbsenPulang = () => {
   }
 
   return (
-    <div>
-      <Navbar bg="dark" variant="dark" expand="lg" className="justify-content-center">
+    <>
+      <Navbar
+        bg="dark"
+        variant="dark"
+        expand="lg"
+        className="justify-content-between"
+      >
         <Container>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mx-auto">
-              <Nav.Link href="/dashboard-user/absen/geolocation" className="mx-3">Geolocation</Nav.Link>
-              <Nav.Link href="/dashboard-user/absen" className="mx-3">Absen Hadir</Nav.Link>
-              <Nav.Link href="/dashboard-user/absen/absen-pulang" active className="mx-3">Absen Pulang</Nav.Link>
+              <Nav.Link href="/dashboard-user/absen">Absen Hadir</Nav.Link>
+              <Nav.Link href="/dashboard-user/absen/absen-pulang" className="text-white text-decoration-underline text-decoration-white">
+                Absen Pulang
+              </Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <div className="container d-flex justify-content-center bg-light dark:bg-dark mt-7 mb-5 rounded">
+      <div className="container d-flex justify-content-center bg-light dark:bg-dark mt-2 rounded">
         <div className="text-center">
           <Webcam
             audio={false}
@@ -225,53 +248,51 @@ const AbsenPulang = () => {
             <img ref={imageRef2} className="d-none" alt="Captured Image" />
           </div>
           <button
-            className="btn btn-primary mt-3"
-            onClick={() => {
-              if (isWithinBounds) {
-                calculateSimilarity();
-              } else {
-                alert(
-                  "Anda berada di luar area kantor. Absen tidak diizinkan."
-                );
-              }
-            }}
+            className="btn text-primary btn-primary mt-3 text-white"
+            onClick={handleAbsenClick}
           >
-            Absen
+            Absen pulang
           </button>
           {similarity && (
             <p className="text-danger font-weight-bold mt-3">
-              Kemiripan wajah :{" "}
-              <span className="text-success">{similarity}</span>
+              Kemiripan wajah : <span className="text-primary">{similarity}%</span>
             </p>
+          )}
+          {!isAfterFour && showReasonField && (
+            <>
+              <h3 className="mb-10 text-lg text-danger font-weight-bold">Berikan alasan pulang lebih cepat</h3>
+              <div className="d-flex flex-column align-items-center mt-4">
+                <form className="w-50" onSubmit={handleSubmitReason}>
+                  <div className="d-flex align-items-center">
+                    <div className="form-group me-2">
+                      <textarea
+                        id="reason"
+                        rows="1"
+                        className="form-control me-2"
+                        placeholder="Keterangan..."
+                        value={reason}
+                        onChange={(e) => setReason(e.target.value)}
+                      ></textarea>
+                    </div>
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      onClick={handleSubmitReason}
+                    >
+                      Kirim
+                    </button>
+                  </div>
+                </form>
+              </div>
+              <p className="text-danger font-weight-bold mt-3">
+                Anda hanya dapat absen pulang setelah jam 4 sore.
+              </p>
+            </>
           )}
         </div>
       </div>
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Absen Berhasil</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Absen berhasil dilakukan untuk {currentUser?.name}.</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Tutup
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      <Modal show={showErrorModal} onHide={() => setShowErrorModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Absen Gagal</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>{errorMessage}</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowErrorModal(false)}>
-            Tutup
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
+    </>
   );
 };
 
-export default AbsenPulang;
+export default FaceComparison;

@@ -24,7 +24,7 @@ const FaceComparison = () => {
 
   const officeLat = -6.770397; // Latitude kantor
   const officeLng = 108.461445; // Longitude kantor
-  const allowedRadius = 100; // Radius yang diizinkan dalam meter
+  const allowedRadius = 10; // Radius yang diizinkan dalam meter
 
   useEffect(() => {
     const loadModels = async () => {
@@ -254,7 +254,7 @@ const FaceComparison = () => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mx-auto">
-              <Nav.Link href="/dashboard-user/absen">Absen Hadir</Nav.Link>
+              <Nav.Link href="/dashboard-user/absen" className="text-white text-decoration-underline text-decoration-white">Absen Hadir</Nav.Link>
               <Nav.Link href="/dashboard-user/absen/absen-pulang">
                 Absen Pulang
               </Nav.Link>
