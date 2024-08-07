@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Webcam from "react-webcam";
 import axios from "axios";
 import Swal from "sweetalert2";
-import Compressor from 'compressorjs';
+import Compressor from "compressorjs";
 
 export default function Capture({ userName }) {
   const webcamRef = useRef(null);
@@ -14,8 +14,6 @@ export default function Capture({ userName }) {
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [keterangan, setKeterangan] = useState("Izin");
   const [alasan, setAlasan] = useState("");
-
-  const [watchId, setWatchId] = useState(null);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -46,7 +44,6 @@ export default function Capture({ userName }) {
         },
         options
       );
-      setWatchId(id);
 
       // Hentikan watching position setelah 15 detik
       const timeoutId = setTimeout(() => {
@@ -169,9 +166,10 @@ export default function Capture({ userName }) {
 
         const image = canvasRef.current.toDataURL("image/png");
 
+
         // Convert base64 to Blob
-        const byteString = atob(image.split(',')[1]);
-        const mimeString = image.split(',')[0].split(':')[1].split(';')[0];
+        const byteString = atob(image.split(",")[1]);
+        const mimeString = image.split(",")[0].split(":")[1].split(";")[0];
         const ab = new ArrayBuffer(byteString.length);
         const ia = new Uint8Array(ab);
         for (let i = 0; i < byteString.length; i++) {
@@ -183,11 +181,7 @@ export default function Capture({ userName }) {
         new Compressor(blob, {
           quality: 0.6, // Adjust the quality as needed
           success(result) {
-            const reader = new FileReader();
-            reader.readAsDataURL(result);
-            reader.onloadend = () => {
-              setPhoto(reader.result);
-            };
+            setPhoto(result); // Set compressed blob directly
           },
           error(err) {
             console.error(err.message);
@@ -221,15 +215,15 @@ export default function Capture({ userName }) {
 
   const submitData = async (e) => {
     e.preventDefault();
-    
+
     const date = new Date();
     const formattedDate = date.toISOString().split("T")[0];
     const formattedTime = date.toTimeString().split(" ")[0];
-  
+
     try {
       const formData = new FormData();
       formData.append("userId", user.id);
-      formData.append("foto", photo);
+      formData.append("foto", new File([photo], "photo.png")); // Append blob as file
       formData.append("tanggal", formattedDate);
       formData.append("waktu_datang", formattedTime);
       formData.append("lat", location.latitude);
@@ -237,11 +231,15 @@ export default function Capture({ userName }) {
       formData.append("keterangan", keterangan);
       formData.append("alasan", alasan);
 
-      const response = await axios.post("http://localhost:5001/absen/geolocation", formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      const response = await axios.post(
+        "http://localhost:5001/absen/geolocation",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-      });
+      );
       Swal.fire({
         title: "Berhasil!",
         text: "Datamu berhasil terkirim! Silahkan melanjutkan ke absen hadir!",
@@ -282,7 +280,7 @@ export default function Capture({ userName }) {
       {photo && (
         <div className="mt-4 d-flex flex-column align-items-center">
           <img
-            src={photo}
+            src={URL.createObjectURL(photo)}
             alt="Captured"
             className="border border-secondary mt-2"
           />

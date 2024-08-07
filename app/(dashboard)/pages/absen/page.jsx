@@ -23,7 +23,7 @@ const FaceComparison = () => {
 
   const officeLat = -6.770397; // Latitude kantor
   const officeLng = 108.461445; // Longitude kantor
-  const allowedRadius = 10000; // Radius yang diizinkan dalam meter
+  const allowedRadius = 10000000; // Radius yang diizinkan dalam meter
 
   useEffect(() => {
     const loadModels = async () => {
@@ -142,7 +142,7 @@ const FaceComparison = () => {
         alert(`Gagal absen: ${error.response?.data?.msg || error.message}`);
       }
     } else {
-      setSimilarity("Tidak dapat mendeteksi wajah atau kemiripan di bawah 60%");
+      setSimilarity("Tidak dapat mendeteksi wajah atau kemiripan di bawah 60");
     }
   };
 
