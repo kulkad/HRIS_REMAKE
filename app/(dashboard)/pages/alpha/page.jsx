@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, Fragment } from "react";
+
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Link from "next/link";
@@ -23,86 +24,37 @@ import Swal from "sweetalert2";
 
 const Users = () => {
   const [user, setUser] = useState(null);
-  const [roles, setRoles] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [alpha, setAlpha] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
-  const [role, setRole] = useState("All");
-  const [roleId, setRoleId] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
+  const [jam_alpha, setjam_alpha] = useState("");
 
-  const [nama_role, setNama_role] = useState("");
-  const [jam_pulang, setJam_pulang] = useState("");
-  const [denda, setDenda] = useState("");
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
-
-  const openEditModal = (role) => {
-    setNama_role(role.nama_role);
-    setJam_pulang(role.jam_pulang);
-    setDenda(role.denda_telat);
-    setRoleId(role.id);
+  const openEditModal = (alpha) => {
+    setjam_alpha(alpha.jam_alpha);
     setShowEditModal(true);
   };
 
   const closeEditModal = () => {
     setShowEditModal(false);
-    setNama_role("");
-    setJam_pulang("");
-    setDenda("");
-    setRoleId(null);
-  };
-
-  const loadImage = (e) => {
-    const image = e.target.files[0];
-    setFile(image);
-    setPreview(URL.createObjectURL(image));
-  };
-
-  const saveData = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("nama_role", nama_role);
-    formData.append("jam_pulang", jam_pulang);
-    formData.append("denda_telat", denda);
-
-    try {
-      await axios.post("http://localhost:5001/roles", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      Swal.fire({
-        title: "Berhasil!",
-        text: "Berhasil menambahkan !",
-        icon: "success",
-      }).then(() => {
-        window.location.reload();
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    setjam_alpha("");
   };
 
   const updateData = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("nama_role", nama_role);
-    formData.append("jam_pulang", jam_pulang);
-    formData.append("denda_telat", denda);
+    formData.append("jam_alpha", jam_alpha);
 
     try {
-      await axios.patch(`http://localhost:5001/roles/${roleId}`, formData, {
+      await axios.patch(`http://localhost:5001/alpha/1`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
       Swal.fire({
         title: "Berhasil!",
-        text: "Berhasil mengupdate !",
+        text: "Berhasil mengupdate!",
         icon: "success",
       }).then(() => {
         window.location.reload();
@@ -121,25 +73,25 @@ const Users = () => {
     }
   }, []);
 
-//   useEffect(() => {
-//     const fetchUsersByRole = async () => {
-//       try {
-//         const response = await axios.get("http://localhost:5001/roles", {
-//           withCredentials: true,
-//         });
-//         setRoles(response.data);
-//       } catch (error) {
-//         console.error("Error fetching users:", error.message);
-//         Swal.fire({
-//           title: "Error!",
-//           text: `Error fetching users: ${error.message}`,
-//           icon: "error",
-//         });
-//       }
-//     };
+  useEffect(() => {
+    const fetchJam_Alpha = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/alpha", {
+          withCredentials: true,
+        });
+        setAlpha(response.data);
+      } catch (error) {
+        console.error("Error fetching alpha:", error.message);
+        Swal.fire({
+          title: "Error!",
+          text: `Error fetching alpha: ${error.message}`,
+          icon: "error",
+        });
+      }
+    };
 
-//     fetchUsersByRole();
-//   }, []);
+    fetchJam_Alpha();
+  }, []);
 
   if (!user) {
     return (
@@ -155,7 +107,7 @@ const Users = () => {
 
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const currentUsers = alpha.slice(indexOfFirstUser, indexOfLastUser);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -176,25 +128,25 @@ const Users = () => {
               {successMessage && (
                 <p className="text-green-600">{successMessage}</p>
               )}
-              {roles.length === 0 ? (
+              {alpha.length === 0 ? (
                 <p className="text-center py-4">Tidak ada data</p>
               ) : (
                 <div className="d-none d-lg-block table-responsive">
                   <Table hover className="table text-center">
                     <thead className="table-light">
                       <tr>  
-                        <th>Jam pulang </th>
-                        <th>aksi</th>
+                        <th>Jam Alpha</th>
+                        <th>Aksi</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {roles.map((role) => (
-                        <tr key={role.id}>
-                          <td>{role.jam_alpha}</td>
+                      {currentUsers.map((alpha) => (
+                        <tr key={alpha.id}>
+                          <td>{alpha.jam_alpha}</td>
                           <td className="d-flex justify-content-center">
                             <Button
                               variant="warning"
-                              onClick={() => openEditModal(role)}
+                              onClick={() => openEditModal(alpha)}
                               className="d-flex align-items-center justify-content-center me-2"
                             >
                               Edit
@@ -206,23 +158,19 @@ const Users = () => {
                   </Table>
                 </div>
               )}
-              {roles.length > 0 && (
+              {alpha.length > 0 && (
                 <div className="d-lg-none">
-                  {roles.map((role) => (
-                    <Card key={role.id} className="mb-3">
+                  {alpha.map((alpha) => (
+                    <Card key={alpha.id} className="mb-3">
                       <Card.Body>
                         <div className="d-flex justify-content-between align-items-center">
                           <div>
-                            <Card.Title>{role.nama_role}</Card.Title>
-                            <Card.Subtitle className="mb-2 text-muted">
-                              {role.jam_pulang}
-                            </Card.Subtitle>
-                            <Card.Text>{role.denda}</Card.Text>
+                            <Card.Title>{alpha.jam_alpha}</Card.Title>
                           </div>
                           <Dropdown align="end">
                             <Dropdown.Toggle
                               variant="link"
-                              id={`dropdown-custom-components-${role.id}`}
+                              id={`dropdown-custom-components-${alpha.id}`}
                               className="p-0 bg-transparent border-0"
                             >
                               <FaEllipsisVertical />
@@ -230,7 +178,7 @@ const Users = () => {
 
                             <Dropdown.Menu>
                               <Dropdown.Item
-                                onClick={() => openEditModal(role)}
+                                onClick={() => openEditModal(alpha)}
                               >
                                 Edit
                               </Dropdown.Item>
@@ -256,8 +204,8 @@ const Users = () => {
               <Form.Label>Jam Alpha</Form.Label>
               <Form.Control
                 type="time"
-                value={jam_pulang}
-                onChange={(e) => setJam_alpha(e.target.value)}
+                value={jam_alpha}
+                onChange={(e) => setjam_alpha(e.target.value)}
               />
             </Form.Group>
             <Button variant="primary" type="submit">
