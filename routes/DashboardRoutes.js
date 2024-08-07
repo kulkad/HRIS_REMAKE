@@ -44,9 +44,7 @@ export const DashboardMenu = [{
         icon: 'clock',
         children: [
             { id: uuid(), link: '/pages/absen/data-absensi', name: 'Data Absensi' },
-            { id: uuid(), link: '/pages/absen/geolocation', name: 'Geolocation' },
-            { id: uuid(), link: '/pages/absen/', name: 'Absen Hadir' },
-            { id: uuid(), link: '/pages/absen/absen-pulang', name: 'Absen Pulang' }
+            { id: uuid(), link: '/pages/absen/geolocation', name: 'Geolocation'}
         ]
     },
 
