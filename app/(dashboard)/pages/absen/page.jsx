@@ -191,9 +191,9 @@ const FaceComparison = () => {
   useEffect(() => {
     const fetchJamAlpha = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/alpha/{$id}");
+        const response = await axios.get("http://localhost:5001/alpha/1");
         setJamAlpha(response.data.jam_alpha);
-        console.log(response.data.jam_alpha);
+        // console.log(response.data.jam_alpha);
         // console.log("Jam Alpha berhasil diambil:", response.data.jam_alpha);
       } catch (error) {
         console.error("Error mengambil jam alpha:", error);
