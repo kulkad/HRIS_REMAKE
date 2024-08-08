@@ -10,9 +10,19 @@ export default function Capture({ userName }) {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   const fileInputRef = useRef(null);
+  const [user, setUser] = useState();
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [attendance, setAttendance] = useState("Hadir");
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (!userData) {
+      window.location.href = "http://localhost:3000/login";
+    } else {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -95,7 +105,7 @@ export default function Capture({ userName }) {
         context.font = "17px Arial";
         context.fillStyle = "white";
         const textX = logoX + logoWidth + 5;
-        const nama = userName;
+        const nama = user.name;
 
         context.fillText(
           `Nama: ${nama}`,
