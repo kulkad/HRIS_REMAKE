@@ -8,6 +8,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Swal from "sweetalert2";
 import Image from "next/image";
+import { Navbar, Container, Nav } from 'react-bootstrap';
 
 const FaceComparison = () => {
   const [initializing, setInitializing] = useState(true);
@@ -264,61 +265,83 @@ const FaceComparison = () => {
   }
 
   return (
-    <div className="container d-flex justify-content-center bg-light dark:bg-dark mt-2 rounded">
-      <div className="text-center">
-        <Webcam
-          audio={false}
-          ref={webcamRef}
-          screenshotFormat="image/jpeg"
-          className="rounded-circle w-100"
-          videoConstraints={{
-            facingMode: "user",
-          }}
-          style={{ transform: "scaleX(-1)" }}
-        />
-        <div>
-          <img ref={imageRef2} className="d-none" alt="Captured Image" />
-        </div>
-        <button
-          className="btn btn-primary mt-3"
-          onClick={() => {
-            if (!isSubmitting) {
-              if (isWithinBounds) {
-                setIsSubmitting(true); // Menonaktifkan tombol setelah diklik
-                calculateSimilarity();
-              } else {
-                alert("Anda berada di luar area kantor. Absen tidak diizinkan.");
-              }
-            }
-            else if (isSubmitting) {
-              handleAbsenClick();
-            }
-          }}
-          disabled={isSubmitting} // Menonaktifkan tombol jika isSubmitting adalah true
+    <>
+      {!initializing && (
+        <Navbar
+          bg="dark"
+          variant="dark"
+          expand="lg"
+          className="justify-content-between"
         >
-          {isSubmitting ? "Sedang memproses..." : "Absen"}
-        </button>
-        {similarity && (
-          <p className="text-danger font-weight-bold mt-3">
-            Kemiripan wajah :{" "}
-            <span className="text-primary">
-              {similarity}%
-            </span>
-          </p>
-        )}
-        {absenSuccess && currentUser && (
-          <p className="text-success font-weight-bold mt-3">
-            Hai {currentUser?.name}, absen berhasil! Silahkan melanjutkan
-            aktifitas anda!
-          </p>
-        )}
-        {!isWithinBounds && (
-          <p className="text-danger font-weight-bold mt-3">
-            Anda berada di luar area kantor. Absen tidak diizinkan.
-          </p>
-        )}
+          <Container>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            <Navbar.Collapse id="basic-navbar-nav">
+              <Nav className="mx-auto">
+                <Nav.Link href="/dashboard-user/absen" className="text-white text-decoration-underline text-decoration-white">Absen Hadir</Nav.Link>
+                <Nav.Link href="/dashboard-user/absen/absen-pulang">
+                  Absen Pulang
+                </Nav.Link>
+              </Nav>
+            </Navbar.Collapse>
+          </Container>
+        </Navbar>
+      )}
+      <div className="container d-flex justify-content-center bg-light dark:bg-dark mt-2 rounded">
+        <div className="text-center">
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            className="rounded-circle w-100"
+            videoConstraints={{
+              facingMode: "user",
+            }}
+            style={{ transform: "scaleX(-1)" }}
+          />
+          <div>
+            <img ref={imageRef2} className="d-none" alt="Captured Image" />
+          </div>
+          <button
+            className="btn btn-primary mt-3"
+            onClick={() => {
+              if (!isSubmitting) {
+                if (isWithinBounds) {
+                  setIsSubmitting(true); // Menonaktifkan tombol setelah diklik
+                  calculateSimilarity();
+                } else {
+                  alert("Anda berada di luar area kantor. Absen tidak diizinkan.");
+                }
+              }
+              else if (isSubmitting) {
+                handleAbsenClick();
+              }
+            }}
+            disabled={isSubmitting} // Menonaktifkan tombol jika isSubmitting adalah true
+          >
+            {isSubmitting ? "Sedang memproses..." : "Absen"}
+          </button>
+          {similarity && (
+            <p className="text-danger font-weight-bold mt-3">
+              Kemiripan wajah :{" "}
+              <span className="text-primary">
+                {similarity}%
+              </span>
+            </p>
+          )}
+          {absenSuccess && currentUser && (
+            <p className="text-success font-weight-bold mt-3">
+              Hai {currentUser?.name}, absen berhasil! Silahkan melanjutkan
+              aktifitas anda!
+            </p>
+          )}
+          {!isWithinBounds && (
+            <p className="text-danger font-weight-bold mt-3">
+              Anda berada di luar area kantor. Absen tidak diizinkan.
+            </p>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
