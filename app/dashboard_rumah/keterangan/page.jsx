@@ -88,7 +88,7 @@ const WebinarCard = () => {
                     <>
                       <h3 className="mb-4 text-truncate">
                         <img 
-                          src={user?.image || "/images/assets/gmt-ultra-full-extra-hd.png"} 
+                          src={`http://localhost:5001/${user.image}` || "/images/assets/gmt-ultra-full-extra-hd.png"} 
                           className="img-fluid w-6 h-12 rounded-top-3 mb-4" 
                           alt="Profile"
                         />
