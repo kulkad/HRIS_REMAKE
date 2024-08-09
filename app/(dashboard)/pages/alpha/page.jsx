@@ -31,6 +31,24 @@ const Users = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [jam_alpha, setjam_alpha] = useState("");
 
+    // Untuk mengganti warna dari database
+    const [data, setData] = useState({});
+    const [loading, setLoading] = useState("");
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const response = await axios.get("http://localhost:5001/settings/1");
+                setData(response.data);
+            } catch (error) {
+                console.error("Error fetching Settings:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSettings();
+    }, []);
+
   const openEditModal = (alpha) => {
     setjam_alpha(alpha.jam_alpha);
     setShowEditModal(true);
@@ -113,7 +131,7 @@ const Users = () => {
 
   return (
     <Fragment>
-      <div className="bg-primary pt-10 pb-21"></div>
+      <div className="pt-10 pb-21" style={{ backgroundColor: data.warna_secondary}}></div>
       <Container fluid className="mt-n22 px-6">
         <Row>
           <Col lg={12} md={12} xs={12}>

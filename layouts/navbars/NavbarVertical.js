@@ -1,5 +1,7 @@
 'use client'
 // import node module libraries
+import React, { useState, useEffect } from 'react';
+import axios from "axios";
 import { Fragment, useContext } from 'react';
 import Link from 'next/link';
 import { usePathname   } from 'next/navigation'
@@ -22,6 +24,23 @@ import 'simplebar/dist/simplebar.min.css';
 import { DashboardMenu } from 'routes/DashboardRoutes';
 
 const NavbarVertical = (props) => {
+	// Untuk mengganti warna dari database
+	const [data, setData] = useState({});
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const response = await axios.get("http://localhost:5001/settings/1");
+                setData(response.data);
+            } catch (error) {
+                console.error("Error fetching Settings:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSettings();
+    }, []);
 	const location = usePathname ()
 	const CustomToggle = ({ children, eventKey, icon }) => {
 		const { activeEventKey } = useContext(AccordionContext);
@@ -99,7 +118,7 @@ const NavbarVertical = (props) => {
 			<SimpleBar style={{ maxHeight: '100vh' }}>
 				<div className="nav-scroller">
 					<Link href="/" className="navbar-brand">
-						<p className='h4 fw-bold text-start text-light'>HRIS-CORPS</p>
+						<p className='h4 fw-bold text-start text-light'>{ data.nama_perusahaan }</p>
 					</Link>
 				</div>				
 				{/* Dashboard Menu */}

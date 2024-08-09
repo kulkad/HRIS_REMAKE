@@ -21,6 +21,23 @@ const DataAbsen = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+      // Untuk mengganti warna dari database
+      const [warna, setWarna] = useState({});
+
+      useEffect(() => {
+          const fetchSettings = async () => {
+              try {
+                  const response = await axios.get("http://localhost:5001/settings/1");
+                  setWarna(response.data);
+              } catch (error) {
+                  console.error("Error fetching Settings:", error);
+              } finally {
+                  setLoading(false);
+              }
+          };
+          fetchSettings();
+      }, []);
+
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
@@ -87,7 +104,7 @@ const DataAbsen = () => {
 
   return (
     <Fragment>
-      <div className="bg-primary pt-10 pb-21"></div>
+      <div className="pt-10 pb-21" style={{ backgroundColor: warna.warna_secondary}}></div>
       <Container fluid className="mt-n22 px-6">
         <Row>
           <Col lg={12} md={12} xs={12}>

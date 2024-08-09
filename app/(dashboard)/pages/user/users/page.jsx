@@ -36,11 +36,29 @@ const Users = () => {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState("");
   const [password, setPassword] = useState("");
   const [confPassword, setConfPassword] = useState("");
   const [file, setFile] = useState("");
   const [preview, setPreview] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Untuk mengganti warna dari database
+  const [warna, setWarna] = useState({});
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/settings/1");
+        setWarna(response.data);
+      } catch (error) {
+        console.error("Error fetching Settings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -222,7 +240,10 @@ const Users = () => {
 
   return (
     <Fragment>
-      <div className="bg-primary pt-10 pb-21"></div>
+      <div
+        className="pt-10 pb-21"
+        style={{ backgroundColor: warna.warna_secondary }}
+      ></div>
       <Container fluid className="mt-n22 px-6">
         <Row>
           <Col lg={12} md={12} xs={12}>
@@ -245,13 +266,20 @@ const Users = () => {
                 )}
               </div>
             </div>
+            <style jsx>{`
+              .custom-dropdown-button {
+                background-color: ${warna.warna_primary} !important;
+                border-color: ${warna.warna_primary} !important;
+              }
+            `}</style>
           </Col>
           <Col lg={12} md={12} xs={12}>
             <Form className="d-flex justify-content-end my-3">
               <DropdownButton
+                className="custom-dropdown-button"
                 id="dropdown-role-selector"
                 title={role === "All" ? "Semua" : role}
-                onSelect={handleRoleSelect} // Gunakan handleRoleSelect
+                onSelect={handleRoleSelect}
               >
                 <Dropdown.Item eventKey="All">Semua</Dropdown.Item>
                 {roles.map((role, index) => (
@@ -371,10 +399,10 @@ const Users = () => {
                                   {user.url_foto_absen == null ? (
                                     <>
                                       <EmojiSmile className="me-2" /> Daftar
-                                      Muka
+                                      Wajah
                                     </>
                                   ) : (
-                                    <span>Muka Sudah Terdaftar</span>
+                                    <span>Wajah Sudah Terdaftar</span>
                                   )}
                                 </Dropdown.Item>
                               )}
@@ -400,6 +428,7 @@ const Users = () => {
                     key={index}
                     active={index + 1 === currentPage}
                     onClick={() => paginate(index + 1)}
+                    style={{ backgroundColor: warna.warna_secondary }}
                   >
                     {index + 1}
                   </Pagination.Item>
