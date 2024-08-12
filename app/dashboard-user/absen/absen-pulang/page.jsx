@@ -255,7 +255,7 @@ const FaceComparison = () => {
           </button>
           {similarity && (
             <p className="text-danger font-weight-bold mt-3">
-              Kemiripan wajah : <span className="text-primary">{similarity}%</span>
+              Absen pulang berhasil !
             </p>
           )}
           {!isAfterFour && showReasonField && (

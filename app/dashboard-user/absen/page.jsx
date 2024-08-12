@@ -145,7 +145,7 @@ const FaceComparison = () => {
         alert(`Gagal absen: ${error.response?.data?.msg || error.message}`);
       }
     } else {
-      setSimilarity("Tidak dapat mendeteksi wajah atau kemiripan di bawah 60");
+      setSimilarity("Wajah tidak dikenali");
     }
 
     setIsSubmitting(false); // Mengaktifkan kembali tombol setelah proses selesai
