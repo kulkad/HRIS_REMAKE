@@ -238,6 +238,11 @@ const Users = () => {
     ),
   ]; // Dapatkan peran unik
 
+  const dropdownStyle = {
+    backgroundColor: warna.warna_primary,
+    borderColor: warna.warna_primary,
+  };
+
   return (
     <Fragment>
       <div
@@ -266,20 +271,15 @@ const Users = () => {
                 )}
               </div>
             </div>
-            <style jsx>{`
-              .custom-dropdown-button {
-                background-color: ${warna.warna_primary} !important;
-                border-color: ${warna.warna_primary} !important;
-              }
-            `}</style>
           </Col>
           <Col lg={12} md={12} xs={12}>
             <Form className="d-flex justify-content-end my-3">
               <DropdownButton
-                className="custom-dropdown-button"
                 id="dropdown-role-selector"
                 title={role === "All" ? "Semua" : role}
                 onSelect={handleRoleSelect}
+                style={dropdownStyle}
+                className="custom-dropdown-button"
               >
                 <Dropdown.Item eventKey="All">Semua</Dropdown.Item>
                 {roles.map((role, index) => (
@@ -331,7 +331,7 @@ const Users = () => {
                                 href={`/pages/user/register/${user.id}?role=${
                                   user.role ? user.role.nama_role : ""
                                 }`}
-                                className="btn btn-primary me-2 d-flex align-items-center justify-content-center"
+                                className="btn btn-success me-2 d-flex align-items-center justify-content-center"
                               >
                                 {user.url_foto_absen == null ? (
                                   <>
@@ -385,7 +385,7 @@ const Users = () => {
 
                             <Dropdown.Menu>
                               <Dropdown.Item
-                                className="text-white"
+                                className="text-dark"
                                 href={`/pages/user/detailuser/${user.id}`}
                               >
                                 <PersonVcard className="me-2" /> Detail

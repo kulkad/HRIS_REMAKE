@@ -284,12 +284,6 @@ const HomePage = () => {
         <Row className="my-6">
           <Col xl={6} lg={12} md={12} xs={12} className="mb-6 mb-xl-0">
             {/* Teams  */}
-            <Teams />
-          </Col>
-          {/* card  */}
-          <Col xl={6} lg={12} md={12} xs={12}>
-            {/* Teams  */}
-            <Teams />
           </Col>
         </Row>
       </Container>

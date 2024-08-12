@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 
@@ -53,6 +53,24 @@ const Settings = () => {
     if (type === "secondary") setWarna_secondary(color);
     if (type === "sidebar") setWarna_sidebar(color);
   };
+
+    // Untuk mengganti warna dari database
+	const [data, setData] = useState({});
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+	  const fetchSettings = async () => {
+		try {
+		  const response = await axios.get("http://localhost:5001/settings/1");
+		  setData(response.data);
+		} catch (error) {
+		  console.error("Error fetching Settings:", error);
+		} finally {
+		  setLoading(false);
+		}
+	  };
+	  fetchSettings();
+	}, []);
 
   return (
     <div className="settings-container">
@@ -110,7 +128,7 @@ const Settings = () => {
             onChange={(e) => setNama_perusahaan(e.target.value)}
           />
         </div>
-        <button type="submit" className="btn-save">
+        <button type="submit" className="btn-save" style={{ backgroundColor: data.warna_secondary }}>
           Save Changes
         </button>
       </form>
