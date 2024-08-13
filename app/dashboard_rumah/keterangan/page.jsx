@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { Navbar, Nav, Container } from "react-bootstrap";
 import axios from "axios";
 import moment from "moment"; // Import moment.js untuk mempermudah manipulasi tanggal
@@ -8,7 +9,7 @@ import moment from "moment"; // Import moment.js untuk mempermudah manipulasi ta
 const WebinarCard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [user, setUser] = useState(null);
+  const [ user, setUser] = useState(null);
   const [absenHariIni, setAbsenHariIni] = useState(null);
 
   // Ambil data user dari local storage
@@ -72,11 +73,27 @@ const WebinarCard = () => {
             </Nav>
           </Navbar.Collapse>
         </Container>
+        <div>
+        <Link href="/authentication/logout">
+          <button
+            style={{
+              backgroundColor: "red",
+              color: "white",
+              padding: "10px 20px",
+              marginRight: "20px",
+              border: "none",
+              borderRadius: "5px",
+            }}
+          >
+            Logout
+          </button>
+        </Link>
+      </div>
       </Navbar>
 
       <section className="py-6">
         <div className="container">
-          <div className="row">
+          <div className="row justify-content-center">
             <div className="col-xxl-3 col-xl-4 col-lg-6">
               <div className="card mb-4 mb-xl-0 card-hover border">
                 <div className="card-body">
@@ -86,9 +103,9 @@ const WebinarCard = () => {
                     <p>Error: {error}</p>
                   ) : (
                     <>
-                      <h3 className="mb-4 text-truncate">
+                      <h3 className="mb-4 text-center">
                         <img 
-                          src={`http://localhost:5001/${user.image}` || "/images/assets/gmt-ultra-full-extra-hd.png"} 
+                          src={user.url} 
                           className="img-fluid w-6 h-12 rounded-top-3 mb-4" 
                           alt="Profile"
                         />

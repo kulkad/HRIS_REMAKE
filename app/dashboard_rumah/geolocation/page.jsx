@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import Webcam from "react-webcam";
 import { FaRegImage } from "react-icons/fa6";
 import Swal from "sweetalert2";
@@ -198,6 +199,22 @@ export default function Capture({ userName }) {
             </Nav>
           </Navbar.Collapse>
         </Container>
+        <div>
+        <Link href="/authentication/logout">
+          <button
+            style={{
+              backgroundColor: "red",
+              color: "white",
+              padding: "10px 20px",
+              marginRight: "20px",
+              border: "none",
+              borderRadius: "5px",
+            }}
+          >
+            Logout
+          </button>
+        </Link>
+      </div>
       </Navbar>
 
       <div className="container min-vh-100 d-flex flex-column align-items-center justify-content-center bg-light dark:bg-dark">

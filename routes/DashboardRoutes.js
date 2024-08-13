@@ -87,6 +87,18 @@ export const DashboardMenu = [{
     },
     {
         id: uuid(),
+        title: 'hari libur',
+        grouptitle: true
+    },
+
+    {
+        id: uuid(),
+        title: 'Hari Libur',
+        icon: <FaUserXmark  style={{ marginRight: '6px' }} />,
+        link: '/pages/hari-libur'
+    },
+    {
+        id: uuid(),
         title: 'Settings',
         grouptitle: true
     },
