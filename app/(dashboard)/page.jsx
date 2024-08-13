@@ -22,8 +22,14 @@ import ProjectsStatsData from "data/dashboard/ProjectsStatsData";
 const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]); // State to store all users
+  const [absens, setAbsens] = useState([]); // State to store all absens
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
+  const [absenHariIni, setAbsenHariIni] = useState({
+    hadir: 0,
+    tidakHadir: 0,
+    persentaseKehadiran: 0
+  });
 
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -65,6 +71,40 @@ const HomePage = () => {
 
   useEffect(() => {
     fetchUsers();
+  }, []);
+
+  const fetchAbsens = async () => {
+    try {
+      const response = await axios.get("http://localhost:5001/absens");
+      setAbsens(response.data); // Update state with fetched absens
+      hitungAbsenHariIni(response.data);
+    } catch (error) {
+      console.error("Error fetching absens:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const hitungAbsenHariIni = (dataAbsen) => {
+    const today = new Date().toISOString().split('T')[0];
+    const absenHariIni = dataAbsen.filter(absen => absen.tanggal === today);
+    
+    const hadir = absenHariIni.filter(absen => absen.keterangan === 'Hadir').length;
+    const tidakHadir = absenHariIni.filter(absen => 
+      ['Alpha', 'Sakit', 'Izin'].includes(absen.keterangan)).length;
+    const totalAbsen = absenHariIni.length;
+    
+    const persentaseKehadiran = totalAbsen > 0 ? (hadir / totalAbsen) * 100 : 0;
+
+    setAbsenHariIni({
+      hadir,
+      tidakHadir,
+      persentaseKehadiran: persentaseKehadiran.toFixed(2)
+    });
+  };
+
+  useEffect(() => {
+    fetchAbsens();
   }, []);
 
   if (loading) {
@@ -116,12 +156,6 @@ const HomePage = () => {
                       </div>
                     </div>
                   </div>
-                  <p class="mt-3 mb-0 text-sm">
-                    <span class="text-success mr-2">
-                      <i class="fa fa-arrow-up"></i> 100%
-                    </span>
-                    <span class="text-nowrap"> Bulan Ini </span>
-                  </p>
                 </div>
               </div>
             </div>
@@ -134,14 +168,13 @@ const HomePage = () => {
                       <h5 class="card-title text-uppercase text-muted mb-0">
                         Hadir
                       </h5>
-                      <span class="h2 font-weight-bold mb-0">5</span>
+                      <span class="h2 font-weight-bold mb-0">
+                        {absenHariIni.hadir}
+                      </span>
                     </div>
                   </div>
                   <p class="mt-3 mb-0 text-sm">
-                    <span class="text-danger mr-2">
-                      <i class="fa fa-arrow-down"></i> 5%
-                    </span>
-                    <span class="text-nowrap"> Bulan Ini </span>
+                    <span class="text-nowrap">Hari Ini</span>
                   </p>
                 </div>
               </div>
@@ -155,19 +188,11 @@ const HomePage = () => {
                       <h5 class="card-title text-uppercase text-muted mb-0">
                         Tidak Hadir
                       </h5>
-                      <span class="h2 font-weight-bold mb-0">5</span>
-                    </div>
-                    <div class="col-auto">
-                      <div class="icon icon-shape bg-gradient-green text-white rounded-circle shadow">
-                        <i class="ni ni-money-coins"></i>
-                      </div>
+                      <span class="h2 font-weight-bold mb-0">{absenHariIni.tidakHadir}</span>
                     </div>
                   </div>
                   <p class="mt-3 mb-0 text-sm">
-                    <span class="text-danger mr-2">
-                      <i class="fa fa-arrow-up"></i> 5%
-                    </span>
-                    <span class="text-nowrap"> Bulan Ini</span>
+                    <span class="text-nowrap">Hari Ini</span>
                   </p>
                 </div>
               </div>
@@ -181,19 +206,11 @@ const HomePage = () => {
                       <h5 class="card-title text-uppercase text-muted mb-0">
                         Kehadiran
                       </h5>
-                      <span class="h2 font-weight-bold mb-0">95%</span>
-                    </div>
-                    <div class="col-auto">
-                      <div class="icon icon-shape bg-gradient-info text-white rounded-circle shadow">
-                        <i class="ni ni-chart-bar-32"></i>
-                      </div>
+                      <span class="h2 font-weight-bold mb-0">{absenHariIni.persentaseKehadiran}%</span>
                     </div>
                   </div>
                   <p class="mt-3 mb-0 text-sm">
-                    <span class="text-danger mr-2">
-                      <i class="fa fa-arrow-down"></i> 5%
-                    </span>
-                    <span class="text-nowrap"> Bulan Ini</span>
+                    <span class="text-nowrap">Hari Ini</span>
                   </p>
                 </div>
               </div>

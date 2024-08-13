@@ -21,22 +21,22 @@ const DataAbsen = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-      // Untuk mengganti warna dari database
-      const [warna, setWarna] = useState({});
+  // Untuk mengganti warna dari database
+  const [warna, setWarna] = useState({});
 
-      useEffect(() => {
-          const fetchSettings = async () => {
-              try {
-                  const response = await axios.get("http://localhost:5001/settings/1");
-                  setWarna(response.data);
-              } catch (error) {
-                  console.error("Error fetching Settings:", error);
-              } finally {
-                  setLoading(false);
-              }
-          };
-          fetchSettings();
-      }, []);
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/settings/1");
+        setWarna(response.data);
+      } catch (error) {
+        console.error("Error fetching Settings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -52,6 +52,7 @@ const DataAbsen = () => {
       try {
         const response = await axios.get("http://localhost:5001/absens");
         setData(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching absens:", error);
       } finally {
@@ -64,7 +65,7 @@ const DataAbsen = () => {
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
-  
+
   const handleRoleChange = (e) => {
     setSelectedRole(e.target.value);
   };
@@ -74,9 +75,14 @@ const DataAbsen = () => {
   };
 
   const filteredData = data.filter((item) => {
-    const matchesName = item.user && item.user.name && item.user.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesName =
+      item.user &&
+      item.user.name &&
+      item.user.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesRole = selectedRole === "" || item.user.role === selectedRole;
-    const matchesDate = searchDate === "" || format(new Date(item.tanggal), 'yyyy-MM-dd') === searchDate;
+    const matchesDate =
+      searchDate === "" ||
+      format(new Date(item.tanggal), "yyyy-MM-dd") === searchDate;
     return matchesName && matchesRole && matchesDate;
   });
 
@@ -104,7 +110,10 @@ const DataAbsen = () => {
 
   return (
     <Fragment>
-      <div className="pt-10 pb-21" style={{ backgroundColor: warna.warna_secondary}}></div>
+      <div
+        className="pt-10 pb-21"
+        style={{ backgroundColor: warna.warna_secondary }}
+      ></div>
       <Container fluid className="mt-n22 px-6">
         <Row>
           <Col lg={12} md={12} xs={12}>
@@ -117,7 +126,7 @@ const DataAbsen = () => {
               </div>
             </div>
           </Col>
-  
+
           <div className="card container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
             {/* Search and Filter Inputs */}
             <div className="d-flex justify-content-between mb-3">
@@ -157,6 +166,9 @@ const DataAbsen = () => {
                     <th>Role</th>
                     <th>Tanggal</th>
                     <th>Waktu</th>
+                    <th>Keterangan</th>
+                    <th>Keterangan tidak berangkat</th>
+                    <th>Alasan tidak berangkat</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -174,10 +186,15 @@ const DataAbsen = () => {
                           <b>{item.user.name}</b>
                         </td>
                         <td>
-                          <span className="text-muted">{item.user.role.nama_role}</span>
+                          <span className="text-muted">
+                            {item.user.role.nama_role}
+                          </span>
                         </td>
                         <td>{item.tanggal}</td>
                         <td>{item.waktu_datang}</td>
+                        <td>{item.keterangan}</td>
+                        <td>{item.url_foto}</td>
+                        <td>{item.alasan}</td>
                       </tr>
                     ))
                   )}
@@ -187,8 +204,14 @@ const DataAbsen = () => {
             {/* Pagination */}
             <div className="d-flex justify-content-center mt-4">
               <Pagination>
-                <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
-                <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
+                <Pagination.First
+                  onClick={() => handlePageChange(1)}
+                  disabled={currentPage === 1}
+                />
+                <Pagination.Prev
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                />
                 {[...Array(totalPages)].map((_, pageIndex) => (
                   <Pagination.Item
                     key={pageIndex + 1}
@@ -198,8 +221,14 @@ const DataAbsen = () => {
                     {pageIndex + 1}
                   </Pagination.Item>
                 ))}
-                <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
-                <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
+                <Pagination.Next
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                />
+                <Pagination.Last
+                  onClick={() => handlePageChange(totalPages)}
+                  disabled={currentPage === totalPages}
+                />
               </Pagination>
             </div>
           </div>
