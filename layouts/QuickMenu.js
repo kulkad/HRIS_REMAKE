@@ -20,55 +20,66 @@ const QuickMenu = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [userOne, setUserOne] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserData = () => {
-      const userData = localStorage.getItem("user");
-      if (userData) {
-        setUser(JSON.parse(userData));
+    const fetchUserData = async () => {
+      try {
+        const userData = JSON.parse(localStorage.getItem("user"));
+        if (userData && userData.id) {
+          const response = await axios.get(`http://localhost:5001/users/${userData.id}`);
+          setUser(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
+    };
+  
+    fetchUserData();
+  }, []);
+
+  // // Update photo URL to ensure fresh data
+  // const getProfileImageUrl = () => {
+  //   const userData = localStorage.getItem("user");
+  //   if (userData) {
+  //     const parsedUser = JSON.parse(userData);
+  //     return parsedUser.url
+  //       ? `${parsedUser.url}?t=${new Date().getTime()}`
+  //       : "/images/assets/gmt-ultra-full-extra-hd.png";
+  //   }
+  //   return "/images/assets/gmt-ultra-full-extra-hd.png";
+  // };
+
+  // const [profileImageUrl, setProfileImageUrl] = useState(getProfileImageUrl());
+
+  // useEffect(() => {
+  //   const updateProfileImage = () => {
+  //     setProfileImageUrl(getProfileImageUrl());
+  //   };
+
+  //   // Simulate fetching user data every few seconds
+  //   const intervalId = setInterval(updateProfileImage, 3000);
+
+  //   return () => clearInterval(intervalId);
+  // }, []);
+
+  useEffect(() => {
+
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5001/users/${userOne.id}`);
+        setUser(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
     };
 
     fetchUserData();
-
-    const handleStorageChange = () => {
-      fetchUserData();
-      setProfileImageUrl(getProfileImageUrl()); // Update profile image URL on storage change
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
-
-  // Update photo URL to ensure fresh data
-  const getProfileImageUrl = () => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      const parsedUser = JSON.parse(userData);
-      return parsedUser.url
-        ? `${parsedUser.url}?t=${new Date().getTime()}`
-        : "/images/assets/gmt-ultra-full-extra-hd.png";
-    }
-    return "/images/assets/gmt-ultra-full-extra-hd.png";
-  };
-
-  const [profileImageUrl, setProfileImageUrl] = useState(getProfileImageUrl());
-
-  useEffect(() => {
-    const updateProfileImage = () => {
-      setProfileImageUrl(getProfileImageUrl());
-    };
-
-    // Simulate fetching user data every few seconds
-    const intervalId = setInterval(updateProfileImage, 3000);
-
-    return () => clearInterval(intervalId);
-  }, []);
+  });
 
   const toggleProfile = () => {
     setIsProfileOpen(!isProfileOpen);
@@ -144,7 +155,7 @@ const QuickMenu = () => {
             <div className="avatar avatar-md avatar-indicators avatar-online">
               <Image
                 alt="avatar"
-                src={profileImageUrl}
+                src={user?.url}
                 className="rounded-circle"
               />
             </div>
@@ -163,7 +174,7 @@ const QuickMenu = () => {
               <div className="lh-1 d-flex align-items-center">
                 <Image
                   alt="avatar"
-                  src={profileImageUrl}
+                  src={user?.url}
                   className="rounded-circle me-2"
                   style={{ width: "30px", height: "30px" }}
                 />
@@ -215,7 +226,7 @@ const QuickMenu = () => {
             <div className="avatar avatar-md avatar-indicators avatar-online">
               <Image
                 alt="avatar"
-                src={profileImageUrl}
+                src={user?.url}
                 className="rounded-circle"
               />
             </div>
@@ -234,7 +245,7 @@ const QuickMenu = () => {
               <div className="lh-1 d-flex align-items-center">
                 <Image
                   alt="avatar"
-                  src={profileImageUrl}
+                  src={user?.url}
                   className="rounded-circle me-2"
                   style={{ width: "30px", height: "30px" }}
                 />

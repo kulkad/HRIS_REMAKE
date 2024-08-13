@@ -76,7 +76,9 @@ const Users = () => {
     setConfPassword("");
     setFile("");
     setPreview("");
+    setRoleId(null); // Reset roleId setelah modal ditutup
   };
+  
 
   const loadImage = (e) => {
     const image = e.target.files[0];
@@ -90,33 +92,44 @@ const Users = () => {
     formData.append("file", file);
     formData.append("name", name);
     formData.append("email", email);
-    formData.append("roleId", roleId); // Gunakan roleId
+    formData.append("roleId", roleId);
     formData.append("password", password);
     formData.append("confPassword", confPassword);
-
+  
     if (password !== confPassword) {
       alert("Password dan Konfirmasi Password Tidak Cocok");
       return;
     }
-
+  
     try {
-      await axios.post("http://localhost:5001/users", formData, {
+      const response = await axios.post("http://localhost:5001/users", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+  
+      // Menambahkan user baru ke state usersByRole dan filteredUsers
+      const newUser = response.data;
+      setUsersByRole((prevUsers) => [...prevUsers, newUser]);
+      setFilteredUsers((prevUsers) => [...prevUsers, newUser]);
+  
       Swal.fire({
         title: "Berhasil!",
-        text: "Berhasil menambahkan !",
+        text: "Berhasil menambahkan user baru!",
         icon: "success",
-      }).then(() => {
-        // Pindah halaman setelah alert ditutup
-        window.location.reload();
       });
+  
+      closeCreateModal();
     } catch (error) {
-      console.log(error);
+      console.error("Error creating user:", error);
+      Swal.fire({
+        title: "Error!",
+        text: `Error creating user: ${error.message}`,
+        icon: "error",
+      });
     }
   };
+  
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -168,10 +181,12 @@ const Users = () => {
 
   useEffect(() => {
     const filtered = usersByRole.filter((user) =>
-      user.name.toLowerCase().includes(searchQuery.toLowerCase())
+      user?.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredUsers(filtered);
   }, [searchQuery, usersByRole]);
+  
+  
 
   if (!user) {
     return (
@@ -193,22 +208,26 @@ const Users = () => {
 
   const confirmDelete = async (userId) => {
     Swal.fire({
-      title: "Apakah kamu yakin ingin menghapus ?",
-      text: "User yang dihapus tidak akan bisa dikembalikan !",
+      title: "Apakah kamu yakin ingin menghapus?",
+      text: "User yang dihapus tidak akan bisa dikembalikan!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Lanjutkan !",
+      confirmButtonText: "Lanjutkan!",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           await axios.delete(`http://localhost:5001/users/${userId}`);
-          const response = await axios.get(`http://localhost:5001/roles/`, {
-            withCredentials: true,
-          });
-          setUsersByRole(response.data);
-          setSuccessMessage("User berhasil dihapus.");
+          
+          // Hapus user dari state usersByRole
+          const updatedUsers = usersByRole.filter((user) => user.id !== userId);
+          setUsersByRole(updatedUsers);
+  
+          // Hapus user dari state filteredUsers juga
+          const updatedFilteredUsers = filteredUsers.filter((user) => user.id !== userId);
+          setFilteredUsers(updatedFilteredUsers);
+          
           Swal.fire({
             title: "Deleted!",
             text: "User telah berhasil dihapus!.",
@@ -216,10 +235,16 @@ const Users = () => {
           });
         } catch (error) {
           console.error("Error deleting user:", error.message);
+          Swal.fire({
+            title: "Error!",
+            text: `Error deleting user: ${error.message}`,
+            icon: "error",
+          });
         }
       }
     });
   };
+  
 
   const handleRoleSelect = (selectedRole) => {
     setRole(selectedRole);

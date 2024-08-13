@@ -29,32 +29,33 @@ const Users = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
   const [role, setRole] = useState("All");
-  const [roleId, setRoleId] = useState(null); // Added state for roleId
+  const [roleId, setRoleId] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false); // Tambahkan state untuk showEditModal
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const [nama_role, setNama_role] = useState("");
   const [jam_pulang, setJam_pulang] = useState("");
   const [denda, setDenda] = useState("");
   
-  // Untuk mengganti warna dari database
   const [data, setData] = useState({});
   const [loading, setLoading] = useState("");
 
-    useEffect(() => {
-        const fetchSettings = async () => {
-            try {
-                const response = await axios.get("http://localhost:5001/settings/1");
-                setData(response.data);
-            } catch (error) {
-                console.error("Error fetching Settings:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchSettings();
-    }, []);
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/settings/1");
+        setData(response.data);
+      } catch (error) {
+        console.error("Error fetching Settings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -87,63 +88,62 @@ const Users = () => {
     setRoleId(null);
   };
 
-  const loadImage = (e) => {
-    const image = e.target.files[0];
-    setFile(image);
-    setPreview(URL.createObjectURL(image));
-  };
-
   const saveData = async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("nama_role", nama_role);
     formData.append("jam_pulang", jam_pulang);
     formData.append("denda_telat", denda);
-
+  
     try {
-      await axios.post("http://localhost:5001/roles", formData, {
+      const response = await axios.post("http://localhost:5001/roles", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      setRoles(prevRoles => [...prevRoles, response.data]);
+      setFilteredUsers(prevUsers => [...prevUsers, response.data]); // Update filteredUsers
       Swal.fire({
         title: "Berhasil!",
-        text: "Berhasil menambahkan !",
+        text: "Berhasil menambahkan!",
         icon: "success",
-      }).then(() => {
-        // Pindah halaman setelah alert ditutup
-        window.location.reload();
       });
+      closeCreateModal();
     } catch (error) {
       console.log(error);
     }
   };
-
+  
   const updateData = async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("nama_role", nama_role);
     formData.append("jam_pulang", jam_pulang);
     formData.append("denda_telat", denda);
-
+  
     try {
       await axios.patch(`http://localhost:5001/roles/${roleId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      setRoles(prevRoles => prevRoles.map(role =>
+        role.id === roleId ? { ...role, nama_role, jam_pulang, denda_telat: denda } : role
+      ));
+      setFilteredUsers(prevUsers => prevUsers.map(role =>
+        role.id === roleId ? { ...role, nama_role, jam_pulang, denda_telat: denda } : role
+      )); // Update filteredUsers
       Swal.fire({
         title: "Berhasil!",
-        text: "Berhasil mengupdate !",
+        text: "Berhasil mengupdate!",
         icon: "success",
-      }).then(() => {
-        // Pindah halaman setelah alert ditutup
-        window.location.reload();
       });
+      closeEditModal();
     } catch (error) {
       console.log(error);
     }
   };
+  
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -160,8 +160,8 @@ const Users = () => {
         const response = await axios.get("http://localhost:5001/roles", {
           withCredentials: true,
         });
-        //console.log(response.data);
         setRoles(response.data);
+        setFilteredUsers(response.data);
       } catch (error) {
         console.error("Error fetching users:", error.message);
         Swal.fire({
@@ -175,13 +175,6 @@ const Users = () => {
     fetchUsersByRole();
   }, []);
 
-  // useEffect(() => {
-  //   const filtered = usersByRole.filter((user) =>
-  //     user.name.toLowerCase().includes(searchQuery.toLowerCase())
-  //   );
-  //   setFilteredUsers(filtered);
-  // }, [searchQuery, usersByRole]);
-
   if (!user) {
     return (
       <div className="w-full bg-white dark:bg-slate-900 dark:text-white max-w-md mx-auto rounded-lg shadow-md overflow-hidden md:max-w-2xl p-4">
@@ -193,7 +186,7 @@ const Users = () => {
       </div>
     );
   }
-
+  
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
@@ -213,21 +206,12 @@ const Users = () => {
       if (result.isConfirmed) {
         try {
           await axios.delete(`http://localhost:5001/roles/${id}`);
-          const response = await axios.get(
-            `http://localhost:5001/roles`,
-            {
-              withCredentials: true,
-            }
-          );
-          setRoles(response.data);
-          setSuccessMessage("User berhasil dihapus.");
+          setRoles(prevRoles => prevRoles.filter(role => role.id !== id));
+          setFilteredUsers(prevUsers => prevUsers.filter(role => role.id !== id)); // Update filteredUsers
           Swal.fire({
             title: "Deleted!",
             text: "User telah berhasil dihapus!.",
             icon: "success",
-          }).then(() => {
-            // Pindah halaman setelah alert ditutup
-            window.location.reload();
           });
         } catch (error) {
           console.error("Error deleting user:", error.message);
@@ -235,14 +219,6 @@ const Users = () => {
       }
     });
   };
-
-  // const handleRoleSelect = (selectedRole) => {
-  //   setRole(selectedRole);
-  //   const selectedRoleId =
-  //     usersByRole.find((user) => user.role.nama_role === selectedRole)
-  //       ?.roleId || null;
-  //   setRoleId(selectedRoleId);
-  // };
 
   return (
     <Fragment>
@@ -254,13 +230,6 @@ const Users = () => {
               <div className="mb-2 mb-lg-0">
                 <h3 className="mb-0 text-white">Role</h3>
               </div>
-              {/* <input
-                type="text"
-                placeholder="Cari Role"
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className="form-control w-25"
-              /> */}
               <div>
                 <Button onClick={openCreateModal} className="btn btn-white">
                   Tambah Role
@@ -269,22 +238,6 @@ const Users = () => {
             </div>
           </Col>
           <Col lg={12} md={12} xs={12}>
-            {/* <Form className="d-flex justify-content-end my-3">
-              <DropdownButton
-                id="dropdown-role-selector"
-                title={role === "All" ? "Semua" : role}
-                onSelect={handleRoleSelect}
-              >
-                <Dropdown.Item eventKey="All">Semua</Dropdown.Item>
-                {usersByRole.map((user, index) =>
-                  user.role && user.role.nama_role ? (
-                    <Dropdown.Item key={index} eventKey={user.role.nama_role}>
-                      {user.role.nama_role}
-                    </Dropdown.Item>
-                  ) : null
-                )}
-              </DropdownButton>
-            </Form> */}
             <div className="bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
               {successMessage && (
                 <p className="text-green-600">{successMessage}</p>
@@ -303,7 +256,7 @@ const Users = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {roles.map((role) => (
+                      {currentUsers.map((role) => (
                         <tr key={role.id}>
                           <td>{role.nama_role}</td>
                           <td>{role.jam_pulang}</td>
@@ -369,7 +322,7 @@ const Users = () => {
 
               <Pagination className="d-flex justify-content-center mt-4">
                 {Array.from({
-                  length: Math.ceil(roles.length / usersPerPage),
+                  length: Math.ceil(filteredUsers.length / usersPerPage),
                 }).map((_, index) => (
                   <Pagination.Item
                     key={index}

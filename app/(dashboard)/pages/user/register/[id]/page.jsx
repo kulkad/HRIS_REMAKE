@@ -77,7 +77,7 @@ const DaftarAbsen = () => {
         icon: "success"
       }).then(() => {
         // Pindah halaman setelah alert ditutup
-        window.location.href = "/";
+        window.location.href = "/pages/user/users";
       });
     } catch (error) {
       console.error("Error submitting data:", error.message);

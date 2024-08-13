@@ -55,7 +55,7 @@ const DetailUser = () => {
                     </Link>
                   </td>
                   <td>{user.name}</td>
-                  <td>{user.role}</td>
+                  <td>{user.roleId}</td>
                   <td>{user.email}</td>
                 </tr>
               ))}
