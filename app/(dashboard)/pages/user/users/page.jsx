@@ -329,6 +329,7 @@ const Users = () => {
                         <th>Nama</th>
                         <th>Email</th>
                         <th>Role</th>
+                        <th>Status</th>
                         <th>Aksi</th>
                       </tr>
                     </thead>
@@ -342,6 +343,8 @@ const Users = () => {
                               ? user.role.nama_role
                               : "Role tidak tersedia"}
                           </td>
+                          
+                          <td>{user.status}</td>
                           <td className="d-flex justify-content-center">
                             <Link
                               href={`/pages/user/detailuser/${user.id}`}

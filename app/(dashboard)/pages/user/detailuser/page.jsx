@@ -35,8 +35,9 @@ const DetailUser = () => {
               <tr>
                 <th scope="col">Foto</th>
                 <th scope="col">Nama</th>
-                <th scope="col">Role</th>
                 <th scope="col">Email</th>
+                <th scope="col">Role</th>
+                <th scope="col">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -55,8 +56,9 @@ const DetailUser = () => {
                     </Link>
                   </td>
                   <td>{user.name}</td>
-                  <td>{user.roleId}</td>
                   <td>{user.email}</td>
+                  <td>{user.roleId}</td>
+                  <td>{user.status}</td>
                 </tr>
               ))}
             </tbody>
