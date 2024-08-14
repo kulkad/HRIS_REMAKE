@@ -67,7 +67,7 @@ const EditFotoProfile = () => {
         text: "Foto profil berhasil diperbarui!",
         icon: "success"
       }).then(() => {
-        window.location.href = "/";
+        window.location.href = "/pages/user/users";
       });
     } catch (error) {
       console.error("Error details:", error);

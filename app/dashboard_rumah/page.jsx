@@ -57,7 +57,6 @@ const DashboardUser = () => {
           <Nav className="mx-auto">
             <Nav.Link href="/dashboard_rumah/geolocation">Geolocation</Nav.Link>
             <Nav.Link href="/dashboard_rumah/keterangan">
-              <Kbd></Kbd>eterangan
             </Nav.Link>
           </Nav>
         </Navbar.Collapse>
