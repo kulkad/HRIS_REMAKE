@@ -78,7 +78,6 @@ const Users = () => {
     setPreview("");
     setRoleId(null); // Reset roleId setelah modal ditutup
   };
-  
 
   const loadImage = (e) => {
     const image = e.target.files[0];
@@ -95,31 +94,37 @@ const Users = () => {
     formData.append("roleId", roleId);
     formData.append("password", password);
     formData.append("confPassword", confPassword);
-  
+
     if (password !== confPassword) {
       alert("Password dan Konfirmasi Password Tidak Cocok");
       return;
     }
-  
+
     try {
-      const response = await axios.post("http://localhost:5001/users", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-  
+      const response = await axios.post(
+        "http://localhost:5001/users",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
       // Menambahkan user baru ke state usersByRole dan filteredUsers
       const newUser = response.data;
       setUsersByRole((prevUsers) => [...prevUsers, newUser]);
       setFilteredUsers((prevUsers) => [...prevUsers, newUser]);
-  
+
       Swal.fire({
         title: "Berhasil!",
         text: "Berhasil menambahkan user baru!",
         icon: "success",
       });
-  
+
       closeCreateModal();
+      fetchUsersByRole();
+      fetchRoles();
     } catch (error) {
       console.error("Error creating user:", error);
       Swal.fire({
@@ -129,7 +134,6 @@ const Users = () => {
       });
     }
   };
-  
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -140,42 +144,42 @@ const Users = () => {
     }
   }, []);
 
-  useEffect(() => {
-    const fetchUsersByRole = async () => {
-      try {
-        const endpoint =
-          role === "All"
-            ? "http://localhost:5001/users"
-            : `http://localhost:5001/userbyrole/${roleId}`; // Ganti dengan roleId
-        const response = await axios.get(endpoint, {
-          withCredentials: true,
-        });
-        setUsersByRole(response.data);
-      } catch (error) {
-        console.error("Error fetching users:", error.message);
-      }
-    };
+  const fetchUsersByRole = async () => {
+    try {
+      const endpoint =
+        role === "All"
+          ? "http://localhost:5001/users"
+          : `http://localhost:5001/userbyrole/${roleId}`; // Ganti dengan roleId
+      const response = await axios.get(endpoint, {
+        withCredentials: true,
+      });
+      setUsersByRole(response.data);
+    } catch (error) {
+      console.error("Error fetching users:", error.message);
+    }
+  };
 
+  useEffect(() => {
     fetchUsersByRole();
   }, [role, roleId]); // Tambahkan roleId ke dependencies
 
-  useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const response = await axios.get("http://localhost:5001/roles", {
-          withCredentials: true,
-        });
-        setRoles(response.data);
-      } catch (error) {
-        console.error("Error fetching roles:", error.message);
-        Swal.fire({
-          title: "Error!",
-          text: `Error fetching roles: ${error.message}`,
-          icon: "error",
-        });
-      }
-    };
+  const fetchRoles = async () => {
+    try {
+      const response = await axios.get("http://localhost:5001/roles", {
+        withCredentials: true,
+      });
+      setRoles(response.data);
+    } catch (error) {
+      console.error("Error fetching roles:", error.message);
+      Swal.fire({
+        title: "Error!",
+        text: `Error fetching roles: ${error.message}`,
+        icon: "error",
+      });
+    }
+  };
 
+  useEffect(() => {
     fetchRoles();
   }, []);
 
@@ -185,8 +189,6 @@ const Users = () => {
     );
     setFilteredUsers(filtered);
   }, [searchQuery, usersByRole]);
-  
-  
 
   if (!user) {
     return (
@@ -219,15 +221,19 @@ const Users = () => {
       if (result.isConfirmed) {
         try {
           await axios.delete(`http://localhost:5001/users/${userId}`);
-          
+
           // Hapus user dari state usersByRole
           const updatedUsers = usersByRole.filter((user) => user.id !== userId);
           setUsersByRole(updatedUsers);
-  
+
           // Hapus user dari state filteredUsers juga
-          const updatedFilteredUsers = filteredUsers.filter((user) => user.id !== userId);
+          const updatedFilteredUsers = filteredUsers.filter(
+            (user) => user.id !== userId
+          );
           setFilteredUsers(updatedFilteredUsers);
-          
+          fetchUsersByRole();
+          fetchRoles();
+
           Swal.fire({
             title: "Deleted!",
             text: "User telah berhasil dihapus!.",
@@ -244,7 +250,6 @@ const Users = () => {
       }
     });
   };
-  
 
   const handleRoleSelect = (selectedRole) => {
     setRole(selectedRole);
@@ -262,11 +267,6 @@ const Users = () => {
         : []
     ),
   ]; // Dapatkan peran unik
-
-  const dropdownStyle = {
-    backgroundColor: warna.warna_primary,
-    borderColor: warna.warna_primary,
-  };
 
   return (
     <Fragment>
@@ -303,7 +303,6 @@ const Users = () => {
                 id="dropdown-role-selector"
                 title={role === "All" ? "Semua" : role}
                 onSelect={handleRoleSelect}
-                style={dropdownStyle}
                 className="custom-dropdown-button"
               >
                 <Dropdown.Item eventKey="All">Semua</Dropdown.Item>
@@ -453,7 +452,6 @@ const Users = () => {
                     key={index}
                     active={index + 1 === currentPage}
                     onClick={() => paginate(index + 1)}
-                    style={{ backgroundColor: warna.warna_secondary }}
                   >
                     {index + 1}
                   </Pagination.Item>

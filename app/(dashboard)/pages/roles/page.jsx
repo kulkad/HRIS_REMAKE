@@ -22,7 +22,7 @@ import { EmojiSmile, TrashFill } from "react-bootstrap-icons";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import Swal from "sweetalert2";
 
-const Users = () => {
+const Roles = () => {
   const [user, setUser] = useState(null);
   const [roles, setRoles] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -109,6 +109,7 @@ const Users = () => {
         icon: "success",
       });
       closeCreateModal();
+      fetchRoles();
     } catch (error) {
       console.log(error);
     }
@@ -139,6 +140,7 @@ const Users = () => {
         icon: "success",
       });
       closeEditModal();
+      fetchRoles();
     } catch (error) {
       console.log(error);
     }
@@ -154,8 +156,7 @@ const Users = () => {
     }
   }, []);
 
-  useEffect(() => {
-    const fetchUsersByRole = async () => {
+    const fetchRoles = async () => {
       try {
         const response = await axios.get("http://localhost:5001/roles", {
           withCredentials: true,
@@ -172,8 +173,9 @@ const Users = () => {
       }
     };
 
-    fetchUsersByRole();
-  }, []);
+    useEffect(() => {
+      fetchRoles();
+    }, []);
 
   if (!user) {
     return (
@@ -413,4 +415,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default Roles;
