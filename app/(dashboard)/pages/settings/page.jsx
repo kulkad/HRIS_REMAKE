@@ -18,12 +18,15 @@ const Settings = () => {
   const [nama_perusahaan, setNama_perusahaan] = useState("");
 
   const [user, setUser] = useState([]); // untuk keamanan agar tidak bocor datanya
-  const userData = localStorage.getItem("user");
-  if (!userData) {
-    window.location.href = "http://localhost:3000/authentication/login";
-  } else {
-    setUser(JSON.parse(userData));
-  }
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (!userData) {
+      window.location.href = "http://localhost:3000/authentication/login";
+    } else {
+      setUser(JSON.parse(userData));
+    }
+  }, [])
 
   const updateSetting = async (e) => {
     e.preventDefault();

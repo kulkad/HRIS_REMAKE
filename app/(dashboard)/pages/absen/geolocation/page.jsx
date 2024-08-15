@@ -16,13 +16,14 @@ export default function Capture({ userName }) {
 
   const [user, setUser] = useState([]); // untuk keamanan agar tidak bocor datanya
   const userData = localStorage.getItem("user");
+    useEffect(() => {
   if (!userData) {
     window.location.href = "http://localhost:3000/authentication/login";
   } else {
     setUser(JSON.parse(userData));
   }
 
-  useEffect(() => {
+
     if (navigator.geolocation) {
       const options = {
         enableHighAccuracy: true,

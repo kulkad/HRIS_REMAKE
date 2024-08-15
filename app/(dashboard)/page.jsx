@@ -32,13 +32,6 @@ const HomePage = () => {
   const [data, setData] = useState({});
 
   const [user, setUser] = useState([]); // untuk keamanan agar tidak bocor datanya
-  const userData = localStorage.getItem("user");
-  if (!userData) {
-    window.location.href = "http://localhost:3000/authentication/login";
-  } else {
-    setUser(JSON.parse(userData));
-  }
-
 
     const fetchSettings = async () => {
       try {
@@ -131,6 +124,14 @@ const HomePage = () => {
     fetchSettings();
     fetchUsers();
     fetchAbsens();
+    
+    const userData = localStorage.getItem("user");
+    if (!userData) {
+      window.location.href = "http://localhost:3000/authentication/login";
+    } else {
+      setUser(JSON.parse(userData));
+    }
+  
   }, []);
 
   if (loading) {

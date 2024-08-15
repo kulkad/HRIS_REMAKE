@@ -33,6 +33,7 @@ const HariLibur = () => {
   const [loading, setLoading] = useState("");
 
   const [user, setUser] = useState([]); // untuk keamanan agar tidak bocor datanya
+  useEffect(() => {
   const userData = localStorage.getItem("user");
   if (!userData) {
     window.location.href = "http://localhost:3000/authentication/login";
@@ -50,7 +51,6 @@ const HariLibur = () => {
     }
   };
 
-  useEffect(() => {
     const fetchSettings = async () => {
       try {
         const response = await axios.get("http://localhost:5001/settings/1");
@@ -61,10 +61,9 @@ const HariLibur = () => {
         setLoading(false);
       }
     };
-    fetchSettings();
-  }, []);
+    
 
-  useEffect(() => {
+    fetchSettings();
     fetchData();
   }, []);
 
