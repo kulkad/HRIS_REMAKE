@@ -4,42 +4,43 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Navbar, Nav, Container } from "react-bootstrap";
 import axios from "axios";
-import moment from "moment"; // Import moment.js untuk mempermudah manipulasi tanggal
+import moment from "moment"; // Import moment.js for easier date manipulation
 
 const WebinarCard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [ user, setUser] = useState(null);
+  const [user, setUser] = useState(null);
   const [absenHariIni, setAbsenHariIni] = useState(null);
 
-  // Ambil data user dari local storage
+  // Retrieve user data from local storage
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://localhost:3000/login"; // Redirect ke login jika data user tidak ditemukan
+      window.location.href = "http://localhost:3000/login"; // Redirect to login if user data not found
     } else {
       setUser(JSON.parse(userData));
     }
   }, []);
 
-  // Fetch data absens dari API
+  // Fetch absens data from API
   useEffect(() => {
     const fetchAbsens = async () => {
       try {
         const response = await axios.get("http://localhost:5001/absens");
-        console.log(response.data); // Cek data yang diterima
+        console.log(response.data); // Check the received data
 
-        // Filter absensi berdasarkan user yang sedang login
-        const userAbsens = response.data.filter(absen => absen.userId === user.id);
-        
-        // Dapatkan tanggal hari ini dalam format yang sesuai dengan data di backend
+        // Filter absensi based on the logged-in user
+        const userAbsens = response.data.filter(
+          (absen) => absen.userId === user.id
+        );
+
+        // Get today's date in a format matching the backend data
         const today = moment().format("YYYY-MM-DD");
-        
-        // Cek apakah user sudah absen hari ini
-        const absenToday = userAbsens.find(absen => absen.tanggal === today);
-        
-        setAbsenHariIni(absenToday || null); // Simpan data absensi hari ini atau null jika belum absen
 
+        // Check if the user has already checked in today
+        const absenToday = userAbsens.find((absen) => absen.tanggal === today);
+
+        setAbsenHariIni(absenToday || null); // Save today's attendance data or null if not yet checked in
       } catch (error) {
         console.error("Error fetching absens:", error);
         setError("Failed to load attendance data.");
@@ -51,6 +52,23 @@ const WebinarCard = () => {
       fetchAbsens();
     }
   }, [user]);
+
+  // Determine the message based on keterangan
+  const getMessage = () => {
+    if (!absenHariIni) return "Anda belum absen hari ini.";
+    switch (absenHariIni.keterangan) {
+      case "Hadir":
+        return "Anda sudah absen hari ini.";
+      case "Alpha":
+        return "Anda alpha untuk hari ini.";
+      case "Sakit":
+        return "Anda sedang sakit, silahkan beristirahat untuk hari ini.";
+      case "Izin":
+        return "Anda sedang izin hari ini.";
+      default:
+        return "Status kehadiran tidak diketahui.";
+    }
+  };
 
   return (
     <>
@@ -67,28 +85,32 @@ const WebinarCard = () => {
               <Nav.Link href="/dashboard_rumah/geolocation" className="mx-3">
                 Geolocation
               </Nav.Link>
-              <Nav.Link href="/dashboard_rumah/keterangan" className="mx-3" active>
+              <Nav.Link
+                href="/dashboard_rumah/keterangan"
+                className="mx-3"
+                active
+              >
                 Keterangan
               </Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
         <div>
-        <Link href="/authentication/logout">
-          <button
-            style={{
-              backgroundColor: "red",
-              color: "white",
-              padding: "10px 20px",
-              marginRight: "20px",
-              border: "none",
-              borderRadius: "5px",
-            }}
-          >
-            Logout
-          </button>
-        </Link>
-      </div>
+          <Link href="/authentication/logout">
+            <button
+              style={{
+                backgroundColor: "red",
+                color: "white",
+                padding: "10px 20px",
+                marginRight: "20px",
+                border: "none",
+                borderRadius: "5px",
+              }}
+            >
+              Logout
+            </button>
+          </Link>
+        </div>
       </Navbar>
 
       <section className="py-6">
@@ -104,9 +126,9 @@ const WebinarCard = () => {
                   ) : (
                     <>
                       <h3 className="mb-4 text-center">
-                        <img 
-                          src={user.url} 
-                          className="img-fluid w-6 h-12 rounded-top-3 mb-4" 
+                        <img
+                          src={user.url}
+                          className="img-fluid w-6 h-12 rounded-top-3 mb-4"
                           alt="Profile"
                         />
                         <div className="text-inherit">{user?.name}</div>
@@ -116,18 +138,22 @@ const WebinarCard = () => {
                           <span className="me-1">
                             <i className="bi bi-calendar-check"></i>
                           </span>
-                          <span>{moment().format("dddd, MMMM Do YYYY")}</span> {/* Tampilkan tanggal hari ini */}
+                          <span>
+                            {moment().format("dddd, MMMM Do YYYY")}
+                          </span>{" "}
+                          {/* Show today's date */}
                         </div>
                         <div className="lh-1">
                           <span className="me-1">
                             <i className="bi bi-clock"></i>
                           </span>
-                          <span>{absenHariIni ? absenHariIni.waktu_datang : "Belum Absen"}</span> {/* Tampilkan waktu absen atau keterangan belum absen */}
+                          <span>
+                            {absenHariIni ? absenHariIni.waktu_datang : "Belum Absen"}
+                          </span>{" "}
+                          {/* Show check-in time or not checked in yet */}
                         </div>
                       </div>
-                      <p className="mt-4">
-                        {absenHariIni ? "Anda sudah absen hari ini." : "Anda belum absen hari ini."}
-                      </p>
+                      <p className="mt-4">{getMessage()}</p>
                     </>
                   )}
                 </div>

@@ -47,7 +47,7 @@ const Login = () => {
         router.push('/');
       } else {
         console.log("Redirecting to /dashboard-user");
-        router.push('/dashboard-user');
+        router.push('/dashboard_rumah');
       }
     
     } catch (err) {
