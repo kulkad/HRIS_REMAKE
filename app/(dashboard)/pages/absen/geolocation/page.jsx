@@ -9,20 +9,18 @@ import Compressor from "compressorjs";
 export default function Capture({ userName }) {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
-  const [user, setUser] = useState();
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [keterangan, setKeterangan] = useState("Izin");
   const [alasan, setAlasan] = useState("");
 
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (!userData) {
-      window.location.href = "http://localhost:3000/login";
-    } else {
-      setUser(JSON.parse(userData));
-    }
-  }, []);
+  const [user, setUser] = useState([]); // untuk keamanan agar tidak bocor datanya
+  const userData = localStorage.getItem("user");
+  if (!userData) {
+    window.location.href = "http://localhost:3000/authentication/login";
+  } else {
+    setUser(JSON.parse(userData));
+  }
 
   useEffect(() => {
     if (navigator.geolocation) {

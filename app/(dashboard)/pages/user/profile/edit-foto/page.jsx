@@ -20,7 +20,7 @@ const EditFotoProfile = () => {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://localhost:3000/login";
+      window.location.href = "http://localhost:3000/authentication/login";
     } else {
       const user = JSON.parse(userData);
       setUser(user);

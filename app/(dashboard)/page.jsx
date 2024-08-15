@@ -31,6 +31,14 @@ const HomePage = () => {
   // Untuk mengganti warna dari database
   const [data, setData] = useState({});
 
+  const [user, setUser] = useState([]); // untuk keamanan agar tidak bocor datanya
+  const userData = localStorage.getItem("user");
+  if (!userData) {
+    window.location.href = "http://localhost:3000/authentication/login";
+  } else {
+    setUser(JSON.parse(userData));
+  }
+
 
     const fetchSettings = async () => {
       try {
@@ -76,20 +84,22 @@ const HomePage = () => {
     const absenHariIni = absenHarian.filter(
       (absen) => absen.tanggal === todayAbsen
     );
-
+  
     const hadir = absenHariIni.filter(
       (absen) => absen.keterangan === "Hadir"
     ).length;
-
-    // Determine users who have not yet marked attendance
-    const tidakHadir = users.length - hadir;
-
+  
+    const tidakHadir = absenHariIni.filter(
+      (absen) =>
+        ["Sakit", "Izin", "Alpha"].includes(absen.keterangan)
+    ).length;
+  
     setAbsenHariIni({
       hadir,
       tidakHadir,
     });
   };
-
+  
   const hitungAbsenBulanIni = (dataAbsen) => {
     const today = new Date();
     const currentMonth = today.getMonth() + 1;
@@ -98,23 +108,24 @@ const HomePage = () => {
       const [year, month] = absen.tanggal.split("-");
       return parseInt(month) === currentMonth && parseInt(year) === currentYear;
     });
-
+  
     const hadir = absenBulanIni.filter((absen) => absen.keterangan === "Hadir")
       .length;
     const tidakHadir = absenBulanIni.filter((absen) =>
       ["Alpha", "Sakit", "Izin"].includes(absen.keterangan)
     ).length;
-    const totalUsers = users.length;
-
+    const totalAbsen = hadir + tidakHadir;
+  
     const persentaseKehadiran =
-      totalUsers > 0 ? (hadir / totalUsers) * 100 : 0;
-
+      totalAbsen > 0 ? (hadir / totalAbsen) * 100 : 0;
+  
     setAbsenBulanIni({
       hadir,
       tidakHadir,
       persentaseKehadiran: persentaseKehadiran.toFixed(2),
     });
   };
+  
 
   useEffect(() => {
     fetchSettings();

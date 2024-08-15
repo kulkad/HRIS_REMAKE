@@ -32,6 +32,14 @@ const HariLibur = () => {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState("");
 
+  const [user, setUser] = useState([]); // untuk keamanan agar tidak bocor datanya
+  const userData = localStorage.getItem("user");
+  if (!userData) {
+    window.location.href = "http://localhost:3000/authentication/login";
+  } else {
+    setUser(JSON.parse(userData));
+  }
+
   const fetchData = async () => {
     try {
       const response = await axios.get("http://localhost:5001/hari-libur");
