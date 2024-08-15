@@ -1,23 +1,12 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { Card, Table, Dropdown, Image, Pagination } from "react-bootstrap";
 import "react-loading-skeleton/dist/skeleton.css";
 // import node module libraries
 import { Fragment } from "react";
-import Link from "next/link";
 import { Container, Col, Row } from "react-bootstrap";
 import axios from "axios";
-
-// import widget/custom components
-import { StatRightTopIcon } from "widgets";
-
-// import sub components
-import { ActiveProjects, Teams, TasksPerformance } from "sub-components";
-
-// import required data files
-import ProjectsStatsData from "data/dashboard/ProjectsStatsData";
 
 const HomePage = () => {
   const [loading, setLoading] = useState(true);
@@ -25,10 +14,12 @@ const HomePage = () => {
   const [absens, setAbsens] = useState([]); // State to store all absens
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
+  const [absenBulanIni, setAbsenBulanIni] = useState({
+    persentaseKehadiran: 0,
+  });
   const [absenHariIni, setAbsenHariIni] = useState({
     hadir: 0,
     tidakHadir: 0,
-    persentaseKehadiran: 0
   });
 
   const indexOfLastUser = currentPage * usersPerPage;
@@ -40,19 +31,17 @@ const HomePage = () => {
   // Untuk mengganti warna dari database
   const [data, setData] = useState({});
 
-    useEffect(() => {
-        const fetchSettings = async () => {
-            try {
-                const response = await axios.get("http://localhost:5001/settings/1");
-                setData(response.data);
-            } catch (error) {
-                console.error("Error fetching Settings:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchSettings();
-    }, []);
+
+    const fetchSettings = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/settings/1");
+        setData(response.data);
+      } catch (error) {
+        console.error("Error fetching Settings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -69,14 +58,11 @@ const HomePage = () => {
     }
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
   const fetchAbsens = async () => {
     try {
       const response = await axios.get("http://localhost:5001/absens");
       setAbsens(response.data); // Update state with fetched absens
+      hitungAbsenBulanIni(response.data);
       hitungAbsenHariIni(response.data);
     } catch (error) {
       console.error("Error fetching absens:", error);
@@ -85,25 +71,54 @@ const HomePage = () => {
     }
   };
 
-  const hitungAbsenHariIni = (dataAbsen) => {
-    const today = new Date().toISOString().split('T')[0];
-    const absenHariIni = dataAbsen.filter(absen => absen.tanggal === today);
-    
-    const hadir = absenHariIni.filter(absen => absen.keterangan === 'Hadir').length;
-    const tidakHadir = absenHariIni.filter(absen => 
-      ['Alpha', 'Sakit', 'Izin'].includes(absen.keterangan)).length;
-    const totalAbsen = absenHariIni.length;
-    
-    const persentaseKehadiran = totalAbsen > 0 ? (hadir / totalAbsen) * 100 : 0;
+  const hitungAbsenHariIni = (absenHarian) => {
+    const todayAbsen = new Date().toISOString().split("T")[0];
+    const absenHariIni = absenHarian.filter(
+      (absen) => absen.tanggal === todayAbsen
+    );
+
+    const hadir = absenHariIni.filter(
+      (absen) => absen.keterangan === "Hadir"
+    ).length;
+
+    // Determine users who have not yet marked attendance
+    const tidakHadir = users.length - hadir;
 
     setAbsenHariIni({
       hadir,
       tidakHadir,
-      persentaseKehadiran: persentaseKehadiran.toFixed(2)
+    });
+  };
+
+  const hitungAbsenBulanIni = (dataAbsen) => {
+    const today = new Date();
+    const currentMonth = today.getMonth() + 1;
+    const currentYear = today.getFullYear();
+    const absenBulanIni = dataAbsen.filter((absen) => {
+      const [year, month] = absen.tanggal.split("-");
+      return parseInt(month) === currentMonth && parseInt(year) === currentYear;
+    });
+
+    const hadir = absenBulanIni.filter((absen) => absen.keterangan === "Hadir")
+      .length;
+    const tidakHadir = absenBulanIni.filter((absen) =>
+      ["Alpha", "Sakit", "Izin"].includes(absen.keterangan)
+    ).length;
+    const totalUsers = users.length;
+
+    const persentaseKehadiran =
+      totalUsers > 0 ? (hadir / totalUsers) * 100 : 0;
+
+    setAbsenBulanIni({
+      hadir,
+      tidakHadir,
+      persentaseKehadiran: persentaseKehadiran.toFixed(2),
     });
   };
 
   useEffect(() => {
+    fetchSettings();
+    fetchUsers();
     fetchAbsens();
   }, []);
 
@@ -121,7 +136,10 @@ const HomePage = () => {
 
   return (
     <Fragment>
-      <div className="pt-10 pb-21" style={{ backgroundColor: data.warna_secondary }}></div>
+      <div
+        className="pt-10 pb-21"
+        style={{ backgroundColor: data.warna_secondary }}
+      ></div>
       <Container fluid className="mt-n22 px-6">
         <Row>
           <Col lg={12} md={12} xs={12}>
@@ -136,81 +154,85 @@ const HomePage = () => {
           </Col>
 
           {/* <!-- Card stats --> */}
-          <div class="row py-5">
-            <div class="col-xl-3 col-md-6">
-              <div class="card card-stats">
+          <div className="row py-5">
+            <div className="col-xl-3 col-md-6">
+              <div className="card card-stats">
                 {/* <!-- Card body --> */}
-                <div class="card-body">
-                  <div class="row">
-                    <div class="col">
-                      <h5 class="card-title text-uppercase text-muted mb-0">
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col">
+                      <h5 className="card-title text-uppercase text-muted mb-0">
                         Total User
                       </h5>
-                      <span class="h2 font-weight-bold mb-0">
+                      <span className="h2 font-weight-bold mb-0">
                         {users.length}
                       </span>
                     </div>
-                    <div class="col-auto">
-                      <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
-                        <i class="ni ni-active-40"></i>
+                    <div className="col-auto">
+                      <div className="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
+                        <i className="ni ni-active-40"></i>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="col-xl-3 col-md-6">
-              <div class="card card-stats">
+            <div className="col-xl-3 col-md-6">
+              <div className="card card-stats">
                 {/* <!-- Card body --> */}
-                <div class="card-body">
-                  <div class="row">
-                    <div class="col">
-                      <h5 class="card-title text-uppercase text-muted mb-0">
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col">
+                      <h5 className="card-title text-uppercase text-muted mb-0">
                         Hadir
                       </h5>
-                      <span class="h2 font-weight-bold mb-0">
+                      <span className="h2 font-weight-bold mb-0">
                         {absenHariIni.hadir}
                       </span>
                     </div>
                   </div>
-                  <p class="mt-3 mb-0 text-sm">
-                    <span class="text-nowrap">Hari Ini</span>
+                  <p className="mt-3 mb-0 text-sm">
+                    <span className="text-nowrap">Hari Ini</span>
                   </p>
                 </div>
               </div>
             </div>
-            <div class="col-xl-3 col-md-6">
-              <div class="card card-stats">
+            <div className="col-xl-3 col-md-6">
+              <div className="card card-stats">
                 {/* <!-- Card body --> */}
-                <div class="card-body">
-                  <div class="row">
-                    <div class="col">
-                      <h5 class="card-title text-uppercase text-muted mb-0">
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col">
+                      <h5 className="card-title text-uppercase text-muted mb-0">
                         Tidak Hadir
                       </h5>
-                      <span class="h2 font-weight-bold mb-0">{absenHariIni.tidakHadir}</span>
+                      <span className="h2 font-weight-bold mb-0">
+                        {absenHariIni.tidakHadir}
+                      </span>
                     </div>
                   </div>
-                  <p class="mt-3 mb-0 text-sm">
-                    <span class="text-nowrap">Hari Ini</span>
+                  <p className="mt-3 mb-0 text-sm">
+                    <span className="text-nowrap">Hari Ini</span>
                   </p>
                 </div>
               </div>
             </div>
-            <div class="col-xl-3 col-md-6">
-              <div class="card card-stats">
+            <div className="col-xl-3 col-md-6">
+              <div className="card card-stats">
                 {/* <!-- Card body --> */}
-                <div class="card-body">
-                  <div class="row">
-                    <div class="col">
-                      <h5 class="card-title text-uppercase text-muted mb-0">
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col">
+                      <h5 className="card-title text-uppercase text-muted mb-0">
                         Kehadiran
                       </h5>
-                      <span class="h2 font-weight-bold mb-0">{absenHariIni.persentaseKehadiran}%</span>
+                      <span className="h2 font-weight-bold mb-0">
+                        {absenBulanIni.persentaseKehadiran}%
+                      </span>
                     </div>
                   </div>
-                  <p class="mt-3 mb-0 text-sm">
-                    <span class="text-nowrap">Hari Ini</span>
+                  <p className="mt-3 mb-0 text-sm">
+                    <span className="text-nowrap">Bulan Ini</span>
                   </p>
                 </div>
               </div>
@@ -218,15 +240,15 @@ const HomePage = () => {
           </div>
         </Row>
 
-        <div class="table-responsive">
+        <div className="table-responsive">
           <div className="bg-white p-4 rounded">
             <h4>Total User : {users.length}</h4>
           </div>
 
           {/* Tabel untuk layar besar */}
           <div className="d-none d-md-block">
-            <table class="table align-items-center table-flush mb-0">
-              <thead class="thead-light">
+            <table className="table align-items-center table-flush mb-0">
+              <thead className="thead-light">
                 <tr>
                   <th>No</th>
                   <th>Nama</th>

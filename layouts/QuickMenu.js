@@ -255,7 +255,7 @@ const QuickMenu = () => {
                 href="/pages/user/detailuser"
                 className="text-inherit fs-6 mt-1"
               >
-                View my profile
+                Lihat Profil saya
               </Link>
               <div className=" dropdown-divider mt-3 mb-2"></div>
             </BootstrapDropdown.Item>

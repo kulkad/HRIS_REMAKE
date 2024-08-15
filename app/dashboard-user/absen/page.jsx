@@ -8,7 +8,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Swal from "sweetalert2";
 import Image from "next/image";
-import { Navbar, Container, Nav } from 'react-bootstrap';
+import { Navbar, Container, Nav } from "react-bootstrap";
 
 const FaceComparison = () => {
   const [initializing, setInitializing] = useState(true);
@@ -23,6 +23,7 @@ const FaceComparison = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const webcamRef = useRef(null);
   const imageRef2 = useRef(null);
+  const [data, setData] = useState({});
 
   const officeLat = -6.770397; // Latitude kantor
   const officeLng = 108.461445; // Longitude kantor
@@ -70,9 +71,9 @@ const FaceComparison = () => {
 
   const getCurrentTime24HourFormat = () => {
     const now = new Date();
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    const seconds = now.getSeconds().toString().padStart(2, '0');
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = now.getMinutes().toString().padStart(2, "0");
+    const seconds = now.getSeconds().toString().padStart(2, "0");
     return `${hours}:${minutes}:${seconds}`;
   };
 
@@ -114,7 +115,8 @@ const FaceComparison = () => {
         );
         const similarityScore = ((1 - distance) * 100).toFixed(2); // Convert to percentage
 
-        if (similarityScore >= 60) { // 60% similarity threshold
+        if (similarityScore >= 60) {
+          // 60% similarity threshold
           isAbsenSuccess = true;
           setSimilarity(similarityScore);
           matchedUser = userPhoto;
@@ -138,7 +140,7 @@ const FaceComparison = () => {
         Swal.fire({
           title: "Berhasil!",
           text: "Absen berhasil !",
-          icon: "success"
+          icon: "success",
         });
       } catch (error) {
         console.error("Error mengirim data absen:", error);
@@ -153,12 +155,18 @@ const FaceComparison = () => {
 
   const getLocationFromIP = async () => {
     try {
-      const response = await axios.get('https://ipapi.co/json/');
+      const response = await axios.get("https://ipapi.co/json/");
       const { latitude, longitude } = response.data;
       // console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
       setLocation({ latitude, longitude });
 
-      const withinBounds = isWithinOfficeBounds(latitude, longitude, officeLat, officeLng, allowedRadius);
+      const withinBounds = isWithinOfficeBounds(
+        latitude,
+        longitude,
+        officeLat,
+        officeLng,
+        allowedRadius
+      );
       setIsWithinBounds(withinBounds);
       // console.log(`Within Bounds: ${withinBounds}`);
     } catch (error) {
@@ -173,16 +181,23 @@ const FaceComparison = () => {
     const Δφ = (lat2 - lat1) * (Math.PI / 180);
     const Δλ = (lon2 - lon1) * (Math.PI / 180);
 
-    const a = Math.sin(Δφ / 2) ** 2 +
-              Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+    const a =
+      Math.sin(Δφ / 2) ** 2 +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     const distance = R * c; // hasil dalam meter
-   // console.log(`Distance: ${distance.toFixed(2)} meters`); // Log untuk memeriksa jarak
+    // console.log(`Distance: ${distance.toFixed(2)} meters`); // Log untuk memeriksa jarak
     return distance;
   };
 
-  const isWithinOfficeBounds = (userLat, userLng, officeLat, officeLng, allowedRadius) => {
+  const isWithinOfficeBounds = (
+    userLat,
+    userLng,
+    officeLat,
+    officeLng,
+    allowedRadius
+  ) => {
     const distance = calculateDistance(userLat, userLng, officeLat, officeLng);
     const withinBounds = distance <= allowedRadius;
     //console.log(`User is within bounds: ${withinBounds}`); // Log hasil perhitungan bounds
@@ -194,11 +209,11 @@ const FaceComparison = () => {
       try {
         const response = await axios.get("http://localhost:5001/alpha/1");
         setJamAlpha(response.data.jam_alpha);
-        // console.log(response.data.jam_alpha);
-        // console.log("Jam Alpha berhasil diambil:", response.data.jam_alpha);
       } catch (error) {
         console.error("Error mengambil jam alpha:", error);
-        alert("Gagal mengambil jam alpha. Silakan periksa server dan endpoint.");
+        alert(
+          "Gagal mengambil jam alpha. Silakan periksa server dan endpoint."
+        );
       }
     };
 
@@ -211,45 +226,57 @@ const FaceComparison = () => {
           //console.log(`Latitude: ${latitude}, Longitude: ${longitude}`); // Log lokasi pengguna
           setLocation({ latitude, longitude });
 
-          const withinBounds = isWithinOfficeBounds(latitude, longitude, officeLat, officeLng, allowedRadius);
+          const withinBounds = isWithinOfficeBounds(
+            latitude,
+            longitude,
+            officeLat,
+            officeLng,
+            allowedRadius
+          );
           setIsWithinBounds(withinBounds);
           //console.log(`Within Bounds: ${withinBounds}`); // Log hasil perhitungan bounds
         },
         (error) => {
-          console.error('Error obtaining location:', error);
+          console.error("Error obtaining location:", error);
           getLocationFromIP(); // Fallback to IP-based location
         }
       );
     } else {
-      console.log('Geolocation is not supported by this browser. Using IP-based location as fallback.');
+      console.log(
+        "Geolocation is not supported by this browser. Using IP-based location as fallback."
+      );
       getLocationFromIP(); // Fallback to IP-based location
     }
   }, []);
 
-  const handleAbsenClick = async () => {
-    setIsSubmitting(true); // Menonaktifkan tombol selama proses
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true); // Nonaktifkan tombol selama proses berlangsung
+    // console.log("Submit button clicked");
+
     const currentTime = getCurrentTime24HourFormat();
-    if (currentTime > jamAlpha) {
+
+    if (currentTime >= jamAlpha) {
       Swal.fire({
-        title: "Peringatan!",
-        text: "Anda tidak bisa absen setelah jam alpha!",
-        icon: "warning"
+        title: "Gagal!",
+        text: "Tidak dapat melakukan absen karena waktu telah melewati jam Alpha!",
+        icon: "error",
       });
-      setIsSubmitting(false); // Mengaktifkan kembali tombol jika gagal
-      return;
+      setIsSubmitting(false);
+      return; // Kembali dan tidak melanjutkan proses absen
     }
 
     if (!isWithinBounds) {
       Swal.fire({
-        title: "Peringatan!",
-        text: "Anda tidak berada dalam lokasi yang diizinkan!",
-        icon: "warning"
+        title: "Gagal!",
+        text: "Anda berada di luar jangkauan kantor!",
+        icon: "error",
       });
-      setIsSubmitting(false); // Mengaktifkan kembali tombol jika gagal
-      return;
+      setIsSubmitting(false);
+      return; // Kembali dan tidak melanjutkan proses absen
     }
 
-    await calculateSimilarity();
+    calculateSimilarity();
   };
 
   if (initializing) {
@@ -277,7 +304,12 @@ const FaceComparison = () => {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="mx-auto">
-                <Nav.Link href="/dashboard-user/absen" className="text-white text-decoration-underline text-decoration-white">Absen Hadir</Nav.Link>
+                <Nav.Link
+                  href="/dashboard-user/absen"
+                  className="text-white text-decoration-underline text-decoration-white"
+                >
+                  Absen Hadir
+                </Nav.Link>
                 <Nav.Link href="/dashboard-user/absen/absen-pulang">
                   Absen Pulang
                 </Nav.Link>
@@ -301,6 +333,7 @@ const FaceComparison = () => {
           <div>
             <img ref={imageRef2} className="d-none" alt="Captured Image" />
           </div>
+          <form onSubmit={handleSubmit}>
           <button
             className="btn btn-primary mt-3"
             onClick={() => {
@@ -309,23 +342,22 @@ const FaceComparison = () => {
                   setIsSubmitting(true); // Menonaktifkan tombol setelah diklik
                   calculateSimilarity();
                 } else {
-                  alert("Anda berada di luar area kantor. Absen tidak diizinkan.");
+                  alert(
+                    "Anda berada di luar area kantor. Absen tidak diizinkan."
+                  );
                 }
-              }
-              else if (isSubmitting) {
-                handleAbsenClick();
+              } else if (isSubmitting) {
+                handleSubmit();
               }
             }}
             disabled={isSubmitting} // Menonaktifkan tombol jika isSubmitting adalah true
           >
             {isSubmitting ? "Sedang memproses..." : "Absen"}
           </button>
+          </form>
           {similarity && (
             <p className="text-danger font-weight-bold mt-3">
-              Kemiripan wajah :{" "}
-              <span className="text-primary">
-                {similarity}%
-              </span>
+              Maaf, wajah tidak dikenali
             </p>
           )}
           {absenSuccess && currentUser && (

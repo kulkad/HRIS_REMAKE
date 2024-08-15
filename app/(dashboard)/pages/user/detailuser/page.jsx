@@ -57,7 +57,7 @@ const DetailUser = () => {
                   </td>
                   <td>{user.name}</td>
                   <td>{user.email}</td>
-                  <td>{user.roleId}</td>
+                  <td>{user.nama_role}</td>
                   <td>{user.status}</td>
                 </tr>
               ))}
