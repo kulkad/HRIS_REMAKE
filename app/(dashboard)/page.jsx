@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { Card, Table, Dropdown, Image, Pagination } from "react-bootstrap";
@@ -113,8 +114,6 @@ const HomePage = () => {
       totalAbsen > 0 ? (hadir / totalAbsen) * 100 : 0;
   
     setAbsenBulanIni({
-      hadir,
-      tidakHadir,
       persentaseKehadiran: persentaseKehadiran.toFixed(2),
     });
   };

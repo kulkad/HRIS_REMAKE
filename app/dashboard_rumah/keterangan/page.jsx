@@ -11,6 +11,11 @@ const WebinarCard = () => {
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
   const [absenHariIni, setAbsenHariIni] = useState(null);
+  const [absenBulanIni, setAbsenBulanIni] = useState({
+    hadir: 0,
+    tidakHadir: 0,
+    persentaseKehadiran: 0,
+  });
 
   // Retrieve user data from local storage
   useEffect(() => {
@@ -38,9 +43,14 @@ const WebinarCard = () => {
         const today = moment().format("YYYY-MM-DD");
 
         // Check if the user has already checked in today
-        const absenToday = userAbsens.find((absen) => absen.tanggal === today);
+        const absenToday = userAbsens.find(
+          (absen) => absen.tanggal === today
+        );
 
         setAbsenHariIni(absenToday || null); // Save today's attendance data or null if not yet checked in
+
+        // Calculate attendance for this month
+        hitungAbsenBulanIni(userAbsens);
       } catch (error) {
         console.error("Error fetching absens:", error);
         setError("Failed to load attendance data.");
@@ -48,10 +58,41 @@ const WebinarCard = () => {
         setLoading(false);
       }
     };
+
     if (user) {
       fetchAbsens();
     }
   }, [user]);
+
+  // Calculate monthly attendance percentage
+  const hitungAbsenBulanIni = (dataAbsen) => {
+    const today = new Date();
+    const currentMonth = today.getMonth() + 1; // getMonth is zero-indexed
+    const currentYear = today.getFullYear();
+
+    // Filter attendance for the current month and year
+    const absenBulanIni = dataAbsen.filter((absen) => {
+      const [year, month] = absen.tanggal.split("-");
+      return (
+        parseInt(month) === currentMonth && parseInt(year) === currentYear
+      );
+    });
+
+    // Count total attendance
+    const totalAbsen = absenBulanIni.length;
+    const hadir = absenBulanIni.filter((absen) => absen.keterangan === "Hadir")
+      .length;
+
+    // Calculate attendance percentage
+    const persentaseKehadiran =
+      totalAbsen > 0 ? ((hadir / totalAbsen) * 100).toFixed(2) : 0;
+
+    setAbsenBulanIni({
+      hadir,
+      tidakHadir: totalAbsen - hadir,
+      persentaseKehadiran,
+    });
+  };
 
   // Determine the message based on keterangan
   const getMessage = () => {
@@ -148,12 +189,19 @@ const WebinarCard = () => {
                             <i className="bi bi-clock"></i>
                           </span>
                           <span>
-                            {absenHariIni ? absenHariIni.waktu_datang : "Belum Absen"}
+                            Anda absen di jam :
+                            {absenHariIni && absenHariIni.waktu_datang
+                              ? ` ${absenHariIni.waktu_datang}`
+                              : " Belum Absen"}
                           </span>{" "}
                           {/* Show check-in time or not checked in yet */}
                         </div>
                       </div>
                       <p className="mt-4">{getMessage()}</p>
+                      <p className="mt-4">
+                        Persentase Kehadiran Bulan Ini:{" "}
+                        {absenBulanIni.persentaseKehadiran}%
+                      </p>
                     </>
                   )}
                 </div>

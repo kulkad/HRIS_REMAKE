@@ -7,7 +7,6 @@ import { IoIosArrowBack } from 'react-icons/io';
 const DetailUser = () => {
   const [user, setUser] = useState(null);
   const { id } = useParams();
-  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [absenBulanIni, setAbsenBulanIni] = useState({
     hadir: 0,
@@ -16,64 +15,49 @@ const DetailUser = () => {
   });
 
   useEffect(() => {
-    const fetchAbsenForDetail = async () => {
+    const fetchUserData = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/absens");
-        const allAttendanceData = response.data;
+        // Fetching user details
+        const userResponse = await axios.get(`http://localhost:5001/users/${id}`);
+        setUser(userResponse.data);
 
-        // Filter data absensi untuk user tertentu
-        const userAttendance = allAttendanceData.filter(absen => absen.userId === id);
-        setData(userAttendance);
+        // Fetching user's attendance records
+        const absenResponse = await axios.get(`http://localhost:5001/detailuser/${id}`);
+        const allAttendanceData = absenResponse.data;
 
-        // Hitung absensi bulan ini
-        hitungAbsenBulanIni(userAttendance);
+        // Calculate attendance for this month
+        hitungAbsenBulanIni(allAttendanceData);
       } catch (error) {
-        console.error("Error fetching absens:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5001/users/${id}`);
-        setUser(response.data);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    fetchAbsenForDetail();
     fetchUserData();
   }, [id]);
 
   const hitungAbsenBulanIni = (dataAbsen) => {
     const today = new Date();
-    const currentMonth = today.getMonth() + 1;
+    const currentMonth = today.getMonth() + 1; // getMonth is zero-indexed
     const currentYear = today.getFullYear();
-    
-    // Filter absensi berdasarkan bulan dan tahun ini
+  
+    // Filter attendance for the current month and year
     const absenBulanIni = dataAbsen.filter((absen) => {
       const [year, month] = absen.tanggal.split("-");
       return parseInt(month) === currentMonth && parseInt(year) === currentYear;
     });
-
-    let poin = 0;
-    let totalAbsen = absenBulanIni.length;
-
-    absenBulanIni.forEach((absen) => {
-      if (absen.keterangan === "Hadir") {
-        poin += 1;
-      } else if (["Alpha", "Sakit", "Izin"].includes(absen.keterangan)) {
-        poin -= 1;
-      }
-    });
-
-    const persentaseKehadiran = totalAbsen > 0 ? ((poin / totalAbsen) * 100).toFixed(2) : 0;
-
+  
+    // Hitung jumlah kehadiran
+    const totalAbsen = absenBulanIni.length;
+    const hadir = absenBulanIni.filter(absen => absen.keterangan === "Hadir").length;
+  
+    // Hitung persentase kehadiran
+    const persentaseKehadiran = totalAbsen > 0 ? ((hadir / totalAbsen) * 100).toFixed(2) : 0;
+  
     setAbsenBulanIni({
-      hadir: absenBulanIni.filter(absen => absen.keterangan === "Hadir").length,
-      tidakHadir: absenBulanIni.filter(absen => ["Alpha", "Sakit", "Izin"].includes(absen.keterangan)).length,
+      hadir,
+      tidakHadir: totalAbsen - hadir,
       persentaseKehadiran
     });
   };

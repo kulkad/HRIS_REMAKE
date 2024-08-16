@@ -12,6 +12,7 @@ import { MdOutlineAlternateEmail } from "react-icons/md";
 import { RiCheckDoubleLine } from "react-icons/ri";
 import { FiLock } from "react-icons/fi";
 
+
 const Login = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -47,7 +48,7 @@ const Login = () => {
         router.push('/');
       } else {
         console.log("Redirecting to /dashboard-user");
-        router.push('/dashboard_rumah');
+        router.push('/dashboard_rumah/geolocation');
       }
     
     } catch (err) {
