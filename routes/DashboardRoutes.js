@@ -1,9 +1,12 @@
-import { v4 as uuid } from 'uuid';
-
+"use client";
+import React, { useState, useEffect, Fragment } from "react";
+import axios from "axios";
+import { v4 as uuid } from "uuid";
 import { BsPersonLinesFill } from "react-icons/bs";
 import { IoSettingsSharp } from "react-icons/io5";
 import { FaUsers } from "react-icons/fa6";
 import { FaUserXmark } from "react-icons/fa6";
+
 /**
  *  All Dashboard Routes
  *
@@ -28,89 +31,88 @@ import { FaUserXmark } from "react-icons/fa6";
  *
  */
 
-export const DashboardMenu = [{
-        id: uuid(),
-        title: 'Dashboard',
-        icon: 'home',
-        link: '/'
-    },
-    {
-        id: uuid(),
-        title: 'Bagian Absen',
-        grouptitle: true
-    },
-    {
-        id: uuid(),
-        title: 'Absensi',
-        icon: 'clock',
-        children: [
-            { id: uuid(), link: '/pages/absen/data-absensi', name: 'Data Absensi' },
-            { id: uuid(), link: '/pages/absen/geolocation', name: 'Geolocation'}
-        ]
-    },
+export const DashboardMenu = [
+  {
+    id: uuid(),
+    title: "Dashboard",
+    icon: "home",
+    link: "/",
+  },
+  {
+    id: uuid(),
+    title: "Bagian Absen",
+    grouptitle: true,
+  },
+  {
+    id: uuid(),
+    title: "Absensi",
+    icon: "clock",
+    children: [
+      { id: uuid(), link: "/pages/absen/data-absensi", name: "Data Absensi" },
+      { id: uuid(), link: "/pages/absen/geolocation", name: "Geolocation" },
+    ],
+  },
 
-    {
-        id: uuid(),
-        title: 'Semua Pengguna',
-        grouptitle: true
-    },
+  {
+    id: uuid(),
+    title: "Semua Pengguna",
+    grouptitle: true,
+  },
 
-    {
-        id: uuid(),
-        title: 'Data Pengguna',
-        icon: <BsPersonLinesFill style={{ marginRight: '6px' }} />,
-        link: '/pages/user/users'
-    },
-    {
-        id: uuid(),
-        title: 'Role',
-        grouptitle: true
-    },
+  {
+    id: uuid(),
+    title: "Data Pengguna",
+    icon: <BsPersonLinesFill style={{ marginRight: "6px" }} />,
+    link: "/pages/user/users",
+  },
+  {
+    id: uuid(),
+    title: "Role",
+    grouptitle: true,
+  },
 
-    {
-        id: uuid(),
-        title: 'Role',
-        icon: <FaUsers  style={{ marginRight: '6px' }} />,
-        link: '/pages/roles'
-    },
-    {
-        id: uuid(),
-        title: 'alpha',
-        grouptitle: true
-    },
+  {
+    id: uuid(),
+    title: "Role",
+    icon: <FaUsers style={{ marginRight: "6px" }} />,
+    link: "/pages/roles",
+  },
+  {
+    id: uuid(),
+    title: "alpha",
+    grouptitle: true,
+  },
 
-    {
-        id: uuid(),
-        title: 'Alpha',
-        icon: <FaUserXmark  style={{ marginRight: '6px' }} />,
-        link: '/pages/alpha'
-    },
-    {
-        id: uuid(),
-        title: 'hari libur',
-        grouptitle: true
-    },
+  {
+    id: uuid(),
+    title: "Alpha",
+    icon: <FaUserXmark style={{ marginRight: "6px" }} />,
+    link: "/pages/alpha",
+  },
+  {
+    id: uuid(),
+    title: "hari libur",
+    grouptitle: true,
+  },
 
-    {
-        id: uuid(),
-        title: 'Hari Libur',
-        icon: <FaUserXmark  style={{ marginRight: '6px' }} />,
-        link: '/pages/hari-libur'
-    },
-    {
-        id: uuid(),
-        title: 'Settings',
-        grouptitle: true
-    },
+  {
+    id: uuid(),
+    title: "Hari Libur",
+    icon: <FaUserXmark style={{ marginRight: "6px" }} />,
+    link: "/pages/hari-libur",
+  },
+  {
+    id: uuid(),
+    title: "Settings",
+    grouptitle: true,
+  },
 
-    {
-        id: uuid(),
-        title: 'Settings',
-        icon: <IoSettingsSharp  style={{ marginRight: '6px' }} />,
-        link: '/pages/settings'
-    },
-
-
+  {
+    id: uuid(),
+    title: "Settings",
+    icon: <IoSettingsSharp style={{ marginRight: "6px" }} />,
+    link: "/pages/settings",
+  },
 ];
 
 // siu

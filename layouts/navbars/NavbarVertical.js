@@ -18,22 +18,46 @@ import "simplebar/dist/simplebar.min.css";
 // import routes file
 import { DashboardMenu } from "routes/DashboardRoutes";
 
+// Fungsi untuk menghitung luminance
+const getLuminance = (hex) => {
+  const r = parseInt(hex.substr(1, 2), 16) / 255;
+  const g = parseInt(hex.substr(3, 2), 16) / 255;
+  const b = parseInt(hex.substr(5, 2), 16) / 255;
+
+  const a = [r, g, b].map((v) => {
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+
+  return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+};
+
 const NavbarVertical = (props) => {
   // Untuk mengganti warna dari database
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [textColor, setTextColor] = useState("#FFFFFF");
 
   useEffect(() => {
     const fetchSettings = async () => {
       try {
         const response = await axios.get("http://localhost:5001/settings/1");
         setData(response.data);
+
+        // Mengambil warna latar belakang dari API
+        const backgroundColor = response.data.warna_sidebar;
+
+        // Menghitung luminance dari warna latar belakang
+        const luminance = getLuminance(backgroundColor);
+
+        // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
+        setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
       } catch (error) {
         console.error("Error fetching Settings:", error);
       } finally {
         setLoading(false);
       }
     };
+
     fetchSettings();
   }, []);
   
@@ -48,7 +72,7 @@ const NavbarVertical = (props) => {
       <li className="nav-item">
         <Link
           href="#"
-          className="nav-link "
+          className="nav-link"
           onClick={decoratedOnClick}
           data-bs-toggle="collapse"
           data-bs-target="#navDashboard"
@@ -114,7 +138,7 @@ const NavbarVertical = (props) => {
       <SimpleBar style={{ maxHeight: "100vh" }}>
         <div className="nav-scroller">
           <Link href="/" className="navbar-brand">
-            <p className="h4 fw-bold text-start text-light">
+            <p className="h4 fw-bold text-start" style={{ color: textColor }}>
               {data.nama_perusahaan}
             </p>
           </Link>
@@ -128,9 +152,9 @@ const NavbarVertical = (props) => {
           {DashboardMenu.map(function (menu, index) {
             if (menu.grouptitle) {
               return (
-                <Card bsPrefix="nav-item" key={index}>
+                <Card bsPrefix="nav-item" key={index} style={{ color: textColor }}>
                   {/* group title item */}
-                  <div className="navbar-heading">{menu.title}</div>
+                  <div className="navbar-heading" style={{ color: textColor }}>{menu.title}</div>
                   {/* end of group title item */}
                 </Card>
               );

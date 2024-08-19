@@ -10,6 +10,19 @@ const colors = [
   "#D3D3D3", "#A52A2A", "#8B4513", "#00CED1", "#9400D3", "#FF1493", "#FF4500"
 ];
 
+// Fungsi untuk menghitung luminance
+const getLuminance = (hex) => {
+  const r = parseInt(hex.substr(1, 2), 16) / 255;
+  const g = parseInt(hex.substr(3, 2), 16) / 255;
+  const b = parseInt(hex.substr(5, 2), 16) / 255;
+
+  const a = [r, g, b].map((v) => {
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+
+  return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+};
+
 const Settings = () => {
   const [warna_primary, setWarna_primary] = useState("");
   const [warna_secondary, setWarna_secondary] = useState("");
@@ -23,8 +36,11 @@ const Settings = () => {
   const [kop_surat_2, setKop_surat_2] = useState("");
   const [kop_surat_3, setKop_surat_3] = useState("");
   const [user, setUser] = useState([]); // untuk keamanan agar tidak bocor datanya
-  const [data, setData] = useState({});
-  const [loading, setLoading] = useState(true);
+
+     // Untuk mengganti warna dari database
+     const [warna, setWarna] = useState({});
+     const [loading, setLoading] = useState({});
+     const [textColor, setTextColor] = useState("#FFFFFF");
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -39,13 +55,23 @@ const Settings = () => {
     const fetchSettings = async () => {
       try {
         const response = await axios.get("http://localhost:5001/settings/1");
-        setData(response.data);
+        setWarna(response.data);
+
+        // Mengambil warna latar belakang dari API
+        const backgroundColor = response.data.warna_sidebar;
+
+        // Menghitung luminance dari warna latar belakang
+        const luminance = getLuminance(backgroundColor);
+
+        // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
+        setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
       } catch (error) {
         console.error("Error fetching Settings:", error);
       } finally {
         setLoading(false);
       }
     };
+
     fetchSettings();
   }, []);
 
@@ -154,7 +180,7 @@ const Settings = () => {
             ))}
           </div>
         </div>
-        <button type="submit" className="btn-save" style={{ backgroundColor: data.warna_secondary }}>
+        <button type="submit" className="btn-save" style={{ backgroundColor: warna.warna_secondary, color: textColor }}>
           Save Color Changes
         </button>
       </form>
@@ -204,7 +230,7 @@ const Settings = () => {
             onChange={(e) => setKop_surat_3(e.target.value)}
           />
         </div>
-        <button type="submit" className="btn-save" style={{ backgroundColor: data.warna_secondary }}>
+        <button type="submit" className="btn-save" style={{ backgroundColor: warna.warna_secondary, color: textColor }}>
           Save Letter Changes
         </button>
       </form>

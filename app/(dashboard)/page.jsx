@@ -9,6 +9,19 @@ import { Fragment } from "react";
 import { Container, Col, Row } from "react-bootstrap";
 import axios from "axios";
 
+// Fungsi untuk menghitung luminance
+const getLuminance = (hex) => {
+  const r = parseInt(hex.substr(1, 2), 16) / 255;
+  const g = parseInt(hex.substr(3, 2), 16) / 255;
+  const b = parseInt(hex.substr(5, 2), 16) / 255;
+
+  const a = [r, g, b].map((v) => {
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+
+  return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+};
+
 const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]); // State to store all users
@@ -34,16 +47,31 @@ const HomePage = () => {
 
   const [user, setUser] = useState([]); // untuk keamanan agar tidak bocor datanya
 
+  const [textColor, setTextColor] = useState("#FFFFFF");
+
+  useEffect(() => {
     const fetchSettings = async () => {
       try {
         const response = await axios.get("http://localhost:5001/settings/1");
         setData(response.data);
+
+        // Mengambil warna latar belakang dari API
+        const backgroundColor = response.data.warna_sidebar;
+
+        // Menghitung luminance dari warna latar belakang
+        const luminance = getLuminance(backgroundColor);
+
+        // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
+        setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
       } catch (error) {
         console.error("Error fetching Settings:", error);
       } finally {
         setLoading(false);
       }
     };
+
+    fetchSettings();
+  }, []);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -120,7 +148,6 @@ const HomePage = () => {
   
 
   useEffect(() => {
-    fetchSettings();
     fetchUsers();
     fetchAbsens();
     
@@ -158,7 +185,7 @@ const HomePage = () => {
             <div>
               <div className="d-flex justify-content-between align-items-center">
                 <div className="mb-2 mb-lg-6">
-                  <h2 className="mb-0  text-white">Dashboard Admin</h2>
+                  <h2 className="mb-0" style={{ color: textColor }}>Dashboard Admin</h2>
                 </div>
               </div>
             </div>

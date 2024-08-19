@@ -22,6 +22,19 @@ import { EmojiSmile, TrashFill } from "react-bootstrap-icons";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import Swal from "sweetalert2";
 
+// Fungsi untuk menghitung luminance
+const getLuminance = (hex) => {
+  const r = parseInt(hex.substr(1, 2), 16) / 255;
+  const g = parseInt(hex.substr(3, 2), 16) / 255;
+  const b = parseInt(hex.substr(5, 2), 16) / 255;
+
+  const a = [r, g, b].map((v) => {
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+
+  return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+};
+
 const Roles = () => {
   const [user, setUser] = useState(null);
   const [roles, setRoles] = useState([]);
@@ -38,22 +51,34 @@ const Roles = () => {
   const [jam_pulang, setJam_pulang] = useState("");
   const [denda, setDenda] = useState("");
   
-  const [data, setData] = useState({});
-  const [loading, setLoading] = useState("");
+// Untuk mengganti warna dari database
+const [warna, setWarna] = useState({});
+const [loading, setLoading] = useState({});
+const [textColor, setTextColor] = useState("#FFFFFF");
 
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const response = await axios.get("http://localhost:5001/settings/1");
-        setData(response.data);
-      } catch (error) {
-        console.error("Error fetching Settings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchSettings();
-  }, []);
+useEffect(() => {
+  const fetchSettings = async () => {
+    try {
+      const response = await axios.get("http://localhost:5001/settings/1");
+      setWarna(response.data);
+
+      // Mengambil warna latar belakang dari API
+      const backgroundColor = response.data.warna_sidebar;
+
+      // Menghitung luminance dari warna latar belakang
+      const luminance = getLuminance(backgroundColor);
+
+      // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
+      setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
+    } catch (error) {
+      console.error("Error fetching Settings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchSettings();
+}, []);
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -224,13 +249,13 @@ const Roles = () => {
 
   return (
     <Fragment>
-      <div className="pt-10 pb-21" style={{ backgroundColor: data.warna_secondary}}></div>
+      <div className="pt-10 pb-21" style={{ backgroundColor: warna.warna_secondary}}></div>
       <Container fluid className="mt-n22 px-6">
         <Row>
           <Col lg={12} md={12} xs={12}>
             <div className="d-flex justify-content-between align-items-center mx-5">
               <div className="mb-2 mb-lg-0">
-                <h3 className="mb-0 text-white">Role</h3>
+                <h3 className="mb-0" style={{ color: textColor }}>Role</h3>
               </div>
               <div>
                 <Button onClick={openCreateModal} className="btn btn-white">
