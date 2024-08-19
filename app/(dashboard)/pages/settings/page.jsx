@@ -14,10 +14,17 @@ const Settings = () => {
   const [warna_primary, setWarna_primary] = useState("");
   const [warna_secondary, setWarna_secondary] = useState("");
   const [warna_sidebar, setWarna_sidebar] = useState("");
+  
+  // New states for letter settings
   const [logo, setLogo] = useState("");
+  const [signature, setSignature] = useState("");
   const [nama_perusahaan, setNama_perusahaan] = useState("");
-
+  const [kop_surat_1, setKop_surat_1] = useState("");
+  const [kop_surat_2, setKop_surat_2] = useState("");
+  const [kop_surat_3, setKop_surat_3] = useState("");
   const [user, setUser] = useState([]); // untuk keamanan agar tidak bocor datanya
+  const [data, setData] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -26,16 +33,51 @@ const Settings = () => {
     } else {
       setUser(JSON.parse(userData));
     }
-  }, [])
+  }, []);
 
-  const updateSetting = async (e) => {
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/settings/1");
+        setData(response.data);
+      } catch (error) {
+        console.error("Error fetching Settings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  const updateColorSetting = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.patch(`http://localhost:5001/settings/1`, {
+        warna_primary,
+        warna_secondary,
+        warna_sidebar
+      });
+      Swal.fire({
+        title: "Berhasil!",
+        text: "Berhasil mengupdate warna!",
+        icon: "success",
+      }).then(() => {
+        window.location.reload();
+      });
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  };
+
+  const updateLetterSetting = async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("nama_perusahaan", nama_perusahaan);
-    formData.append("warna_primary", warna_primary);
-    formData.append("warna_secondary", warna_secondary);
-    formData.append("warna_sidebar", warna_sidebar);
     formData.append("logo", logo);
+    formData.append("signature", signature);
+    formData.append("kop_surat_1", kop_surat_1);
+    formData.append("kop_surat_2", kop_surat_2);
+    formData.append("kop_surat_3", kop_surat_3);
 
     try {
       await axios.patch(`http://localhost:5001/settings/1`, formData, {
@@ -45,7 +87,7 @@ const Settings = () => {
       });
       Swal.fire({
         title: "Berhasil!",
-        text: "Berhasil mengupdate!",
+        text: "Berhasil mengupdate surat!",
         icon: "success",
       }).then(() => {
         window.location.reload();
@@ -59,34 +101,20 @@ const Settings = () => {
     setLogo(e.target.files[0]); // Mengambil file yang dipilih
   };
 
+  const handleSignatureChange = (e) => {
+    setSignature(e.target.files[0]); // Mengambil file yang dipilih
+  };
+
   const handleColorSelect = (color, type) => {
     if (type === "primary") setWarna_primary(color);
     if (type === "secondary") setWarna_secondary(color);
     if (type === "sidebar") setWarna_sidebar(color);
   };
 
-    // Untuk mengganti warna dari database
-	const [data, setData] = useState({});
-	const [loading, setLoading] = useState(true);
-
-	useEffect(() => {
-	  const fetchSettings = async () => {
-		try {
-		  const response = await axios.get("http://localhost:5001/settings/1");
-		  setData(response.data);
-		} catch (error) {
-		  console.error("Error fetching Settings:", error);
-		} finally {
-		  setLoading(false);
-		}
-	  };
-	  fetchSettings();
-	}, []);
-
   return (
     <div className="settings-container">
       <h2>Settings</h2>
-      <form className="settings-form" onSubmit={updateSetting}>
+      <form className="settings-form" onSubmit={updateColorSetting}>
         <div className="form-group">
           <label>Primary Color:</label>
           <div className="color-grid">
@@ -126,9 +154,19 @@ const Settings = () => {
             ))}
           </div>
         </div>
+        <button type="submit" className="btn-save" style={{ backgroundColor: data.warna_secondary }}>
+          Save Color Changes
+        </button>
+      </form>
+      
+      <form className="settings-form" onSubmit={updateLetterSetting}>
         <div className="form-group">
           <label>Logo :</label>
           <input type="file" name="logo" onChange={handleLogoChange} />
+        </div>
+        <div className="form-group">
+          <label>Signature :</label>
+          <input type="file" name="signature" onChange={handleSignatureChange} />
         </div>
         <div className="form-group">
           <label>Nama Perusahaan :</label>
@@ -139,10 +177,38 @@ const Settings = () => {
             onChange={(e) => setNama_perusahaan(e.target.value)}
           />
         </div>
+        <div className="form-group">
+          <label>Kop Surat 1 :</label>
+          <input
+            type="text"
+            name="kop_surat_1"
+            value={kop_surat_1}
+            onChange={(e) => setKop_surat_1(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label>Kop Surat 2 :</label>
+          <input
+            type="text"
+            name="kop_surat_2"
+            value={kop_surat_2}
+            onChange={(e) => setKop_surat_2(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label>Kop Surat 3 :</label>
+          <input
+            type="text"
+            name="kop_surat_3"
+            value={kop_surat_3}
+            onChange={(e) => setKop_surat_3(e.target.value)}
+          />
+        </div>
         <button type="submit" className="btn-save" style={{ backgroundColor: data.warna_secondary }}>
-          Save Changes
+          Save Letter Changes
         </button>
       </form>
+
       <style jsx>{`
         .settings-container {
           max-width: 600px;
@@ -156,6 +222,7 @@ const Settings = () => {
         .settings-form {
           display: flex;
           flex-direction: column;
+          margin-bottom: 20px;
         }
 
         .form-group {
