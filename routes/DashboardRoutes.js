@@ -1,6 +1,4 @@
 "use client";
-import React, { useState, useEffect, Fragment } from "react";
-import axios from "axios";
 import { v4 as uuid } from "uuid";
 import { BsPersonLinesFill } from "react-icons/bs";
 import { IoSettingsSharp } from "react-icons/io5";
