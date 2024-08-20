@@ -101,15 +101,17 @@ export const DashboardMenu = [
   },
   {
     id: uuid(),
-    title: "Settings",
+    title: "Bagian Setting",
     grouptitle: true,
   },
-
   {
     id: uuid(),
     title: "Settings",
-    icon: <IoSettingsSharp style={{ marginRight: "6px" }} />,
-    link: "/pages/settings",
+    icon: <IoSettingsSharp size={20} />, // Tambahkan ukuran ikon
+    children: [
+      { id: uuid(), link: "/pages/settings", name: "Setting Tema" },
+      { id: uuid(), link: "/pages/surat", name: "Setting Surat" },
+    ],
   },
 ];
 

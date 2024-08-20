@@ -19,6 +19,34 @@ const WebinarCard = () => {
   });
   const [showModal, setShowModal] = useState(false);
 
+  // Untuk mengganti warna dari database
+  const [warna, setWarna] = useState({});
+  const [textColor, setTextColor] = useState("#FFFFFF");
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/settings/1");
+        setWarna(response.data);
+
+        // Mengambil warna latar belakang dari API
+        const backgroundColor = response.data.warna_sidebar;
+
+        // Menghitung luminance dari warna latar belakang
+        const luminance = getLuminance(backgroundColor);
+
+        // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
+        setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
+      } catch (error) {
+        console.error("Error fetching Settings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSettings();
+  }, []);
+
   // Retrieve user data from local storage
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -34,7 +62,7 @@ const WebinarCard = () => {
     const fetchAbsens = async () => {
       try {
         const response = await axios.get("http://localhost:5001/absens");
-        console.log(response.data); // Check the received data
+        // console.log(response.data); // Check the received data
 
         // Filter absensi based on the logged-in user
         const userAbsens = response.data.filter(
@@ -88,7 +116,10 @@ const WebinarCard = () => {
 
     // Prepare attendance history for the table
     const history = Array.from({ length: 31 }, (_, i) => {
-      const date = moment(`${currentYear}-${currentMonth}-${i + 1}`, "YYYY-MM-DD").format("YYYY-MM-DD");
+      const date = moment(
+        `${currentYear}-${currentMonth}-${i + 1}`,
+        "YYYY-MM-DD"
+      ).format("YYYY-MM-DD");
       const absen = absenBulanIni.find((a) => a.tanggal === date);
       return {
         tanggal: i + 1,
@@ -137,12 +168,17 @@ const WebinarCard = () => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mx-auto fs-5">
-              <Nav.Link href="/dashboard_rumah/geolocation" className="mx-3">
+              <Nav.Link href="/dashboard_rumah/geolocation" className="mx-3" style={{
+                  color: textColor,
+                }}>
                 Geolocation
               </Nav.Link>
               <Nav.Link
                 href="/dashboard_rumah/keterangan"
                 className="mx-3"
+                style={{
+                  color: textColor,
+                }}
                 active
               >
                 Keterangan
@@ -259,7 +295,8 @@ const WebinarCard = () => {
                         ? "green"
                         : absen.keterangan === "Alpha"
                         ? "red"
-                        : absen.keterangan === "Izin" || absen.keterangan === "Sakit"
+                        : absen.keterangan === "Izin" ||
+                          absen.keterangan === "Sakit"
                         ? "orange"
                         : "white",
                     color: "white",
@@ -272,11 +309,7 @@ const WebinarCard = () => {
             </tbody>
           </Table>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Close
-          </Button>
-        </Modal.Footer>
+        <Modal.Footer></Modal.Footer>
       </Modal>
     </>
   );
