@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Navbar, Nav, Container } from "react-bootstrap";
+import { Navbar, Nav, Container, Modal, Button, Table } from "react-bootstrap";
 import axios from "axios";
-import moment from "moment"; // Import moment.js for easier date manipulation
+import moment from "moment";
 
 const WebinarCard = () => {
   const [loading, setLoading] = useState(true);
@@ -15,7 +15,9 @@ const WebinarCard = () => {
     hadir: 0,
     tidakHadir: 0,
     persentaseKehadiran: 0,
+    history: [],
   });
+  const [showModal, setShowModal] = useState(false);
 
   // Retrieve user data from local storage
   useEffect(() => {
@@ -43,9 +45,7 @@ const WebinarCard = () => {
         const today = moment().format("YYYY-MM-DD");
 
         // Check if the user has already checked in today
-        const absenToday = userAbsens.find(
-          (absen) => absen.tanggal === today
-        );
+        const absenToday = userAbsens.find((absen) => absen.tanggal === today);
 
         setAbsenHariIni(absenToday || null); // Save today's attendance data or null if not yet checked in
 
@@ -64,7 +64,7 @@ const WebinarCard = () => {
     }
   }, [user]);
 
-  // Calculate monthly attendance percentage
+  // Calculate monthly attendance percentage and history
   const hitungAbsenBulanIni = (dataAbsen) => {
     const today = new Date();
     const currentMonth = today.getMonth() + 1; // getMonth is zero-indexed
@@ -73,24 +73,34 @@ const WebinarCard = () => {
     // Filter attendance for the current month and year
     const absenBulanIni = dataAbsen.filter((absen) => {
       const [year, month] = absen.tanggal.split("-");
-      return (
-        parseInt(month) === currentMonth && parseInt(year) === currentYear
-      );
+      return parseInt(month) === currentMonth && parseInt(year) === currentYear;
     });
 
     // Count total attendance
     const totalAbsen = absenBulanIni.length;
-    const hadir = absenBulanIni.filter((absen) => absen.keterangan === "Hadir")
-      .length;
+    const hadir = absenBulanIni.filter(
+      (absen) => absen.keterangan === "Hadir"
+    ).length;
 
     // Calculate attendance percentage
     const persentaseKehadiran =
       totalAbsen > 0 ? ((hadir / totalAbsen) * 100).toFixed(2) : 0;
 
+    // Prepare attendance history for the table
+    const history = Array.from({ length: 31 }, (_, i) => {
+      const date = moment(`${currentYear}-${currentMonth}-${i + 1}`, "YYYY-MM-DD").format("YYYY-MM-DD");
+      const absen = absenBulanIni.find((a) => a.tanggal === date);
+      return {
+        tanggal: i + 1,
+        keterangan: absen ? absen.keterangan : "Tidak Ada Data",
+      };
+    });
+
     setAbsenBulanIni({
       hadir,
       tidakHadir: totalAbsen - hadir,
       persentaseKehadiran,
+      history,
     });
   };
 
@@ -110,6 +120,10 @@ const WebinarCard = () => {
         return "Status kehadiran tidak diketahui.";
     }
   };
+
+  // Open and close the modal
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
 
   return (
     <>
@@ -179,9 +193,7 @@ const WebinarCard = () => {
                           <span className="me-1">
                             <i className="bi bi-calendar-check"></i>
                           </span>
-                          <span>
-                            {moment().format("dddd, MMMM Do YYYY")}
-                          </span>{" "}
+                          <span>{moment().format("dddd, MMMM Do YYYY")}</span>{" "}
                           {/* Show today's date */}
                         </div>
                         <div className="lh-1">
@@ -202,6 +214,19 @@ const WebinarCard = () => {
                         Persentase Kehadiran Bulan Ini:{" "}
                         {absenBulanIni.persentaseKehadiran}%
                       </p>
+                      <button
+                        onClick={handleShowModal}
+                        style={{
+                          backgroundColor: "blue",
+                          color: "white",
+                          padding: "10px 20px",
+                          marginRight: "20px",
+                          border: "none",
+                          borderRadius: "5px",
+                        }}
+                      >
+                        Absen bulan ini
+                      </button>
                     </>
                   )}
                 </div>
@@ -210,6 +235,49 @@ const WebinarCard = () => {
           </div>
         </div>
       </section>
+
+      {/* Modal */}
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Riwayat Absen Bulan Ini</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Table bordered>
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Keterangan</th>
+              </tr>
+            </thead>
+            <tbody>
+              {absenBulanIni.history.map((absen) => (
+                <tr
+                  key={absen.tanggal}
+                  style={{
+                    backgroundColor:
+                      absen.keterangan === "Hadir"
+                        ? "green"
+                        : absen.keterangan === "Alpha"
+                        ? "red"
+                        : absen.keterangan === "Izin" || absen.keterangan === "Sakit"
+                        ? "orange"
+                        : "white",
+                    color: "white",
+                  }}
+                >
+                  <td>{absen.tanggal}</td>
+                  <td>{absen.keterangan}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };
