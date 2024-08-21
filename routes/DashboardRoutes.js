@@ -107,7 +107,7 @@ export const DashboardMenu = [
   {
     id: uuid(),
     title: "Settings",
-    icon: <IoSettingsSharp size={20} />, // Tambahkan ukuran ikon
+    icon: <IoSettingsSharp size={20} style={{ marginRight: "6px" }} />,
     children: [
       { id: uuid(), link: "/pages/settings", name: "Setting Tema" },
       { id: uuid(), link: "/pages/surat", name: "Setting Surat" },

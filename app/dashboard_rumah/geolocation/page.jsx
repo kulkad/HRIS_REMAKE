@@ -21,9 +21,11 @@ export default function Capture({ userName }) {
     if (!userData) {
       window.location.href = "http://localhost:3000/login";
     } else {
-      setUser(JSON.parse(userData));
+      const parsedUserData = JSON.parse(userData);
+      setUser(parsedUserData);
     }
   }, []);
+  
 
   useEffect(() => {
     if (navigator.geolocation) {

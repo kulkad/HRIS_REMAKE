@@ -106,22 +106,21 @@ const HomePage = () => {
     const absenHariIni = absenHarian.filter(
       (absen) => absen.tanggal === todayAbsen
     );
-  
+
     const hadir = absenHariIni.filter(
       (absen) => absen.keterangan === "Hadir"
     ).length;
-  
-    const tidakHadir = absenHariIni.filter(
-      (absen) =>
-        ["Sakit", "Izin", "Alpha"].includes(absen.keterangan)
+
+    const tidakHadir = absenHariIni.filter((absen) =>
+      ["Sakit", "Izin", "Alpha"].includes(absen.keterangan)
     ).length;
-  
+
     setAbsenHariIni({
       hadir,
       tidakHadir,
     });
   };
-  
+
   const hitungAbsenBulanIni = (dataAbsen) => {
     const today = new Date();
     const currentMonth = today.getMonth() + 1;
@@ -130,34 +129,26 @@ const HomePage = () => {
       const [year, month] = absen.tanggal.split("-");
       return parseInt(month) === currentMonth && parseInt(year) === currentYear;
     });
-  
-    const hadir = absenBulanIni.filter((absen) => absen.keterangan === "Hadir")
-      .length;
+
+    const hadir = absenBulanIni.filter(
+      (absen) => absen.keterangan === "Hadir"
+    ).length;
     const tidakHadir = absenBulanIni.filter((absen) =>
       ["Alpha", "Sakit", "Izin"].includes(absen.keterangan)
     ).length;
     const totalAbsen = hadir + tidakHadir;
-  
-    const persentaseKehadiran =
-      totalAbsen > 0 ? (hadir / totalAbsen) * 100 : 0;
-  
+
+    const persentaseKehadiran = totalAbsen > 0 ? (hadir / totalAbsen) * 100 : 0;
+
     setAbsenBulanIni({
       persentaseKehadiran: persentaseKehadiran.toFixed(2),
     });
   };
-  
 
   useEffect(() => {
+    // Memanggil fungsi untuk mendapatkan users dan absens
     fetchUsers();
     fetchAbsens();
-    
-    const userData = localStorage.getItem("user");
-    if (!userData) {
-      window.location.href = "http://localhost:3000/authentication/login";
-    } else {
-      setUser(JSON.parse(userData));
-    }
-  
   }, []);
 
   if (loading) {
@@ -185,7 +176,9 @@ const HomePage = () => {
             <div>
               <div className="d-flex justify-content-between align-items-center">
                 <div className="mb-2 mb-lg-6">
-                  <h2 className="mb-0" style={{ color: textColor }}>Dashboard Admin</h2>
+                  <h2 className="mb-0" style={{ color: textColor }}>
+                    Dashboard Admin
+                  </h2>
                 </div>
               </div>
             </div>
