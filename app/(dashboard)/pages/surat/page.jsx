@@ -19,8 +19,11 @@ const getLuminance = (hex) => {
 const Settings = () => {
   const [logo, setLogo] = useState("");
   const [signature, setSignature] = useState("");
+  const [signature_wakil, setSignature_wakil] = useState("");
   const [nama_perusahaan, setNama_perusahaan] = useState("");
   const [kop_surat, setKop_surat] = useState("");
+  const [ketua, setKetua] = useState("");
+  const [wakil_ketua, setWakil_ketua] = useState("");
   const [alamat, setAlamat] = useState("");
   const [alamat_lengkap, setAlamat_lengkap] = useState("");
   const [user, setUser] = useState([]);
@@ -65,7 +68,10 @@ const Settings = () => {
     formData.append("nama_perusahaan", nama_perusahaan);
     formData.append("logo", logo);
     formData.append("signature", signature);
+    formData.append("signature_wakil", signature_wakil);
     formData.append("kop_surat", kop_surat);
+    formData.append("ketua", ketua);
+    formData.append("wakil_ketua", wakil_ketua);
     formData.append("alamat", alamat);
     formData.append("alamat_lengkap", alamat_lengkap);
     try {
@@ -94,12 +100,16 @@ const Settings = () => {
     setSignature(e.target.files[0]);
   };
 
+  const handleSignatureWakilChange = (e) => {
+    setSignature_wakil(e.target.files[0]);
+  };
+
   // Function to load the letter preview
   const loadSuratPreview = async () => {
     try {
       const response = await axios.get("http://localhost:5001/surats/1");
       setSuratPreview(response.data); // Set the entire response object to suratPreview
-      console.log(response.data);
+      // console.log(response.data);
     } catch (error) {
       console.error("Error fetching Surat Preview:", error);
     }
@@ -126,6 +136,14 @@ const Settings = () => {
           />
         </div>
         <div className="form-group">
+          <label>Signature Wakil :</label>
+          <input
+            type="file"
+            name="signature"
+            onChange={handleSignatureWakilChange}
+          />
+        </div>
+        <div className="form-group">
           <label>Nama Perusahaan :</label>
           <input
             type="text"
@@ -141,6 +159,24 @@ const Settings = () => {
             name="kop_surat"
             value={kop_surat}
             onChange={(e) => setKop_surat(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label>Ketua :</label>
+          <input
+            type="text"
+            name="ketua"
+            value={ketua}
+            onChange={(e) => setKetua(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label>Wakil Ketua :</label>
+          <input
+            type="text"
+            name="wakil_ketua"
+            value={wakil_ketua}
+            onChange={(e) => setWakil_ketua(e.target.value)}
           />
         </div>
         <div className="form-group">
@@ -182,8 +218,9 @@ const Settings = () => {
             </div>
           </div>
         </div>
-        <div className="body-surat flex justify-center">
-          <p>Contoh isi</p> {/* Accessing the content field */}
+        <div className="body-surat flex ju  stify-center">
+          <p> Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis, laudantium dignissimos corrupti quis adipisci dolores cupiditate qui at reprehenderit a laboriosam enim itaque quo nam debitis? Fugit dolores commodi fuga.
+          Hic at eveniet autem ea alias dolores aliquam totam iure magnam repellat. Maxime animi voluptate ad nulla asperiores consequuntur deserunt sunt suscipit nobis reiciendis, et corrupti, impedit molestiae libero aperiam!</p> {/* Accessing the content field */}
         </div>
         <div className="footer-surat">
           <div className="sign-left">
@@ -192,9 +229,9 @@ const Settings = () => {
             <p>{suratPreview.ketua}</p>
           </div>
           <div className="sign-right">
-            <p>Sekretaris,</p>
-            <img src={suratPreview.signature_sekretaris} alt="Signature" />
-            <p>{suratPreview.sekretaris}</p>
+            <p>Wakil Ketua,</p>
+            <img src={suratPreview.url_signature_wakil} alt="Signature" />
+            <p>{suratPreview.wakil_ketua}</p>
           </div>
         </div>
       </div>
