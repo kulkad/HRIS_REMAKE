@@ -34,6 +34,7 @@ const getLuminance = (hex) => {
 const NavbarVertical = (props) => {
   // Untuk mengganti warna dari database
   const [data, setData] = useState({});
+  const [letter, setLetter] = useState({});
   const [loading, setLoading] = useState(true);
   const [textColor, setTextColor] = useState("#FFFFFF");
 
@@ -60,7 +61,22 @@ const NavbarVertical = (props) => {
 
     fetchSettings();
   }, []);
-  
+
+  useEffect(() => {
+    const fetchLetter = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/surats/1");
+        setLetter(response.data);
+      } catch (error) {
+        console.error("Error fetching Settings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLetter();
+  }, []);
+
   const location = usePathname();
   const CustomToggle = ({ children, eventKey, icon }) => {
     const { activeEventKey } = useContext(AccordionContext);
@@ -139,7 +155,7 @@ const NavbarVertical = (props) => {
         <div className="nav-scroller">
           <Link href="/" className="navbar-brand">
             <p className="h4 fw-bold text-start" style={{ color: textColor }}>
-              {data.nama_perusahaan}
+              {letter.nama_perusahaan}
             </p>
           </Link>
         </div>
@@ -345,11 +361,9 @@ const NavbarVertical = (props) => {
                     {/* menu item without any childern items like Documentation and Changelog items*/}
                     <Link
                       href={menu.link}
-                      className={`nav-link ${
-                        location === menu.link ? "active" : ""
-                      } ${
-                        menu.title === "Download" ? "bg-primary text-white" : ""
-                      }`}
+                      className={`nav-link ${location === menu.link ? "active" : ""
+                        } ${menu.title === "Download" ? "bg-primary text-white" : ""
+                        }`}
                     >
                       {typeof menu.icon === "string" ? (
                         <i className={`nav-icon fe fe-${menu.icon} me-2`}></i>

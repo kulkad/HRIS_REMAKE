@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Navbar, Nav, Container, Modal, Button, Table } from "react-bootstrap";
 import axios from "axios";
 import moment from "moment";
+import { useReactToPrint } from "react-to-print";
 
 const WebinarCard = () => {
   const [loading, setLoading] = useState(true);
@@ -22,6 +23,8 @@ const WebinarCard = () => {
   // Untuk mengganti warna dari database
   const [warna, setWarna] = useState({});
   const [textColor, setTextColor] = useState("#FFFFFF");
+
+  const componentRef = useRef(); // Reference for printing
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -156,6 +159,11 @@ const WebinarCard = () => {
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
 
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: `Attendance_Report_${moment().format("MMMM_YYYY")}`,
+  });
+
   return (
     <>
       <Navbar
@@ -168,9 +176,13 @@ const WebinarCard = () => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mx-auto fs-5">
-              <Nav.Link href="/dashboard_rumah/geolocation" className="mx-3" style={{
+              <Nav.Link
+                href="/dashboard_rumah/geolocation"
+                className="mx-3"
+                style={{
                   color: textColor,
-                }}>
+                }}
+              >
                 Geolocation
               </Nav.Link>
               <Nav.Link
@@ -277,7 +289,7 @@ const WebinarCard = () => {
         <Modal.Header closeButton>
           <Modal.Title>Riwayat Absen Bulan Ini</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body ref={componentRef}>
           <Table bordered>
             <thead>
               <tr>
@@ -309,7 +321,11 @@ const WebinarCard = () => {
             </tbody>
           </Table>
         </Modal.Body>
-        <Modal.Footer></Modal.Footer>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handlePrint}>
+            Print as PDF
+          </Button>
+        </Modal.Footer>
       </Modal>
     </>
   );

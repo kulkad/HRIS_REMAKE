@@ -13,8 +13,9 @@ function RootLayout({ children }) {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/settings/1");
+        const response = await axios.get("http://localhost:5001/surats/1");
         setData(response.data);
+        // console.log(response.data);
         // Mengubah judul halaman secara dinamis
         document.title = response.data.nama_perusahaan || 'Default Title';
         

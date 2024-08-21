@@ -17,18 +17,17 @@ const getLuminance = (hex) => {
 };
 
 const Settings = () => {
-  // New states for letter settings
   const [logo, setLogo] = useState("");
   const [signature, setSignature] = useState("");
   const [nama_perusahaan, setNama_perusahaan] = useState("");
-  const [kop_surat_1, setKop_surat_1] = useState("");
-  const [kop_surat_2, setKop_surat_2] = useState("");
-  const [kop_surat_3, setKop_surat_3] = useState("");
-  const [user, setUser] = useState([]); // untuk keamanan agar tidak bocor datanya
+  const [kop_surat, setKop_surat] = useState("");
+  const [alamat, setAlamat] = useState("");
+  const [alamat_lengkap, setAlamat_lengkap] = useState("");
+  const [user, setUser] = useState([]);
+  const [suratPreview, setSuratPreview] = useState(""); // State to store the letter preview
 
-  // Untuk mengganti warna dari database
   const [warna, setWarna] = useState({});
-  const [loading, setLoading] = useState({});
+  const [loading, setLoading] = useState(false);
   const [textColor, setTextColor] = useState("#FFFFFF");
 
   useEffect(() => {
@@ -46,13 +45,8 @@ const Settings = () => {
         const response = await axios.get("http://localhost:5001/settings/1");
         setWarna(response.data);
 
-        // Mengambil warna latar belakang dari API
         const backgroundColor = response.data.warna_sidebar;
-
-        // Menghitung luminance dari warna latar belakang
         const luminance = getLuminance(backgroundColor);
-
-        // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
         setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
       } catch (error) {
         console.error("Error fetching Settings:", error);
@@ -66,16 +60,16 @@ const Settings = () => {
 
   const updateLetterSetting = async (e) => {
     e.preventDefault();
+
     const formData = new FormData();
     formData.append("nama_perusahaan", nama_perusahaan);
     formData.append("logo", logo);
     formData.append("signature", signature);
-    formData.append("kop_surat_1", kop_surat_1);
-    formData.append("kop_surat_2", kop_surat_2);
-    formData.append("kop_surat_3", kop_surat_3);
-
+    formData.append("kop_surat", kop_surat);
+    formData.append("alamat", alamat);
+    formData.append("alamat_lengkap", alamat_lengkap);
     try {
-      await axios.patch(`http://localhost:5001/settings/1`, formData, {
+      await axios.patch(`http://localhost:5001/surats/1`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -93,12 +87,27 @@ const Settings = () => {
   };
 
   const handleLogoChange = (e) => {
-    setLogo(e.target.files[0]); // Mengambil file yang dipilih
+    setLogo(e.target.files[0]);
   };
 
   const handleSignatureChange = (e) => {
-    setSignature(e.target.files[0]); // Mengambil file yang dipilih
+    setSignature(e.target.files[0]);
   };
+
+  // Function to load the letter preview
+  const loadSuratPreview = async () => {
+    try {
+      const response = await axios.get("http://localhost:5001/surats/1");
+      setSuratPreview(response.data); // Set the entire response object to suratPreview
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching Surat Preview:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadSuratPreview();
+  }, []);
 
   return (
     <div className="settings-container">
@@ -120,36 +129,36 @@ const Settings = () => {
           <label>Nama Perusahaan :</label>
           <input
             type="text"
-            name="companyName"
+            name="nama_perusahaan"
             value={nama_perusahaan}
             onChange={(e) => setNama_perusahaan(e.target.value)}
           />
         </div>
         <div className="form-group">
-          <label>Kop Surat 1 :</label>
+          <label>Kop Surat :</label>
           <input
             type="text"
-            name="kop_surat_1"
-            value={kop_surat_1}
-            onChange={(e) => setKop_surat_1(e.target.value)}
+            name="kop_surat"
+            value={kop_surat}
+            onChange={(e) => setKop_surat(e.target.value)}
           />
         </div>
         <div className="form-group">
-          <label>Kop Surat 2 :</label>
+          <label>Alamat :</label>
           <input
             type="text"
-            name="kop_surat_2"
-            value={kop_surat_2}
-            onChange={(e) => setKop_surat_2(e.target.value)}
+            name="alamat"
+            value={alamat}
+            onChange={(e) => setAlamat(e.target.value)}
           />
         </div>
         <div className="form-group">
-          <label>Kop Surat 3 :</label>
+          <label>Alamat Lengkap :</label>
           <input
             type="text"
-            name="kop_surat_3"
-            value={kop_surat_3}
-            onChange={(e) => setKop_surat_3(e.target.value)}
+            name="alamat_lengkap"
+            value={alamat_lengkap}
+            onChange={(e) => setAlamat_lengkap(e.target.value)}
           />
         </div>
         <button
@@ -160,6 +169,35 @@ const Settings = () => {
           Save Letter Changes
         </button>
       </form>
+
+      {/* Add Letter Preview Below */}
+      <div className="surat-preview-container">
+        <div className="kop-surat">
+          <div className="header-left">
+            <img src={suratPreview.url} alt="Logo" className="logo" />
+            <div>
+              <h3>{suratPreview.kop_surat}</h3>
+              <h5>{suratPreview.alamat}</h5>  
+              <p>{suratPreview.alamat_lengkap}</p>  
+            </div>
+          </div>
+        </div>
+        <div className="body-surat flex justify-center">
+          <p>Contoh isi</p> {/* Accessing the content field */}
+        </div>
+        <div className="footer-surat">
+          <div className="sign-left">
+            <p>Ketua Panitia,</p>
+            <img src={suratPreview.url_signature} alt="Signature" />
+            <p>{suratPreview.ketua}</p>
+          </div>
+          <div className="sign-right">
+            <p>Sekretaris,</p>
+            <img src={suratPreview.signature_sekretaris} alt="Signature" />
+            <p>{suratPreview.sekretaris}</p>
+          </div>
+        </div>
+      </div>
 
       <style jsx>{`
         .settings-container {
@@ -187,24 +225,6 @@ const Settings = () => {
           font-weight: bold;
         }
 
-        .color-grid {
-          display: grid;
-          grid-template-columns: repeat(5, 1fr);
-          gap: 10px;
-        }
-
-        .color-block {
-          width: 40px;
-          height: 40px;
-          border-radius: 4px;
-          cursor: pointer;
-          border: 2px solid transparent;
-        }
-
-        .color-block.selected {
-          border: 2px solid #000;
-        }
-
         .btn-save {
           padding: 10px 15px;
           background-color: #007bff;
@@ -216,6 +236,60 @@ const Settings = () => {
 
         .btn-save:hover {
           background-color: #0056b3;
+        }
+
+        /* Surat Preview Styling */
+        .surat-preview-container {
+          margin-top: 30px;
+          padding: 20px;
+          background-color: #ffffff;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+        }
+
+        .kop-surat {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 2px solid #000;
+          padding-bottom: 10px;
+          margin-bottom: 20px;
+        }
+
+        .header-left {
+          display: flex;
+          align-items: center;
+        }
+
+        .logo {
+          width: 80px;
+          margin-right: 15px;
+        }
+
+        .flag {
+          width: 80px;
+        }
+
+        .body-surat {
+          margin-bottom: 20px;
+        }
+
+        .footer-surat {
+          display: flex;
+          justify-content: space-between;
+        }
+
+        .sign-left,
+        .sign-right {
+          text-align: center;
+        }
+
+        .sign-left img,
+        .sign-right img {
+          width: 150px;
+          height: auto;
+          display: block;
+          margin: 10px auto;
         }
       `}</style>
     </div>
