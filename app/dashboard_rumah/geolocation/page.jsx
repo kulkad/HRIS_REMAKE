@@ -3,18 +3,18 @@
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Webcam from "react-webcam";
-import { FaRegImage } from "react-icons/fa6";
 import Swal from "sweetalert2";
 import { Navbar, Nav, Container } from "react-bootstrap";
+import axios from "axios"; // Import axios di sini
 
 export default function Capture({ userName }) {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
-  const fileInputRef = useRef(null);
   const [user, setUser] = useState();
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState({ latitude: null, longitude: null });
-  const [attendance, setAttendance] = useState("Hadir");
+  const [keterangan, setKeterangan] = useState(null);
+  const [alasan, setAlasan] = useState(null);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -25,7 +25,6 @@ export default function Capture({ userName }) {
       setUser(parsedUserData);
     }
   }, []);
-  
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -118,7 +117,7 @@ export default function Capture({ userName }) {
         const marginTop = 6;
         let currentTextY = canvasRef.current.height - 130 + 30 + marginTop;
 
-        if (location.latitude && location.longitude) {
+        if (location.latitude && location.longitude) {  
           context.fillText(
             `Lokasi Anda: ${location.latitude}, ${location.longitude}`,
             textX,
@@ -136,7 +135,7 @@ export default function Capture({ userName }) {
     };
 
     img.src = imageSrc;
-  };
+  };  
 
   const retakePhoto = () => {
     setPhoto(null);
@@ -158,22 +157,46 @@ export default function Capture({ userName }) {
     }
   };
 
-  const submitData = () => {
-    console.log("Photo:", photo);
+  const submitData = async (e) => {
+    e.preventDefault();
+
+    const date = new Date();
+    const formattedDate = date.toISOString().split("T")[0];
+    const formattedTime = date.toTimeString().split(" ")[0];
+
+    try {
+      const formData = new FormData();
+
+      formData.append("userId", user.id);
+      formData.append("foto", photo); // Now photo is a File object
+      formData.append("tanggal", formattedDate);
+      formData.append("waktu_datang", formattedTime);
+      formData.append("lat", location.latitude);
+      formData.append("long", location.longitude);
+      formData.append("keterangan", keterangan);
+      formData.append("alasan", alasan);
+
+      const response = await axios.post(
+        "http://localhost:5001/absen/geolocation",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      Swal.fire({
+        title: "Berhasil!",
+        text: "Datamu berhasil terkirim! Silahkan melanjutkan ke absen hadir!",
+        icon: "success",
+      });
+    } catch (error) {
+      console.error("Error Kirim Data", error);
+    }
+
     console.log("Location:", location);
-    Swal.fire({
-      title: "Berhasil!",
-      text: "Datamu berhasil terkirim! Silahkan melanjutkan ke absen hadir!",
-      icon: "success",
-    });
-  };
-
-  const toggleAttendance = () => {
-    setAttendance((prev) => (prev === "Hadir" ? "Tidak Hadir" : "Hadir"));
-  };
-
-  const handleFileUploadClick = () => {
-    fileInputRef.current.click();
+    console.log(user.id, photo, formattedDate, formattedTime, keterangan, alasan);
   };
 
   return (
@@ -202,21 +225,21 @@ export default function Capture({ userName }) {
           </Navbar.Collapse>
         </Container>
         <div>
-        <Link href="/authentication/logout">
-          <button
-            style={{
-              backgroundColor: "red",
-              color: "white",
-              padding: "10px 20px",
-              marginRight: "20px",
-              border: "none",
-              borderRadius: "5px",
-            }}
-          >
-            Logout
-          </button>
-        </Link>
-      </div>
+          <Link href="/authentication/logout">
+            <button
+              style={{
+                backgroundColor: "red",
+                color: "white",
+                padding: "10px 20px",
+                marginRight: "20px",
+                border: "none",
+                borderRadius: "5px",
+              }}
+            >
+              Logout
+            </button>
+          </Link>
+        </div>
       </Navbar>
 
       <div className="container min-vh-100 d-flex flex-column align-items-center justify-content-center bg-light dark:bg-dark">
@@ -257,50 +280,31 @@ export default function Capture({ userName }) {
               <button onClick={retakePhoto} className="btn btn-secondary">
                 Retake Photo
               </button>
-              <button onClick={submitData} className="btn btn-success">
-                Kirim Data
-              </button>
             </div>
-          </div>
-        )}
-        <button
-          onClick={toggleAttendance}
-          className={`btn mt-4 ${
-            attendance === "Hadir" ? "btn-success" : "btn-danger"
-          }`}
-        >
-          {attendance === "Hadir" ? "Hadir" : "Tidak Hadir"}
-        </button>
-        {attendance === "Tidak Hadir" && (
-          <div className="mt-4 w-100 d-flex justify-content-center">
-            <form className="w-100">
-              <div className="d-flex align-items-center">
-                <div className="form-group me-2">
-                  <select className="form-select">
-                    <option>Izin</option>
-                    <option>Sakit</option>
-                    <option>Lainnya</option>
-                  </select>
+            <div className="mt-4 w-100 d-flex justify-content-center">
+              <form className="w-100">
+                <div className="d-flex align-items-center">
+                  <div className="form-group me-2">
+                    <select className="form-select" 
+                    onChange={(e) => setKeterangan(e.target.value)}>
+                      <option>Izin</option>
+                      <option>Sakit</option>
+                    </select>
+                  </div>
+                  <textarea
+                    id="chat"
+                    rows="1"
+                    className="form-control me-2"
+                    placeholder="Alasan..."
+                    value={alasan}
+                    onChange={(e) => setAlasan(e.target.value)}
+                  ></textarea>
+                  <button onClick={submitData} className="btn btn-primary">
+                    Kirim
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary me-2"
-                  onClick={handleFileUploadClick}
-                >
-                  <input type="file" className="d-none" ref={fileInputRef} />
-                  <FaRegImage size={24} />
-                </button>
-                <textarea
-                  id="chat"
-                  rows="1"
-                  className="form-control me-2"
-                  placeholder="Keterangan..."
-                ></textarea>
-                <button type="submit" className="btn btn-primary">
-                  Kirim
-                </button>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         )}
         <canvas
