@@ -4,34 +4,29 @@ import React, { useState, useRef, useEffect } from "react";
 import Webcam from "react-webcam";
 import axios from "axios";
 import Swal from "sweetalert2";
-import Compressor from "compressorjs";
 
 export default function Capture({ userName }) {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
+  const [user, setUser] = useState();
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState({ latitude: null, longitude: null });
-  const [keterangan, setKeterangan] = useState("Izin");
-  const [alasan, setAlasan] = useState("");
+  const [keterangan, setKeterangan] = useState("Izin"); // Ubah nilai awal menjadi "Izin"
+  const [alasan, setAlasan] = useState(null);
 
-  const [user, setUser] = useState([]); // untuk keamanan agar tidak bocor datanya
-  const userData = localStorage.getItem("user");
-    useEffect(() => {
-  if (!userData) {
-    window.location.href = "http://localhost:3000/authentication/login";
-  } else {
-    setUser(JSON.parse(userData));
-  }
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (!userData) {
+      window.location.href = "http://localhost:3000/login";
+    } else {
+      const parsedUserData = JSON.parse(userData);
+      setUser(parsedUserData);
+    }
+  }, []);
 
-
+  useEffect(() => {
     if (navigator.geolocation) {
-      const options = {
-        enableHighAccuracy: true,
-        timeout: 60000, // 60 detik
-        maximumAge: 0,
-      };
-
-      const id = navigator.geolocation.watchPosition(
+      navigator.geolocation.getCurrentPosition(
         (position) => {
           setLocation({
             latitude: position.coords.latitude,
@@ -41,41 +36,10 @@ export default function Capture({ userName }) {
         (error) => {
           console.error("Error accessing geolocation: ", error);
         },
-        options
+        { enableHighAccuracy: true }
       );
-
-      // Hentikan watching position setelah 15 detik
-      const timeoutId = setTimeout(() => {
-        navigator.geolocation.clearWatch(id);
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            setLocation({
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            });
-          },
-          (error) => {
-            console.error("Error accessing geolocation: ", error);
-          },
-          options
-        );
-      }, 15000);
-
-      // Clear the timeout if the component unmounts
-      return () => {
-        clearTimeout(timeoutId);
-        navigator.geolocation.clearWatch(id);
-      };
     }
   }, []);
-
-  const handleKeteranganChange = (event) => {
-    setKeterangan(event.target.value);
-  };
-
-  const handleAlasanChange = (event) => {
-    setAlasan(event.target.value);
-  };
 
   const getFormattedDate = () => {
     const now = new Date();
@@ -98,8 +62,8 @@ export default function Capture({ userName }) {
     });
   };
 
-  const capturePhoto = async () => {
-    const imageSrc = webcamRef.current.getScreenshot();
+  const capturePhoto = () => {
+    const imageSrc = webcamRef.current.getScreenshot({ format: "image/png" }); // Ubah format screenshot menjadi PNG
     const context = canvasRef.current.getContext("2d");
     const img = new Image();
 
@@ -131,7 +95,7 @@ export default function Capture({ userName }) {
 
       const logoImg = new Image();
       logoImg.src = "/images/assets/gmt-ultra-full-extra-hd.png";
-      logoImg.onload = async () => {
+      logoImg.onload = () => {
         const logoWidth = 70;
         const logoHeight = 70;
         const logoX = 10;
@@ -151,7 +115,7 @@ export default function Capture({ userName }) {
         const marginTop = 6;
         let currentTextY = canvasRef.current.height - 130 + 30 + marginTop;
 
-        if (location.latitude && location.longitude) {
+        if (location.latitude && location.longitude) {  
           context.fillText(
             `Lokasi Anda: ${location.latitude}, ${location.longitude}`,
             textX,
@@ -163,35 +127,16 @@ export default function Capture({ userName }) {
         currentTextY += 30 + marginTop;
         context.fillText(`Waktu: ${time}`, textX, currentTextY);
 
-        const image = canvasRef.current.toDataURL("image/png");
-
-        // Convert base64 to Blob
-        const byteString = atob(image.split(",")[1]);
-        const mimeString = image.split(",")[0].split(":")[1].split(";")[0];
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
-        for (let i = 0; i < byteString.length; i++) {
-          ia[i] = byteString.charCodeAt(i);
-        }
-        const blob = new Blob([ab], { type: mimeString });
-
-        // Compress the image before setting it to state
-        new Compressor(blob, {
-          quality: 0.6, // Adjust the quality as needed
-          success(result) {
-            // Convert Blob to File object
-            const file = new File([result], "photo.png", { type: result.type });
-            setPhoto(file);
-          },
-          error(err) {
-            console.error(err.message);
-          },
-        });
+        const image = canvasRef.current.toDataURL("image/png"); // Pastikan format PNG
+        setPhoto(image);
+        
+        // Tambahkan console.log di sini
+        console.log("Isi foto yang dicapture:", image);
       };
     };
 
     img.src = imageSrc;
-  };
+  };  
 
   const retakePhoto = () => {
     setPhoto(null);
@@ -215,31 +160,30 @@ export default function Capture({ userName }) {
 
   const submitData = async (e) => {
     e.preventDefault();
-
+  
     const date = new Date();
     const formattedDate = date.toISOString().split("T")[0];
     const formattedTime = date.toTimeString().split(" ")[0];
-
+  
     try {
-      const formData = new FormData();
-      formData.append("userId", user.id);
-      formData.append("foto", photo); // Ensure `photo` is a File object
-      formData.append("tanggal", formattedDate);
-      formData.append("waktu_datang", formattedTime);
-      formData.append("lat", location.latitude);
-      formData.append("long", location.longitude);
-      formData.append("keterangan", keterangan);
-      formData.append("alasan", alasan);
-
+      // Kirim data dalam format JSON
       const response = await axios.post(
         "http://localhost:5001/absen/geolocation",
-        formData,
+        {
+          userId: user.id,
+          lat: location.latitude,
+          long: location.longitude,
+          keterangan: keterangan,
+          alasan: alasan,
+          foto: photo, // Kirim string base64 secara langsung
+        },
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         }
       );
+  
       Swal.fire({
         title: "Berhasil!",
         text: "Datamu berhasil terkirim! Silahkan melanjutkan ke absen hadir!",
@@ -248,82 +192,86 @@ export default function Capture({ userName }) {
     } catch (error) {
       console.error("Error Kirim Data", error);
     }
+  
     console.log("Location:", location);
+    console.log("Photo:", photo);
   };
 
   return (
     <div className="container min-vh-100 d-flex flex-column align-items-center justify-content-center bg-light dark:bg-dark">
-      <h1 className="display-4 mt-2 font-bold mb-4 position-absolute top-0 start-0 ms-4 text-dark dark:text-white">
-        {/* Geolocation */}
-      </h1>
-      {!photo && (
-        <div className="d-flex flex-column align-items-center position-relative">
-          <Webcam
-            audio={false}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            className="rounded-circle w-100"
-            videoConstraints={{
-              facingMode: "user",
-            }}
-            style={{ transform: "scaleX(-1)" }}
-          />
-          <button
-            onClick={capturePhoto}
-            className="btn btn-primary mt-4"
-            disabled={location.latitude === null || location.longitude === null}
-          >
-            Ambil Foto
-          </button>
-        </div>
-      )}
-      {photo && (
-        <div className="mt-4 d-flex flex-column align-items-center">
-          <img
-            src={URL.createObjectURL(photo)}
-            alt="Captured"
-            className="border border-secondary mt-2"
-          />
-          <div className="d-flex gap-2 mt-4">
-            <button onClick={retakePhoto} className="btn btn-secondary">
-              Retake Photo
+        <h1 className="display-4 mt-7 font-bold mb-5 position-absolute top-0 start-0 ms-4 text-dark dark:text-white">
+          {/* Geolocation */}
+        </h1>
+        {!photo && (
+          <div className="d-flex flex-column align-items-center position-relative">
+            <Webcam
+              audio={false}
+              ref={webcamRef}
+              screenshotFormat="image/png" // Ubah format menjadi PNG
+              className="rounded-circle w-100"
+              videoConstraints={{
+                facingMode: "user",
+              }}
+              style={{ transform: "scaleX(-1)" }}
+            />
+            <button
+              onClick={capturePhoto}
+              className="btn btn-primary mt-4"
+              disabled={
+                location.latitude === null || location.longitude === null
+              }
+            >
+              Ambil Foto
             </button>
           </div>
-        </div>
-      )}
-      <div className="mt-4 w-100 d-flex justify-content-center">
-        <form className="w-100" onSubmit={submitData}>
-          <div className="d-flex align-items-center">
-            <div className="form-group me-2">
-              <select
-                className="form-select"
-                value={keterangan}
-                onChange={handleKeteranganChange}
-              >
-                <option value="Izin">Izin</option>
-                <option value="Sakit">Sakit</option>
-              </select>
+        )}
+        {photo && (
+          <div className="mt-4 d-flex flex-column align-items-center">
+            <img
+              src={photo}
+              alt="Captured"
+              className="border border-secondary mt-2"
+            />
+            <div className="d-flex gap-2 mt-4">
+              <button onClick={retakePhoto} className="btn btn-secondary">
+                Retake Photo
+              </button>
             </div>
-            <textarea
-              id="chat"
-              rows="1"
-              className="form-control me-2"
-              placeholder="Keterangan..."
-              value={alasan}
-              onChange={handleAlasanChange}
-            ></textarea>
-            <button type="submit" className="btn btn-success">
-              Kirim Data
-            </button>
+            <div className="mt-4 w-100 d-flex justify-content-center">
+              <form className="w-100">
+                <div className="d-flex align-items-center">
+                  <div className="form-group me-2">
+                    <select 
+                      className="form-select" 
+                      value={keterangan} // Tambahkan ini
+                      onChange={(e) => setKeterangan(e.target.value)}
+                    >
+                      <option value="Izin">Izin</option>
+                      <option value="Sakit">Sakit</option>
+                    </select>
+                  </div>
+                  <textarea
+                    id="chat"
+                    rows="1"
+                    className="form-control me-2"
+                    placeholder="Alasan..."
+                    value={alasan}
+                    onChange={(e) => setAlasan(e.target.value)}
+                  ></textarea>
+                  <button onClick={submitData} className="btn btn-primary">
+                    Kirim
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </form>
+        )}
+        <canvas
+          ref={canvasRef}
+          className="d-none"
+          width="480"
+          height="320"
+        ></canvas>
       </div>
-      <canvas
-        ref={canvasRef}
-        className="d-none"
-        width="480"
-        height="320"
-      ></canvas>
-    </div>
   );
 }
