@@ -117,7 +117,7 @@ export default function Capture({ userName }) {
         const marginTop = 6;
         let currentTextY = canvasRef.current.height - 130 + 30 + marginTop;
 
-        if (location.latitude && location.longitude) {  
+        if (location.latitude && location.longitude) {
           context.fillText(
             `Lokasi Anda: ${location.latitude}, ${location.longitude}`,
             textX,
@@ -131,14 +131,14 @@ export default function Capture({ userName }) {
 
         const image = canvasRef.current.toDataURL("image/png"); // Pastikan format PNG
         setPhoto(image);
-        
+
         // Tambahkan console.log di sini
         console.log("Isi foto yang dicapture:", image);
       };
     };
 
     img.src = imageSrc;
-  };  
+  };
 
   const retakePhoto = () => {
     setPhoto(null);
@@ -162,11 +162,11 @@ export default function Capture({ userName }) {
 
   const submitData = async (e) => {
     e.preventDefault();
-  
+
     const date = new Date();
     const formattedDate = date.toISOString().split("T")[0];
     const formattedTime = date.toTimeString().split(" ")[0];
-  
+
     try {
       // Kirim data dalam format JSON
       const response = await axios.post(
@@ -185,7 +185,7 @@ export default function Capture({ userName }) {
           },
         }
       );
-  
+
       Swal.fire({
         title: "Berhasil!",
         text: "Datamu berhasil terkirim! Silahkan melanjutkan ke absen hadir!",
@@ -194,11 +194,10 @@ export default function Capture({ userName }) {
     } catch (error) {
       console.error("Error Kirim Data", error);
     }
-  
+
     console.log("Location:", location);
     console.log("Photo:", photo);
   };
-  
 
   return (
     <div>
@@ -285,9 +284,9 @@ export default function Capture({ userName }) {
             <div className="mt-4 w-100 d-flex justify-content-center">
               <form className="w-100">
                 <div className="d-flex align-items-center">
-                  <div className="form-group me-2">
-                    <select 
-                      className="form-select" 
+                  <div className="form-group me-2 w-50">
+                    <select
+                      className="form-select"
                       value={keterangan} // Tambahkan ini
                       onChange={(e) => setKeterangan(e.target.value)}
                     >

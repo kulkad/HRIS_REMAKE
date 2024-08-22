@@ -240,7 +240,7 @@ export default function Capture({ userName }) {
             <div className="mt-4 w-100 d-flex justify-content-center">
               <form className="w-100">
                 <div className="d-flex align-items-center">
-                  <div className="form-group me-2">
+                  <div className="form-group me-2 w-50">
                     <select 
                       className="form-select" 
                       value={keterangan} // Tambahkan ini

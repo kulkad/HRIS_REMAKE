@@ -1,12 +1,15 @@
 "use client";
 
+// Import necessary libraries and hooks
 import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import { Navbar, Nav, Container, Modal, Button, Table } from "react-bootstrap";
 import axios from "axios";
 import moment from "moment";
-import { useReactToPrint } from "react-to-print";
+import Link from "next/link";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf"; // Pastikan jsPDF diimpor
 
+// Main component
 const WebinarCard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,68 +22,44 @@ const WebinarCard = () => {
     history: [],
   });
   const [showModal, setShowModal] = useState(false);
-
-  // Untuk mengganti warna dari database
-  const [warna, setWarna] = useState({});
-  const [textColor, setTextColor] = useState("#FFFFFF");
-
+  const [surat, setSurat] = useState({});
   const componentRef = useRef(); // Reference for printing
 
   useEffect(() => {
-    const fetchSettings = async () => {
+    const fetchSurat = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/settings/1");
-        setWarna(response.data);
-
-        // Mengambil warna latar belakang dari API
-        const backgroundColor = response.data.warna_sidebar;
-
-        // Menghitung luminance dari warna latar belakang
-        const luminance = getLuminance(backgroundColor);
-
-        // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
-        setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
+        const response = await axios.get("http://localhost:5001/surats/1");
+        setSurat(response.data);
+        console.log(response.data);
       } catch (error) {
-        console.error("Error fetching Settings:", error);
+        console.error("Error fetching Surat:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSettings();
+    fetchSurat();
   }, []);
 
-  // Retrieve user data from local storage
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://localhost:3000/login"; // Redirect to login if user data not found
+      window.location.href = "http://localhost:3000/login";
     } else {
       setUser(JSON.parse(userData));
     }
   }, []);
 
-  // Fetch absens data from API
   useEffect(() => {
     const fetchAbsens = async () => {
       try {
         const response = await axios.get("http://localhost:5001/absens");
-        // console.log(response.data); // Check the received data
-
-        // Filter absensi based on the logged-in user
         const userAbsens = response.data.filter(
           (absen) => absen.userId === user.id
         );
-
-        // Get today's date in a format matching the backend data
         const today = moment().format("YYYY-MM-DD");
-
-        // Check if the user has already checked in today
         const absenToday = userAbsens.find((absen) => absen.tanggal === today);
-
-        setAbsenHariIni(absenToday || null); // Save today's attendance data or null if not yet checked in
-
-        // Calculate attendance for this month
+        setAbsenHariIni(absenToday || null);
         hitungAbsenBulanIni(userAbsens);
       } catch (error) {
         console.error("Error fetching absens:", error);
@@ -95,29 +74,20 @@ const WebinarCard = () => {
     }
   }, [user]);
 
-  // Calculate monthly attendance percentage and history
   const hitungAbsenBulanIni = (dataAbsen) => {
     const today = new Date();
-    const currentMonth = today.getMonth() + 1; // getMonth is zero-indexed
+    const currentMonth = today.getMonth() + 1;
     const currentYear = today.getFullYear();
-
-    // Filter attendance for the current month and year
     const absenBulanIni = dataAbsen.filter((absen) => {
       const [year, month] = absen.tanggal.split("-");
       return parseInt(month) === currentMonth && parseInt(year) === currentYear;
     });
-
-    // Count total attendance
     const totalAbsen = absenBulanIni.length;
     const hadir = absenBulanIni.filter(
       (absen) => absen.keterangan === "Hadir"
     ).length;
-
-    // Calculate attendance percentage
     const persentaseKehadiran =
       totalAbsen > 0 ? ((hadir / totalAbsen) * 100).toFixed(2) : 0;
-
-    // Prepare attendance history for the table
     const history = Array.from({ length: 31 }, (_, i) => {
       const date = moment(
         `${currentYear}-${currentMonth}-${i + 1}`,
@@ -138,7 +108,6 @@ const WebinarCard = () => {
     });
   };
 
-  // Determine the message based on keterangan
   const getMessage = () => {
     if (!absenHariIni) return "Anda belum absen hari ini.";
     switch (absenHariIni.keterangan) {
@@ -155,14 +124,46 @@ const WebinarCard = () => {
     }
   };
 
-  // Open and close the modal
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
 
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-    documentTitle: `Attendance_Report_${moment().format("MMMM_YYYY")}`,
-  });
+  // Function to download PDF with multi-page support
+  const handleDownloadPDF = async () => {
+    if (componentRef.current) {
+      const canvas = await html2canvas(componentRef.current);
+
+      const imgWidth = 180;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const doc = new jsPDF("p", "mm", "a4"); // Instansiasi jsPDF
+      const pageHeight = doc.internal.pageSize.height;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      doc.setFontSize(12);
+      doc.text(surat.kop_surat, 15, 15);
+      doc.text(surat.alamat_lengkap, 15, 25);
+      doc.text(`${surat.kota}, ${moment().format("DD MMMM YYYY")}`, 15, 35);
+
+      while (heightLeft >= 0) {
+        const imgData = canvas.toDataURL("image/png");
+        doc.addImage(imgData, "PNG", 15, position + 40, imgWidth, imgHeight);
+        heightLeft -= pageHeight - 50;
+        position = heightLeft - imgHeight;
+        if (heightLeft > 0) {
+          doc.addPage();
+        }
+      }
+
+      // Director's signature
+      doc.text("Direktur,", 15, imgHeight + 55);
+      doc.addImage(surat.url_signature, "PNG", 15, imgHeight + 60, 24, 24);
+      doc.text(surat.direktur, 15, imgHeight + 85);
+
+      doc.save(`Attendance_Report_${moment().format("MMMM_YYYY")}.pdf`);
+    } else {
+      console.error("Referensi elemen tidak valid");
+    }
+  };
 
   return (
     <>
@@ -170,27 +171,18 @@ const WebinarCard = () => {
         bg="dark"
         variant="dark"
         expand="lg"
-        className="justify-content-center"
+        className="justify-content-beetween"
       >
         <Container>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mx-auto fs-5">
-              <Nav.Link
-                href="/dashboard_rumah/geolocation"
-                className="mx-3"
-                style={{
-                  color: textColor,
-                }}
-              >
+              <Nav.Link href="/dashboard_rumah/geolocation" className="mx-3">
                 Geolocation
               </Nav.Link>
               <Nav.Link
                 href="/dashboard_rumah/keterangan"
                 className="mx-3"
-                style={{
-                  color: textColor,
-                }}
                 active
               >
                 Keterangan
@@ -234,47 +226,44 @@ const WebinarCard = () => {
                           className="img-fluid w-6 h-12 rounded-top-3 mb-4"
                           alt="Profile"
                         />
-                        <div className="text-inherit">{user?.name}</div>
                       </h3>
+                      <h3 className="mb-4 text-center">{user && user.name}</h3>
                       <div className="mb-4">
                         <div className="mb-3 lh-1">
-                          <span className="me-1">
-                            <i className="bi bi-calendar-check"></i>
-                          </span>
-                          <span>{moment().format("dddd, MMMM Do YYYY")}</span>{" "}
-                          {/* Show today's date */}
+                          <span>{moment().format("dddd, MMMM Do YYYY")}</span>
                         </div>
                         <div className="lh-1">
-                          <span className="me-1">
-                            <i className="bi bi-clock"></i>
-                          </span>
                           <span>
                             Anda absen di jam :
                             {absenHariIni && absenHariIni.waktu_datang
                               ? ` ${absenHariIni.waktu_datang}`
                               : " Belum Absen"}
-                          </span>{" "}
-                          {/* Show check-in time or not checked in yet */}
+                          </span>
+                          <p className="mt-4">
+                            Persentase Kehadiran Bulan Ini:{" "}
+                            {absenBulanIni.persentaseKehadiran}%
+                          </p>
                         </div>
                       </div>
-                      <p className="mt-4">{getMessage()}</p>
-                      <p className="mt-4">
-                        Persentase Kehadiran Bulan Ini:{" "}
-                        {absenBulanIni.persentaseKehadiran}%
-                      </p>
-                      <button
-                        onClick={handleShowModal}
+                      <div
+                        className="d-flex justify-content-center align-items-center"
                         style={{
-                          backgroundColor: "blue",
-                          color: "white",
-                          padding: "10px 20px",
-                          marginRight: "20px",
-                          border: "none",
-                          borderRadius: "5px",
+                          height: "100px",
+                          border: "2px solid blue",
+                          borderRadius: "10px",
                         }}
                       >
-                        Absen bulan ini
-                      </button>
+                        <h4 className="text-center">{getMessage()}</h4>
+                      </div>
+                      <br />
+                      <Button
+                        onClick={handleShowModal}
+                        variant="primary"
+                        block
+                        size="lg"
+                      >
+                        Cek Detail Kehadiran Bulan Ini
+                      </Button>
                     </>
                   )}
                 </div>
@@ -284,46 +273,36 @@ const WebinarCard = () => {
         </div>
       </section>
 
-      {/* Modal */}
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Riwayat Absen Bulan Ini</Modal.Title>
+          <Modal.Title>Detail Kehadiran Bulan Ini</Modal.Title>
         </Modal.Header>
-        <Modal.Body ref={componentRef}>
-          <Table bordered>
-            <thead>
-              <tr>
-                <th>Tanggal</th>
-                <th>Keterangan</th>
-              </tr>
-            </thead>
-            <tbody>
-              {absenBulanIni.history.map((absen) => (
-                <tr
-                  key={absen.tanggal}
-                  style={{
-                    backgroundColor:
-                      absen.keterangan === "Hadir"
-                        ? "green"
-                        : absen.keterangan === "Alpha"
-                        ? "red"
-                        : absen.keterangan === "Izin" ||
-                          absen.keterangan === "Sakit"
-                        ? "orange"
-                        : "white",
-                    color: "white",
-                  }}
-                >
-                  <td>{absen.tanggal}</td>
-                  <td>{absen.keterangan}</td>
+        <Modal.Body>
+          <div ref={componentRef}>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Keterangan</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {absenBulanIni.history.map((absen, index) => (
+                  <tr key={index}>
+                    <td>{absen.tanggal}</td>
+                    <td>{absen.keterangan}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={handlePrint}>
-            Print as PDF
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleDownloadPDF}>
+            Download PDF Kehadiran
           </Button>
         </Modal.Footer>
       </Modal>
