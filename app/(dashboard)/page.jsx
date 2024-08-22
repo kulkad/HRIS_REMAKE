@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
-import { Card, Table, Dropdown, Image, Pagination } from "react-bootstrap";
+import { Card, Pagination } from "react-bootstrap";
 import "react-loading-skeleton/dist/skeleton.css";
 // import node module libraries
 import { Fragment } from "react";

@@ -5,7 +5,7 @@ import Link from "next/link";
 import Webcam from "react-webcam";
 import Swal from "sweetalert2";
 import { Navbar, Nav, Container } from "react-bootstrap";
-import axios from "axios"; // Import axios di sini
+import axios from "axios";
 
 export default function Capture({ userName }) {
   const webcamRef = useRef(null);
@@ -13,7 +13,7 @@ export default function Capture({ userName }) {
   const [user, setUser] = useState();
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState({ latitude: null, longitude: null });
-  const [keterangan, setKeterangan] = useState(null);
+  const [keterangan, setKeterangan] = useState("Izin"); // Ubah nilai awal menjadi "Izin"
   const [alasan, setAlasan] = useState(null);
 
   useEffect(() => {
@@ -65,7 +65,7 @@ export default function Capture({ userName }) {
   };
 
   const capturePhoto = () => {
-    const imageSrc = webcamRef.current.getScreenshot();
+    const imageSrc = webcamRef.current.getScreenshot({ format: "image/png" }); // Ubah format screenshot menjadi PNG
     const context = canvasRef.current.getContext("2d");
     const img = new Image();
 
@@ -129,8 +129,11 @@ export default function Capture({ userName }) {
         currentTextY += 30 + marginTop;
         context.fillText(`Waktu: ${time}`, textX, currentTextY);
 
-        const image = canvasRef.current.toDataURL("image/png");
+        const image = canvasRef.current.toDataURL("image/png"); // Pastikan format PNG
         setPhoto(image);
+        
+        // Tambahkan console.log di sini
+        console.log("Isi foto yang dicapture:", image);
       };
     };
 
@@ -159,33 +162,30 @@ export default function Capture({ userName }) {
 
   const submitData = async (e) => {
     e.preventDefault();
-
+  
     const date = new Date();
     const formattedDate = date.toISOString().split("T")[0];
     const formattedTime = date.toTimeString().split(" ")[0];
-
+  
     try {
-      const formData = new FormData();
-
-      formData.append("userId", user.id);
-      formData.append("foto", photo); // Now photo is a File object
-      formData.append("tanggal", formattedDate);
-      formData.append("waktu_datang", formattedTime);
-      formData.append("lat", location.latitude);
-      formData.append("long", location.longitude);
-      formData.append("keterangan", keterangan);
-      formData.append("alasan", alasan);
-
+      // Kirim data dalam format JSON
       const response = await axios.post(
         "http://localhost:5001/absen/geolocation",
-        formData,
+        {
+          userId: user.id,
+          lat: location.latitude,
+          long: location.longitude,
+          keterangan: keterangan,
+          alasan: alasan,
+          foto: photo, // Kirim string base64 secara langsung
+        },
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         }
       );
-
+  
       Swal.fire({
         title: "Berhasil!",
         text: "Datamu berhasil terkirim! Silahkan melanjutkan ke absen hadir!",
@@ -194,10 +194,11 @@ export default function Capture({ userName }) {
     } catch (error) {
       console.error("Error Kirim Data", error);
     }
-
+  
     console.log("Location:", location);
-    console.log(user.id, photo, formattedDate, formattedTime, keterangan, alasan);
+    console.log("Photo:", photo);
   };
+  
 
   return (
     <div>
@@ -251,7 +252,7 @@ export default function Capture({ userName }) {
             <Webcam
               audio={false}
               ref={webcamRef}
-              screenshotFormat="image/jpeg"
+              screenshotFormat="image/png" // Ubah format menjadi PNG
               className="rounded-circle w-100"
               videoConstraints={{
                 facingMode: "user",
@@ -285,10 +286,13 @@ export default function Capture({ userName }) {
               <form className="w-100">
                 <div className="d-flex align-items-center">
                   <div className="form-group me-2">
-                    <select className="form-select" 
-                    onChange={(e) => setKeterangan(e.target.value)}>
-                      <option>Izin</option>
-                      <option>Sakit</option>
+                    <select 
+                      className="form-select" 
+                      value={keterangan} // Tambahkan ini
+                      onChange={(e) => setKeterangan(e.target.value)}
+                    >
+                      <option value="Izin">Izin</option>
+                      <option value="Sakit">Sakit</option>
                     </select>
                   </div>
                   <textarea
