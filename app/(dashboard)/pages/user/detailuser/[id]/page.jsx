@@ -113,35 +113,41 @@ const DetailUser = () => {
   const handleCloseModal = () => setShowModal(false);
 
   // Function to download PDF with multi-page support
-  // Function to download PDF with multi-page support
   const handleDownloadPDF = async () => {
     if (componentRef.current) {
       const canvas = await html2canvas(componentRef.current);
       const imgWidth = 180;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      const doc = new jsPDF("p", "mm", "a4"); // Instansiasi jsPDF
+      const doc = new jsPDF("p", "mm", "a4");
       const pageHeight = doc.internal.pageSize.height;
       let heightLeft = imgHeight;
       let position = 0;
+  
       // Logo surat
       if (surat.url) {
-        doc.addImage(surat.url, "PNG", 15, 10, 24, 24); // Menambahkan logo di bagian atas
+        doc.addImage(surat.url, "PNG", 15, 10, 24, 24);
       }
-
+  
       // Teks kop surat, alamat, dan tanggal
-      doc.setFontSize(24); // Ukuran font disesuaikan agar setara dengan h3
-      doc.text(surat.kop_surat, 45, 20); // Menyesuaikan posisi teks kop surat di samping logo
-
-      // Mengurangi ukuran font untuk alamat dan tanggal
+      doc.setFontSize(24); // Ukuran font setara dengan h3
+      doc.text(surat.kop_surat, 45, 20); // Posisi teks kop surat
+  
       doc.setFontSize(12);
       doc.text(surat.alamat_lengkap, 45, 30);
-      // doc.text(
-      //   `${surat.kota}, ${moment().locale("id").format("DD MMMM YYYY")}`,
-      //   45,
-      //   40
-      // );
-
-      // Menambahkan tabel ke dalam PDF
+  
+      // Garis di bawah kop surat dan alamat
+      doc.setLineWidth(0.5); 
+      doc.line(15, 45, 195, 45); 
+  
+      // Tanggal
+      doc.setFontSize(12);
+      doc.text(
+        `${surat.kota}, ${moment().locale("id").format("DD MMMM YYYY")}`,
+        150, // Menyesuaikan posisi tanggal ke kanan
+        55
+      );
+  
+      // Menambahkan laporan absen dari canvas
       while (heightLeft >= 0) {
         const imgData = canvas.toDataURL("image/png");
         doc.addImage(imgData, "PNG", 15, position + 70, imgWidth, imgHeight);
@@ -151,19 +157,21 @@ const DetailUser = () => {
           doc.addPage();
         }
       }
-
+  
       // Signature dan nama direktur
       if (surat.url_signature) {
-        doc.addImage(surat.url_signature, "PNG", 15, pageHeight - 50, 24, 24); // Menambahkan signature
+        doc.addImage(surat.url_signature, "PNG", 15, pageHeight - 40, 24, 24);
       }
-      doc.text("Direktur,", 15, pageHeight - 60); // Menambahkan teks "Direktur" di atas signature
-      doc.text(surat.direktur, 15, pageHeight - 35); // Menambahkan nama direktur di bawah signature
-
+      doc.text("Direktur,", 15, pageHeight - 45); // Menambahkan teks "Direktur"
+      doc.text(surat.direktur, 15, pageHeight - 20); // Nama direktur di bawah signature
+  
+      // Save the PDF
       doc.save(`Attendance_Report_${moment().format("MMMM_YYYY")}.pdf`);
     } else {
       console.error("Referensi elemen tidak valid");
     }
   };
+  
 
   return (
     <div className="container mt-5">
@@ -274,7 +282,7 @@ const DetailUser = () => {
             Close
           </Button>
           <Button variant="primary" onClick={handleDownloadPDF}>
-            Download PDF Kehadiran
+            Download PDF
           </Button>
         </Modal.Footer>
       </Modal>

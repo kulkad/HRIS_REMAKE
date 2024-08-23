@@ -56,7 +56,7 @@ const HomePage = () => {
         setData(response.data);
 
         // Mengambil warna latar belakang dari API
-        const backgroundColor = response.data.warna_sidebar;
+        const backgroundColor = response.data.warna_secondary;
 
         // Menghitung luminance dari warna latar belakang
         const luminance = getLuminance(backgroundColor);
@@ -165,10 +165,6 @@ const HomePage = () => {
 
   return (
     <Fragment>
-      <div
-        className="pt-10 pb-21"
-        style={{ backgroundColor: data.warna_secondary }}
-      ></div>
       <Container fluid className="mt-n22 px-6">
         <Row>
           <Col lg={12} md={12} xs={12}>

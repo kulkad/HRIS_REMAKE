@@ -85,6 +85,11 @@ export default function DashboardLayout({ children }) {
             }}
           />
         </div>
+        <div
+        className="pt-10 pb-21"
+        style={{ backgroundColor: data.warna_secondary }}
+      >
+      </div>
         {children}
       </div>
     </div>

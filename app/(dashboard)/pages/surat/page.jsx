@@ -205,7 +205,7 @@ const Settings = () => {
           </div>
         </div>
         <div className="body-surat flex flex-col">
-          <p className="mb-4">{suratPreview.kota}, {currentDate}</p>
+          <p className="mb-4 text-right">{suratPreview.kota}, {currentDate}</p>
           <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis, laudantium dignissimos corrupti quis adipisci dolores cupiditate qui at reprehenderit a laboriosam enim itaque quo nam debitis? Fugit dolores commodi fuga.
           Hic at eveniet autem ea alias dolores aliquam totam iure magnam repellat. Maxime animi voluptate ad nulla asperiores consequuntur deserunt sunt suscipit nobis reiciendis, et corrupti, impedit molestiae libero aperiam!</p>
         </div>
@@ -315,6 +315,10 @@ const Settings = () => {
 
         .body-surat p:first-child {
           font-weight: bold;
+        }
+
+        .text-right {
+          text-align: right; /* Mengatur teks menjadi rata kanan */
         }
       `}</style>
     </div>
