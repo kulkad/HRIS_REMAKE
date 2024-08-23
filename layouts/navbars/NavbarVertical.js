@@ -157,7 +157,7 @@ const NavbarVertical = (props) => {
             <p
               className="h4 fw-bold text-start"
               style={{ color: textColor }} // Set initial text color
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#FF0000")} // Change color on hover
+              onMouseEnter={(e) => (e.currentTarget.style.color = textColor)} // Change color on hover
               onMouseLeave={(e) => (e.currentTarget.style.color = textColor)} // Revert color on leave
             >
               {letter.nama_perusahaan}
@@ -178,7 +178,7 @@ const NavbarVertical = (props) => {
                   key={index}
                   style={{ color: textColor }}
                   onMouseEnter={(e) =>
-                    (e.currentTarget.style.color = "#FF0000")
+                    (e.currentTarget.style.color = textColor)
                   }
                   onMouseLeave={(e) =>
                     (e.currentTarget.style.color = textColor)
@@ -188,7 +188,7 @@ const NavbarVertical = (props) => {
                     className="navbar-heading"
                     style={{ color: textColor }}
                     onMouseEnter={(e) =>
-                      (e.currentTarget.style.color = "#FF0000")
+                      (e.currentTarget.style.color = textColor)
                     }
                     onMouseLeave={(e) =>
                       (e.currentTarget.style.color = textColor)
