@@ -212,7 +212,7 @@ const Settings = () => {
         <div className="footer-surat">
           <div className="sign-left">
             <p>Direktur,</p>
-            <img src={suratPreview.url_signature} alt="Signature" />
+            <img src={suratPreview.url_signature} alt="Signature" className="signature" />
             <p>{suratPreview.direktur}</p>
           </div>
         </div>
@@ -280,9 +280,15 @@ const Settings = () => {
           align-items: center;
         }
 
+        /* Gaya untuk logo dan signature */
         .logo {
-          width: 80px;
+          width: 80px; /* Ukuran logo */
           margin-right: 15px;
+        }
+
+        .signature {
+          width: 80px; /* Ukuran signature yang sama dengan logo */
+          height: auto; /* Mempertahankan rasio aspek */
         }
 
         .body-surat {

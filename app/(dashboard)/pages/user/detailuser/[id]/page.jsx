@@ -1,28 +1,58 @@
-"use client"
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import axios from 'axios';
-import { IoIosArrowBack } from 'react-icons/io';
+"use client";
+import React, { useEffect, useState, useRef } from "react";
+
+import { Modal, Button, Table } from "react-bootstrap";
+import { useParams } from "next/navigation";
+import axios from "axios";
+import { IoIosArrowBack } from "react-icons/io";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf"; // Pastikan jsPDF diimpor
+import moment from "moment";
+import "moment/locale/id"; // Impor locale bahasa Indonesia
 
 const DetailUser = () => {
   const [user, setUser] = useState(null);
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const [absenBulanIni, setAbsenBulanIni] = useState({
     hadir: 0,
     tidakHadir: 0,
-    persentaseKehadiran: 0
+    persentaseKehadiran: 0,
+    history: [], // Tambahkan history untuk menyimpan data kehadiran
   });
+  const [surat, setSurat] = useState({});
+  const componentRef = useRef(null);
+
+  useEffect(() => {
+    const fetchSurat = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/surats/1");
+        setSurat(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching Surat:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSurat();
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         // Fetching user details
-        const userResponse = await axios.get(`http://localhost:5001/users/${id}`);
+        const userResponse = await axios.get(
+          `http://localhost:5001/users/${id}`
+        );
         setUser(userResponse.data);
 
         // Fetching user's attendance records
-        const absenResponse = await axios.get(`http://localhost:5001/detailuser/${id}`);
+        const absenResponse = await axios.get(
+          `http://localhost:5001/detailuser/${id}`
+        );
         const allAttendanceData = absenResponse.data;
 
         // Calculate attendance for this month
@@ -39,26 +69,35 @@ const DetailUser = () => {
 
   const hitungAbsenBulanIni = (dataAbsen) => {
     const today = new Date();
-    const currentMonth = today.getMonth() + 1; // getMonth is zero-indexed
+    const currentMonth = today.getMonth() + 1;
     const currentYear = today.getFullYear();
-  
-    // Filter attendance for the current month and year
     const absenBulanIni = dataAbsen.filter((absen) => {
       const [year, month] = absen.tanggal.split("-");
       return parseInt(month) === currentMonth && parseInt(year) === currentYear;
     });
-  
-    // Hitung jumlah kehadiran
     const totalAbsen = absenBulanIni.length;
-    const hadir = absenBulanIni.filter(absen => absen.keterangan === "Hadir").length;
-  
-    // Hitung persentase kehadiran
-    const persentaseKehadiran = totalAbsen > 0 ? ((hadir / totalAbsen) * 100).toFixed(2) : 0;
-  
+    const hadir = absenBulanIni.filter(
+      (absen) => absen.keterangan === "Hadir"
+    ).length;
+    const persentaseKehadiran =
+      totalAbsen > 0 ? ((hadir / totalAbsen) * 100).toFixed(2) : 0;
+    const history = Array.from({ length: 31 }, (_, i) => {
+      const date = moment(
+        `${currentYear}-${currentMonth}-${i + 1}`,
+        "YYYY-MM-DD"
+      ).format("YYYY-MM-DD");
+      const absen = absenBulanIni.find((a) => a.tanggal === date);
+      return {
+        tanggal: i + 1,
+        keterangan: absen ? absen.keterangan : "Tidak Ada Data",
+      };
+    });
+
     setAbsenBulanIni({
       hadir,
       tidakHadir: totalAbsen - hadir,
-      persentaseKehadiran
+      persentaseKehadiran,
+      history,
     });
   };
 
@@ -69,6 +108,62 @@ const DetailUser = () => {
   if (!user) {
     return <div>User not found.</div>;
   }
+
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+
+  // Function to download PDF with multi-page support
+  // Function to download PDF with multi-page support
+  const handleDownloadPDF = async () => {
+    if (componentRef.current) {
+      const canvas = await html2canvas(componentRef.current);
+      const imgWidth = 180;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const doc = new jsPDF("p", "mm", "a4"); // Instansiasi jsPDF
+      const pageHeight = doc.internal.pageSize.height;
+      let heightLeft = imgHeight;
+      let position = 0;
+      // Logo surat
+      if (surat.url) {
+        doc.addImage(surat.url, "PNG", 15, 10, 24, 24); // Menambahkan logo di bagian atas
+      }
+
+      // Teks kop surat, alamat, dan tanggal
+      doc.setFontSize(24); // Ukuran font disesuaikan agar setara dengan h3
+      doc.text(surat.kop_surat, 45, 20); // Menyesuaikan posisi teks kop surat di samping logo
+
+      // Mengurangi ukuran font untuk alamat dan tanggal
+      doc.setFontSize(12);
+      doc.text(surat.alamat_lengkap, 45, 30);
+      // doc.text(
+      //   `${surat.kota}, ${moment().locale("id").format("DD MMMM YYYY")}`,
+      //   45,
+      //   40
+      // );
+
+      // Menambahkan tabel ke dalam PDF
+      while (heightLeft >= 0) {
+        const imgData = canvas.toDataURL("image/png");
+        doc.addImage(imgData, "PNG", 15, position + 70, imgWidth, imgHeight);
+        heightLeft -= pageHeight - 50;
+        position = heightLeft - imgHeight;
+        if (heightLeft > 0) {
+          doc.addPage();
+        }
+      }
+
+      // Signature dan nama direktur
+      if (surat.url_signature) {
+        doc.addImage(surat.url_signature, "PNG", 15, pageHeight - 50, 24, 24); // Menambahkan signature
+      }
+      doc.text("Direktur,", 15, pageHeight - 60); // Menambahkan teks "Direktur" di atas signature
+      doc.text(surat.direktur, 15, pageHeight - 35); // Menambahkan nama direktur di bawah signature
+
+      doc.save(`Attendance_Report_${moment().format("MMMM_YYYY")}.pdf`);
+    } else {
+      console.error("Referensi elemen tidak valid");
+    }
+  };
 
   return (
     <div className="container mt-5">
@@ -94,7 +189,7 @@ const DetailUser = () => {
                 <td>
                   <img
                     className="img-fluid rounded-circle"
-                    style={{ width: '80px', height: '80px' }}
+                    style={{ width: "80px", height: "80px" }}
                     src={user.url}
                     alt="user photo"
                   />
@@ -103,7 +198,17 @@ const DetailUser = () => {
                 <td>{user.role.nama_role}</td>
                 <td>{user.email}</td>
                 <td>{user.status}</td>
-                <td>{absenBulanIni.persentaseKehadiran}%</td>
+                <td>
+                  {absenBulanIni.persentaseKehadiran}%
+                  <Button
+                    onClick={handleShowModal}
+                    variant="primary"
+                    size="sm"
+                    style={{ marginLeft: "10px" }}
+                  >
+                    Detail
+                  </Button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -121,7 +226,7 @@ const DetailUser = () => {
         <div className="card-body text-center">
           <img
             className="img-fluid rounded-circle mb-3"
-            style={{ width: '100px', height: '100px' }}
+            style={{ width: "100px", height: "100px" }}
             src={user.url}
             alt="user photo"
           />
@@ -129,14 +234,50 @@ const DetailUser = () => {
           <p className="card-text">{user.role.nama_role}</p>
           <div className="mt-3">
             <p className="mb-1">
-              <strong>Email: </strong>{user.email}
+              <strong>Email: </strong>
+              {user.email}
             </p>
             <p className="mb-1">
-              <strong>Kehadiran Bulan Ini: </strong>{absenBulanIni.persentaseKehadiran}%
+              <strong>Kehadiran Bulan Ini: </strong>
+              {absenBulanIni.persentaseKehadiran}%
             </p>
           </div>
         </div>
       </div>
+
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Detail Kehadiran Bulan Ini</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div ref={componentRef}>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Keterangan</th>
+                </tr>
+              </thead>
+              <tbody>
+                {absenBulanIni.history.map((absen, index) => (
+                  <tr key={index}>
+                    <td>{absen.tanggal}</td>
+                    <td>{absen.keterangan}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleDownloadPDF}>
+            Download PDF Kehadiran
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
