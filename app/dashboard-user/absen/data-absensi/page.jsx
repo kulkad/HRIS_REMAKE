@@ -11,14 +11,6 @@ import Link from "next/link";
 import { Fragment } from "react";
 import { Container, Col, Row } from "react-bootstrap";
 
-// import widget/custom components
-import { StatRightTopIcon } from "widgets";
-
-// import sub components
-import { ActiveProjects, Teams, TasksPerformance } from "sub-components";
-
-// import required data files
-import ProjectsStatsData from "data/dashboard/ProjectsStatsData";
 
 const DataAbsen = () => {
   const [user, setUser] = useState(null);
@@ -96,7 +88,6 @@ const DataAbsen = () => {
 
   return (
     <Fragment>
-      <div className="pt-10 pb-21" style={{ backgroundColor: data.warna_secondary}}></div>
       <Container fluid className="mt-n22 px-6">
         <Row>
           <Col lg={12} md={12} xs={12}>

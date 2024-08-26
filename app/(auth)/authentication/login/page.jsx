@@ -4,8 +4,6 @@
 import { Row, Col, Card, Form, Button } from 'react-bootstrap';
 import Head from 'next/head';
 import axios from 'axios';
-import { FaLock } from 'react-icons/fa';
-import { MdEmail } from 'react-icons/md';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { MdOutlineAlternateEmail } from "react-icons/md";

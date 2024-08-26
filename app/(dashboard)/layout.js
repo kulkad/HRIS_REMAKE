@@ -85,10 +85,11 @@ export default function DashboardLayout({ children }) {
             }}
           />
         </div>
-        <div
-        className="pt-10 pb-21"
-        style={{ backgroundColor: data.warna_secondary }}
-      >
+       <div
+          className="pt-10 pb-21"
+          style={{ backgroundColor: data.warna_secondary }}
+          hidden={window.location.pathname === "/pages/absen/geolocation" || window.location.pathname.startsWith("/pages/settings") ? true : false}
+        >
       </div>
         {children}
       </div>
