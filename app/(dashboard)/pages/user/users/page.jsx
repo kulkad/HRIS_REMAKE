@@ -55,6 +55,7 @@ const Users = () => {
   const [file, setFile] = useState("");
   const [preview, setPreview] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
 
   // Untuk mengganti warna dari database
   const [warna, setWarna] = useState({});
@@ -86,6 +87,21 @@ const Users = () => {
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
+  };
+
+  const handleRoleChange = (e) => {
+    const selectedRoleName = e.target.value;
+
+    if (selectedRoleName === "") {
+      setRole("All");
+      setRoleId(null);
+    } else {
+      const selectedRoleId = roles.find(
+        (role) => role.nama_role === selectedRoleName
+      )?.id;
+      setRole(selectedRoleName);
+      setRoleId(selectedRoleId);
+    }
   };
 
   const openCreateModal = () => {
@@ -275,23 +291,6 @@ const Users = () => {
     });
   };
 
-  const handleRoleSelect = (selectedRole) => {
-    setRole(selectedRole);
-    const selectedRoleId =
-      roles.find((role) => role.nama_role === selectedRole)?.id || null;
-    setRoleId(selectedRoleId);
-  };
-
-  const uniqueRoles = [
-    ...new Set(
-      Array.isArray(usersByRole)
-        ? usersByRole
-            .map((user) => (user.role ? user.role.nama_role : null))
-            .filter((role) => role !== null)
-        : []
-    ),
-  ]; // Dapatkan peran unik
-
   return (
     <Fragment>
       <Container fluid className="mt-n22 px-6">
@@ -299,15 +298,10 @@ const Users = () => {
           <Col lg={12} md={12} xs={12}>
             <div className="d-flex justify-content-between align-items-center mx-5">
               <div className="mb-2 mb-lg-0">
-                <h3 className="mb-0" style={{ color: textColor }}>Data Pengguna</h3>
+                <h3 className="mb-0" style={{ color: textColor }}>
+                  Data Pengguna
+                </h3>
               </div>
-              <input
-                type="text"
-                placeholder="Cari Nama"
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className="form-control w-25"
-              />
               <div>
                 {role !== "All" && (
                   <Button onClick={openCreateModal} className="btn btn-white">
@@ -318,25 +312,32 @@ const Users = () => {
             </div>
           </Col>
           <Col lg={12} md={12} xs={12}>
-            <Form className="d-flex justify-content-end my-3">
-              <DropdownButton
-                id="dropdown-role-selector"
-                title={role === "All" ? "Semua" : role}
-                onSelect={handleRoleSelect}
-                className="custom-dropdown-button"
-              >
-                <Dropdown.Item eventKey="All">Semua</Dropdown.Item>
-                {roles.map((role, index) => (
-                  <Dropdown.Item key={index} eventKey={role.nama_role}>
-                    {role.nama_role}
-                  </Dropdown.Item>
-                ))}
-              </DropdownButton>
-            </Form>
             <div className="bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
               {successMessage && (
                 <p className="text-green-600">{successMessage}</p>
               )}
+              {/* Search and Filter Inputs */}
+              <div className="d-flex justify-content-between mb-3">
+                <input
+                  type="text"
+                  placeholder="Cari Nama"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  className="form-control w-25"
+                />
+                <Form.Select
+                  value={role === "All" ? "" : role}
+                  onChange={handleRoleChange}
+                  className="form-control w-25"
+                >
+                  <option value="">Semua Role</option>
+                  {roles.map((role) => (
+                    <option key={role.id} value={role.nama_role}>
+                      {role.nama_role}
+                    </option>
+                  ))}
+                </Form.Select>
+              </div>
               {filteredUsers.length === 0 ? (
                 <p className="text-center py-4">
                   Belum ada data, silahkan tambahkan data
@@ -363,7 +364,7 @@ const Users = () => {
                               ? user.role.nama_role
                               : "Role tidak tersedia"}
                           </td>
-                          
+
                           <td>{user.status}</td>
                           <td className="d-flex justify-content-center">
                             <Link
@@ -419,6 +420,9 @@ const Users = () => {
                               {user.role
                                 ? user.role.nama_role
                                 : "Role tidak tersedia"}
+                            </Card.Text>
+                            <Card.Text>
+                              Status: {user.status}
                             </Card.Text>
                           </div>
                           <Dropdown align="end">
