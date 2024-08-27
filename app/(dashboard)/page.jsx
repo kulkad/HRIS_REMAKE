@@ -279,6 +279,7 @@ const HomePage = () => {
                   <th>Nama</th>
                   <th>Email</th>
                   <th>Role</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -288,6 +289,7 @@ const HomePage = () => {
                     <td>{user.name}</td>
                     <td>{user.email}</td>
                     <td>{user.role.nama_role}</td>
+                    <td>{user.status}</td>
                   </tr>
                 ))}
               </tbody>
