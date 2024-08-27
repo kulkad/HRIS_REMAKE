@@ -12,7 +12,6 @@ import {
   Form,
   Table,
   Pagination,
-  DropdownButton,
   Dropdown,
   Card,
   Button,
@@ -224,9 +223,17 @@ const Users = () => {
   }, []);
 
   useEffect(() => {
-    const filtered = usersByRole.filter((user) =>
-      user?.name?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filtered = usersByRole.filter((user) => {
+      const matchesName = user?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesEmail = user?.email?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesRole = user?.role?.nama_role?.toLowerCase().includes(searchQuery.toLowerCase());
+
+      return matchesName || matchesEmail || matchesRole; // Filter berdasarkan nama, email, atau role
+    }).sort((a, b) => {
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+      return nameA.localeCompare(nameB); // Mengurutkan berdasarkan nama
+    });
     setFilteredUsers(filtered);
   }, [searchQuery, usersByRole]);
 

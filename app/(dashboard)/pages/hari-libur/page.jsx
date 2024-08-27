@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, Fragment } from "react";
-import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import axios from "axios";
 import {
@@ -127,9 +126,14 @@ const HariLibur = () => {
         nama_libur,
         tanggal_hari_libur,
       });
-      Swal.fire("Berhasil!", "Hari Libur baru berhasil ditambahkan!", "success");
+      // Tambahkan data baru ke state hariLibur tanpa refresh
+      setHariLibur([...hariLibur, response.data]);
+      Swal.fire(
+        "Berhasil!",
+        "Hari Libur baru berhasil ditambahkan!",
+        "success"
+      );
       closeCreateModal();
-      fetchData();
     } catch (error) {
       console.log(error);
     }
@@ -151,6 +155,7 @@ const HariLibur = () => {
       );
       Swal.fire("Berhasil!", "Hari Libur berhasil diupdate!", "success");
       closeEditModal();
+      fetchData();
     } catch (error) {
       console.log(error);
     }
@@ -170,7 +175,11 @@ const HariLibur = () => {
         try {
           await axios.delete(`http://localhost:5001/hari-libur/${id}`);
           setHariLibur(hariLibur.filter((libur) => libur.id !== id));
-          Swal.fire("Deleted!", "Hari Libur telah berhasil dihapus!.", "success");
+          Swal.fire(
+            "Deleted!",
+            "Hari Libur telah berhasil dihapus!.",
+            "success"
+          );
         } catch (error) {
           console.error("Error deleting Hari Libur:", error.message);
         }
@@ -180,15 +189,23 @@ const HariLibur = () => {
 
   useEffect(() => {
     // Filter data berdasarkan searchQuery
-    const filtered = hariLibur.filter((libur) =>
-      libur.nama_libur.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filtered = hariLibur
+      .filter(
+        (libur) =>
+          libur.nama_libur &&
+          libur.nama_libur.toLowerCase().includes(searchQuery.toLowerCase()) // Periksa apakah nama_libur ada
+      )
+      .sort((a, b) => a.nama_libur.localeCompare(b.nama_libur)); // Tambahkan pengurutan
     setFilteredHariLibur(filtered); // Simpan hasil filter ke state
   }, [searchQuery, hariLibur]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentLibur = searchQuery ? filteredHariLibur : hariLibur.slice(indexOfFirstItem, indexOfLastItem); // Gunakan filteredHariLibur jika ada query pencarian
+  const currentLibur = searchQuery
+    ? filteredHariLibur
+    : (hariLibur || [])
+        .sort((a, b) => (a.nama_libur || "").localeCompare(b.nama_libur || ""))
+        .slice(indexOfFirstItem, indexOfLastItem); // Gunakan filteredHariLibur jika ada query pencarian
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -199,7 +216,9 @@ const HariLibur = () => {
           <Col lg={12} md={12} xs={12}>
             <div className="d-flex justify-content-between align-items-center mx-5">
               <div className="mb-2 mb-lg-0">
-                <h3 className="mb-0" style={{ color: textColor }}>Hari Libur</h3>
+                <h3 className="mb-0" style={{ color: textColor }}>
+                  Hari Libur
+                </h3>
               </div>
               <div>
                 <Button onClick={openCreateModal} className="btn btn-white">
@@ -219,7 +238,8 @@ const HariLibur = () => {
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className="form-control w-25"
-              /> <br />
+              />{" "}
+              <br />
               {hariLibur.length === 0 ? (
                 <p className="text-center py-4">Tidak ada data</p>
               ) : (

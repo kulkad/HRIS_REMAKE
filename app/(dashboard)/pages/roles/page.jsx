@@ -3,7 +3,6 @@
 import React, { useState, useEffect, Fragment } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import Link from "next/link";
 import axios from "axios";
 import {
   Container,
@@ -84,27 +83,44 @@ useEffect(() => {
 
   // Fetch roles on component mount
   useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/roles");
+        setRoles(response.data);
+
+        // Filter dan urutkan data setelah diambil
+        const filtered = response.data
+          .filter((role) =>
+            role.nama_role.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+          .sort((a, b) =>
+            a.nama_role.toLowerCase().localeCompare(b.nama_role.toLowerCase())
+          );
+
+        setFilteredUsers(filtered);
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      }
+    };
+
     fetchRoles();
   }, []);
 
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
-  };
 
-  // Debounce search
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      const filtered = roles.filter((role) =>
-        role.nama_role.toLowerCase().includes(searchQuery.toLowerCase())
+    // Update filteredUsers saat searchQuery berubah
+    const filtered = roles
+      .filter((role) =>
+        role.nama_role.toLowerCase().includes(e.target.value.toLowerCase())
+      )
+      .sort((a, b) =>
+        a.nama_role.toLowerCase().localeCompare(b.nama_role.toLowerCase())
       );
-      setFilteredUsers(filtered);
-    }, 300); // Delay 300ms
 
-    return () => {
-      clearTimeout(handler); // Clear timeout on cleanup
-    };
-  }, [searchQuery, roles]); // Run when searchQuery or roles change
+    setFilteredUsers(filtered);
+  };
 
   const openCreateModal = () => {
     setShowCreateModal(true);
@@ -281,31 +297,31 @@ useEffect(() => {
           </Col>
           <Col lg={12} md={12} xs={12}>
             <div className="bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
-              {successMessage && (
+            {successMessage && (
                 <p className="text-green-600">{successMessage}</p>
               )}
               <input
-                  type="text"
-                  placeholder="Cari Role"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  className="form-control w-25"
-                /> <br />
-              {roles.length === 0 ? (
+                type="text"
+                placeholder="Cari Role"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="form-control w-25"
+              /> <br />
+              {filteredUsers.length === 0 ? (
                 <p className="text-center py-4">Tidak ada data</p>
               ) : (
                 <div className="d-none d-lg-block table-responsive">
                   <Table hover className="table text-center">
                     <thead className="table-light">
                       <tr>
-                        <th>Nama role </th>
-                        <th>Jam pulang </th>
-                        <th>Denda </th>
+                        <th>Nama role</th>
+                        <th>Jam pulang</th>
+                        <th>Denda</th>
                         <th>Aksi</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {currentUsers.map((role) => (
+                      {filteredUsers.map((role) => (
                         <tr key={role.id}>
                           <td>{role.nama_role}</td>
                           <td>{role.jam_pulang}</td>

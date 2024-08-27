@@ -6,7 +6,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 // import node module libraries
 import { Fragment } from "react";
-import { Container, Col, Row, Form, Pagination } from "react-bootstrap";
+import { Container, Col, Row, Pagination } from "react-bootstrap";
 import { format } from "date-fns"; // import date-fns
 
 // Fungsi untuk menghitung luminance
@@ -232,7 +232,9 @@ const DataAbsen = () => {
                             {item.user.role.nama_role || "Tidak ada data"}
                           </span>
                         </td>
-                        <td>{item.tanggal || "Tidak ada data"}</td>
+                        <td style={{ whiteSpace: "normal", width: "150px" }}>
+                          {item.tanggal || "Tidak ada data"}
+                        </td>
                         <td>{item.waktu_datang || "Tidak ada data"}</td>
                         <td>{item.keterangan || "Tidak ada data"}</td>
                         <td>
