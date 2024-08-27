@@ -235,7 +235,7 @@ const DataAbsen = () => {
                         <td>{item.tanggal}</td>
                         <td>{item.waktu_datang}</td>
                         <td>{item.keterangan}</td>
-                        <td>{item.url_foto}</td>
+                        <td><img src={item.url_foto} alt="Tidak ada foto" style={{ width: '200px', height: '130px' }} /></td>
                         <td>{item.alasan}</td>
                       </tr>
                     ))
