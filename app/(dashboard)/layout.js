@@ -1,51 +1,30 @@
 "use client";
 
-// import node module libraries
+// Import modul node
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation"; // Gunakan usePathname dari next/navigation
 import axios from "axios"; // Jangan lupa import axios jika belum
 
-// import theme style scss file
+// Import file scss tema
 import "styles/theme.scss";
 
-// import sub components
+// Import sub komponen
 import NavbarVertical from "/layouts/navbars/NavbarVertical";
 import NavbarTop from "/layouts/navbars/NavbarTop";
 
 export default function DashboardLayout({ children }) {
-  useEffect(() => {
-    // Mengambil data pengguna dari localStorage
-    const userData = localStorage.getItem("user");
-
-    // Periksa apakah userData ada
-    if (!userData) {
-      // Jika tidak ada data pengguna, arahkan ke halaman login
-      window.location.href = "http://localhost:3000/authentication/login";
-    } else {
-      // Parse data pengguna dari JSON string menjadi objek
-      const parsedUserData = JSON.parse(userData);
-
-      // Periksa nilai nama_role
-      if (
-        parsedUserData.nama_role !== "Admin" &&
-        parsedUserData.nama_role !== "Manager" &&
-        parsedUserData.nama_role !== "Karyawan"
-      ) {
-        // Jika nama_role tidak sesuai, arahkan ke halaman geolocation
-        window.location.href =
-          "http://localhost:3000/dashboard_rumah/geolocation";
-      } else {
-        // Jika nama_role sesuai, set user ke dalam state dan log data pengguna
-        setUser(parsedUserData);
-        console.log(parsedUserData);
-      }
-    }
-  }, []);
-
-  // Untuk mengganti warna dari database
+  const pathname = usePathname(); // Dapatkan path saat ini
   const [data, setData] = useState({});
-  const [user, setUser] = useState([]); // State to store all users
+  const [user, setUser] = useState([]); // State untuk menyimpan data pengguna
   const [loading, setLoading] = useState(true);
+  const [showMenu, setShowMenu] = useState(true);
+  const [isPageExcluded, setIsPageExcluded] = useState(false); // State untuk mengelola halaman yang dikecualikan
 
+  const ToggleMenu = () => {
+    setShowMenu(!showMenu);
+  };
+
+  // Fetch settings dari API
   useEffect(() => {
     const fetchSettings = async () => {
       try {
@@ -60,10 +39,46 @@ export default function DashboardLayout({ children }) {
     fetchSettings();
   }, []);
 
-  const [showMenu, setShowMenu] = useState(true);
-  const ToggleMenu = () => {
-    return setShowMenu(!showMenu);
-  };
+  // Cek apakah halaman saat ini termasuk dalam halaman yang dikecualikan
+  useEffect(() => {
+    const excludedPaths = [
+      "/pages/absen/geolocation",
+      "/pages/settings",
+      "/pages/surat",
+      "/pages/user/detailuser"
+    ];
+
+    const isExcluded = excludedPaths.some((path) =>
+      pathname.startsWith(path)
+    );
+    setIsPageExcluded(isExcluded);
+  }, [pathname]);
+
+  // Cek data pengguna dari localStorage
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+
+    if (!userData) {
+      // Jika tidak ada data pengguna, arahkan ke halaman login
+      window.location.href = "http://localhost:3000/authentication/login";
+    } else {
+      const parsedUserData = JSON.parse(userData);
+
+      // Periksa nilai nama_role
+      if (
+        parsedUserData.nama_role !== "Admin" &&
+        parsedUserData.nama_role !== "Manager" &&
+        parsedUserData.nama_role !== "Karyawan"
+      ) {
+        // Jika nama_role tidak sesuai, arahkan ke halaman geolocation
+        window.location.href =
+          "http://localhost:3000/dashboard_rumah/geolocation";
+      } else {
+        setUser(parsedUserData);
+        console.log(parsedUserData);
+      }
+    }
+  }, []);
 
   return (
     <div id="db-wrapper" className={`${showMenu ? "" : "toggled"}`}>
@@ -85,12 +100,11 @@ export default function DashboardLayout({ children }) {
             }}
           />
         </div>
-       <div
+        <div
           className="pt-10 pb-21"
           style={{ backgroundColor: data.warna_secondary }}
-          hidden={window.location.pathname === "/pages/absen/geolocation" || window.location.pathname.startsWith("/pages/settings") ? true : false}
-        >
-      </div>
+          hidden={isPageExcluded} // Sembunyikan div berdasarkan pengecualian halaman
+        ></div>
         {children}
       </div>
     </div>

@@ -23,7 +23,6 @@ const FaceComparison = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const webcamRef = useRef(null);
   const imageRef2 = useRef(null);
-  const [data, setData] = useState({});
 
   const officeLat = -6.770397; // Latitude kantor
   const officeLng = 108.461445; // Longitude kantor

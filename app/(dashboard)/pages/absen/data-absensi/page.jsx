@@ -2,10 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { BiSolidUserDetail } from "react-icons/bi";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import Link from "next/link";
 // import node module libraries
 import { Fragment } from "react";
 import { Container, Col, Row, Form, Pagination } from "react-bootstrap";
@@ -62,12 +60,29 @@ const DataAbsen = () => {
     fetchSettings();
   }, []);
 
+  // Cek data pengguna dari localStorage
   useEffect(() => {
     const userData = localStorage.getItem("user");
+
     if (!userData) {
-      window.location.href = "http://localhost:3000/login";
+      // Jika tidak ada data pengguna, arahkan ke halaman login
+      window.location.href = "http://localhost:3000/authentication/login";
     } else {
-      setUser(JSON.parse(userData));
+      const parsedUserData = JSON.parse(userData);
+
+      // Periksa nilai nama_role
+      if (
+        parsedUserData.nama_role !== "Admin" &&
+        parsedUserData.nama_role !== "Manager" &&
+        parsedUserData.nama_role !== "Karyawan"
+      ) {
+        // Jika nama_role tidak sesuai, arahkan ke halaman geolocation
+        window.location.href =
+          "http://localhost:3000/dashboard_rumah/geolocation";
+      } else {
+        setUser(parsedUserData);
+        console.log(parsedUserData);
+      }
     }
   }, []);
 
@@ -103,10 +118,15 @@ const DataAbsen = () => {
       item.user &&
       item.user.name &&
       item.user.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesRole = selectedRole === "" || item.user.role === selectedRole;
+
+    const matchesRole =
+      selectedRole === "" ||
+      (item.user.role && item.user.role.nama_role === selectedRole);
+
     const matchesDate =
       searchDate === "" ||
       format(new Date(item.tanggal), "yyyy-MM-dd") === searchDate;
+
     return matchesName && matchesRole && matchesDate;
   });
 
@@ -141,7 +161,9 @@ const DataAbsen = () => {
             <div>
               <div className="d-flex justify-content-between align-items-center">
                 <div className="mb-2 mb-lg-0">
-                  <h3 className="mb-0" style={{ color: textColor }}>Data Absensi</h3>
+                  <h3 className="mb-0" style={{ color: textColor }}>
+                    Data Absensi
+                  </h3>
                 </div>
               </div>
             </div>

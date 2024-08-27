@@ -182,7 +182,7 @@ const HomePage = () => {
 
           {/* <!-- Card stats --> */}
           <div className="row py-5">
-            <div className="col-xl-3 col-md-6">
+          <div className="col-xl-3 col-md-6">
               <div className="card card-stats">
                 {/* <!-- Card body --> */}
                 <div className="card-body">
@@ -195,12 +195,10 @@ const HomePage = () => {
                         {users.length}
                       </span>
                     </div>
-                    <div className="col-auto">
-                      <div className="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
-                        <i className="ni ni-active-40"></i>
-                      </div>
-                    </div>
                   </div>
+                  <p className="mt-3 mb-0 text-sm">
+                    <span className="text-nowrap">Hari Ini</span>
+                  </p>
                 </div>
               </div>
             </div>
