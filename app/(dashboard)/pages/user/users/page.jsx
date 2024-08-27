@@ -369,7 +369,7 @@ const Users = () => {
                           <td className="d-flex justify-content-center">
                             <Link
                               href={`/pages/user/detailuser/${user.id}`}
-                              className="btn btn-info me-2 d-flex align-items-center justify-content-center text-white"
+                              className="btn btn-success me-2 d-flex align-items-center justify-content-center text-white"
                             >
                               <PersonVcard className="me-2 text-white" />
                               Detail
@@ -379,7 +379,7 @@ const Users = () => {
                                 href={`/pages/user/register/${user.id}?role=${
                                   user.role ? user.role.nama_role : ""
                                 }`}
-                                className="btn btn-success me-2 d-flex align-items-center justify-content-center"
+                                className="btn btn-info me-2 d-flex align-items-center justify-content-center text-white"
                               >
                                 {user.url_foto_absen == null ? (
                                   <>

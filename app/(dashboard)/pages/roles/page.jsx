@@ -82,9 +82,29 @@ useEffect(() => {
 
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Fetch roles on component mount
+  useEffect(() => {
+    fetchRoles();
+  }, []);
+
+  // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
+
+  // Debounce search
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const filtered = roles.filter((role) =>
+        role.nama_role.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredUsers(filtered);
+    }, 300); // Delay 300ms
+
+    return () => {
+      clearTimeout(handler); // Clear timeout on cleanup
+    };
+  }, [searchQuery, roles]); // Run when searchQuery or roles change
 
   const openCreateModal = () => {
     setShowCreateModal(true);
@@ -198,10 +218,6 @@ useEffect(() => {
       }
     };
 
-    useEffect(() => {
-      fetchRoles();
-    }, []);
-
   if (!user) {
     return (
       <div className="w-full bg-white dark:bg-slate-900 dark:text-white max-w-md mx-auto rounded-lg shadow-md overflow-hidden md:max-w-2xl p-4">
@@ -268,6 +284,13 @@ useEffect(() => {
               {successMessage && (
                 <p className="text-green-600">{successMessage}</p>
               )}
+              <input
+                  type="text"
+                  placeholder="Cari Role"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  className="form-control w-25"
+                /> <br />
               {roles.length === 0 ? (
                 <p className="text-center py-4">Tidak ada data</p>
               ) : (

@@ -38,34 +38,35 @@ const HariLibur = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-
   const [nama_libur, setNamaLibur] = useState("");
   const [tanggal_hari_libur, setTanggalHariLibur] = useState("");
   const [selectedLiburId, setSelectedLiburId] = useState(null);
-  
-   // Untuk mengganti warna dari database
-   const [warna, setWarna] = useState({});
-   const [loading, setLoading] = useState({});
-   const [textColor, setTextColor] = useState("#FFFFFF");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredHariLibur, setFilteredHariLibur] = useState([]); // Ubah ini menjadi state untuk menyimpan hasil filter
+
+  // Untuk mengganti warna dari database
+  const [warna, setWarna] = useState({});
+  const [loading, setLoading] = useState({});
+  const [textColor, setTextColor] = useState("#FFFFFF");
 
   const [user, setUser] = useState([]); // untuk keamanan agar tidak bocor datanya
   useEffect(() => {
-  const userData = localStorage.getItem("user");
-  if (!userData) {
-    window.location.href = "http://localhost:3000/authentication/login";
-  } else {
-    setUser(JSON.parse(userData));
-  }
-
-  const fetchData = async () => {
-    try {
-      const response = await axios.get("http://localhost:5001/hari-libur");
-      setHariLibur(response.data);
-      // console.log(response.data);
-    } catch (error) {
-      console.error("Error fetching Hari Libur:", error);
+    const userData = localStorage.getItem("user");
+    if (!userData) {
+      window.location.href = "http://localhost:3000/authentication/login";
+    } else {
+      setUser(JSON.parse(userData));
     }
-  };
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/hari-libur");
+        setHariLibur(response.data);
+        // console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching Hari Libur:", error);
+      }
+    };
 
     const fetchSettings = async () => {
       try {
@@ -90,6 +91,10 @@ const HariLibur = () => {
     fetchSettings();
     fetchData();
   }, []);
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
 
   const openCreateModal = () => {
     setShowCreateModal(true);
@@ -173,9 +178,17 @@ const HariLibur = () => {
     });
   };
 
+  useEffect(() => {
+    // Filter data berdasarkan searchQuery
+    const filtered = hariLibur.filter((libur) =>
+      libur.nama_libur.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredHariLibur(filtered); // Simpan hasil filter ke state
+  }, [searchQuery, hariLibur]);
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentLibur = hariLibur.slice(indexOfFirstItem, indexOfLastItem);
+  const currentLibur = searchQuery ? filteredHariLibur : hariLibur.slice(indexOfFirstItem, indexOfLastItem); // Gunakan filteredHariLibur jika ada query pencarian
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -200,6 +213,13 @@ const HariLibur = () => {
               {successMessage && (
                 <p className="text-green-600">{successMessage}</p>
               )}
+              <input
+                type="text"
+                placeholder="Cari Hari Libur"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="form-control w-25"
+              /> <br />
               {hariLibur.length === 0 ? (
                 <p className="text-center py-4">Tidak ada data</p>
               ) : (

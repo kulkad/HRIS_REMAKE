@@ -225,18 +225,24 @@ const DataAbsen = () => {
                       <tr key={item.id}>
                         <td>{indexOfFirstItem + index + 1}</td>
                         <td className="table-user">
-                          <b>{item.user.name}</b>
+                          <b>{item.user.name || "Tidak ada data"}</b>
                         </td>
                         <td>
                           <span className="text-muted">
-                            {item.user.role.nama_role}
+                            {item.user.role.nama_role || "Tidak ada data"}
                           </span>
                         </td>
-                        <td>{item.tanggal}</td>
-                        <td>{item.waktu_datang}</td>
-                        <td>{item.keterangan}</td>
-                        <td><img src={item.url_foto} alt="Tidak ada foto" style={{ width: '200px', height: '130px' }} /></td>
-                        <td>{item.alasan}</td>
+                        <td>{item.tanggal || "Tidak ada data"}</td>
+                        <td>{item.waktu_datang || "Tidak ada data"}</td>
+                        <td>{item.keterangan || "Tidak ada data"}</td>
+                        <td>
+                          <img
+                            src={item.url_foto}
+                            alt="Tidak ada foto"
+                            style={{ width: "200px", height: "130px" }}
+                          />
+                        </td>
+                        <td>{item.alasan || "Tidak ada data"}</td>
                       </tr>
                     ))
                   )}
