@@ -237,7 +237,7 @@ const HariLibur = () => {
                 placeholder="Cari Hari Libur"
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className="form-control w-25"
+                className="form-control w-50"
               />{" "}
               <br />
               {hariLibur.length === 0 ? (

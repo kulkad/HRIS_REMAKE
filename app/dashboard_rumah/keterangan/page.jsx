@@ -187,25 +187,23 @@ const WebinarCard = () => {
               >
                 Keterangan
               </Nav.Link>
+              <Link href="/authentication/logout">
+                <button
+                  style={{
+                    backgroundColor: "red",
+                    color: "white",
+                    padding: "10px 20px",
+                    marginLeft: "10px",
+                    border: "none",
+                    borderRadius: "5px",
+                  }}
+                >
+                  Logout
+                </button>
+              </Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
-        <div>
-          <Link href="/authentication/logout">
-            <button
-              style={{
-                backgroundColor: "red",
-                color: "white",
-                padding: "10px 20px",
-                marginRight: "20px",
-                border: "none",
-                borderRadius: "5px",
-              }}
-            >
-              Logout
-            </button>
-          </Link>
-        </div>
       </Navbar>
 
       <section className="py-6">
@@ -257,6 +255,7 @@ const WebinarCard = () => {
                       </div>
                       <br />
                       <Button
+                        className="d-flex justify-content-center align-items-center mx-auto" // Tambahkan mx-auto untuk memusatkan
                         onClick={handleShowModal}
                         variant="primary"
                         block
@@ -300,9 +299,6 @@ const WebinarCard = () => {
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>
             Close
-          </Button>
-          <Button variant="primary" onClick={handleDownloadPDF}>
-            Download PDF Kehadiran
           </Button>
         </Modal.Footer>
       </Modal>

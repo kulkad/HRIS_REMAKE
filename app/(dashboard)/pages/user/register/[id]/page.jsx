@@ -5,8 +5,8 @@ import * as faceapi from "face-api.js";
 import Webcam from "react-webcam";
 import axios from "axios";
 import { useParams } from "next/navigation";
-import Skeleton from 'react-loading-skeleton'
-import 'react-loading-skeleton/dist/skeleton.css'
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import Swal from "sweetalert2";
 
 const DaftarAbsen = () => {
@@ -74,7 +74,7 @@ const DaftarAbsen = () => {
       Swal.fire({
         title: "Berhasil!",
         text: "Berhasil mendaftarkan wajah !",
-        icon: "success"
+        icon: "success",
       }).then(() => {
         // Pindah halaman setelah alert ditutup
         window.location.href = "/pages/user/users";
@@ -84,8 +84,8 @@ const DaftarAbsen = () => {
       Swal.fire({
         title: "Berhasil!",
         text: "Gagal mendaftarkan wajah !",
-        icon: "error"
-      }).then(() =>{
+        icon: "error",
+      }).then(() => {
         window.location.href = "/pages/user/register";
       });
     }
@@ -94,11 +94,11 @@ const DaftarAbsen = () => {
   if (initializing) {
     return (
       <div className="container bg-white text-dark rounded shadow p-4">
-        <Skeleton height={40} count={1} className="mb-4"/>
-        <Skeleton height={20} count={1} className="mb-4"/>
-        <Skeleton height={20} count={1} className="mb-4"/>
-        <Skeleton height={50} width={150} className="mb-4"/>
-        <Skeleton height={50} width={150} className="mb-4"/>
+        <Skeleton height={40} count={1} className="mb-4" />
+        <Skeleton height={20} count={1} className="mb-4" />
+        <Skeleton height={20} count={1} className="mb-4" />
+        <Skeleton height={50} width={150} className="mb-4" />
+        <Skeleton height={50} width={150} className="mb-4" />
       </div>
     );
   }
@@ -117,16 +117,21 @@ const DaftarAbsen = () => {
               audio={false}
               ref={webcamRef}
               screenshotFormat="image/jpeg"
-              width="640"
-              height="480"
               videoConstraints={{
                 facingMode: "user",
               }}
-              className="rounded-circle"
+              className="rounded-circle w-100"
               style={{ transform: "scaleX(-1)" }}
             />
           )}
-          {photo && <img src={photo} alt="Captured" className="mt-4 rounded-circle" style={{ transform: "scaleX(-1)" }} />}
+          {photo && (
+            <img
+              src={photo}
+              alt="Captured"
+              className="mt-4 rounded-circle"
+              style={{ transform: "scaleX(-1)" }}
+            />
+          )}
         </div>
       </div>
       <div className="row justify-content-center mt-4">
@@ -134,7 +139,7 @@ const DaftarAbsen = () => {
           <button
             onClick={capture}
             className="btn btn-primary btn-sm"
-            style={{ width: 'auto' }}
+            style={{ width: "auto" }}
           >
             Ambil Foto
           </button>
@@ -162,9 +167,7 @@ const DaftarAbsen = () => {
         </p>
       )}
       {absenSuccess && (
-        <p className="text-primary font-weight-bold text-center">
-          
-        </p>
+        <p className="text-primary font-weight-bold text-center"></p>
       )}
     </div>
   );

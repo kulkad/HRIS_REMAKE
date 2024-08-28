@@ -305,7 +305,7 @@ useEffect(() => {
                 placeholder="Cari Role"
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className="form-control w-25"
+                className="form-control w-50"
               /> <br />
               {filteredUsers.length === 0 ? (
                 <p className="text-center py-4">Tidak ada data</p>

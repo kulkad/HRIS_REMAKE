@@ -223,17 +223,25 @@ const Users = () => {
   }, []);
 
   useEffect(() => {
-    const filtered = usersByRole.filter((user) => {
-      const matchesName = user?.name?.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesEmail = user?.email?.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesRole = user?.role?.nama_role?.toLowerCase().includes(searchQuery.toLowerCase());
+    const filtered = usersByRole
+      .filter((user) => {
+        const matchesName = user?.name
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        const matchesEmail = user?.email
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        const matchesRole = user?.role?.nama_role
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase());
 
-      return matchesName || matchesEmail || matchesRole; // Filter berdasarkan nama, email, atau role
-    }).sort((a, b) => {
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-      return nameA.localeCompare(nameB); // Mengurutkan berdasarkan nama
-    });
+        return matchesName || matchesEmail || matchesRole; // Filter berdasarkan nama, email, atau role
+      })
+      .sort((a, b) => {
+        const nameA = a.name.toLowerCase();
+        const nameB = b.name.toLowerCase();
+        return nameA.localeCompare(nameB); // Mengurutkan berdasarkan nama
+      });
     setFilteredUsers(filtered);
   }, [searchQuery, usersByRole]);
 
@@ -330,12 +338,12 @@ const Users = () => {
                   placeholder="Cari Nama"
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  className="form-control w-25"
+                  className="form-control w-50"
                 />
                 <Form.Select
                   value={role === "All" ? "" : role}
                   onChange={handleRoleChange}
-                  className="form-control w-25"
+                  className="form-control w-auto"
                 >
                   <option value="">Semua Role</option>
                   {roles.map((role) => (
@@ -428,9 +436,7 @@ const Users = () => {
                                 ? user.role.nama_role
                                 : "Role tidak tersedia"}
                             </Card.Text>
-                            <Card.Text>
-                              Status: {user.status}
-                            </Card.Text>
+                            <Card.Text>Status: {user.status}</Card.Text>
                           </div>
                           <Dropdown align="end">
                             <Dropdown.Toggle

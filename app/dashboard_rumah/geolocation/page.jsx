@@ -221,25 +221,23 @@ export default function Capture({ userName }) {
               <Nav.Link href="/dashboard_rumah/keterangan" className="mx-3">
                 Keterangan
               </Nav.Link>
+              <Link href="/authentication/logout">
+                <button
+                  style={{
+                    backgroundColor: "red",
+                    color: "white",
+                    padding: "10px 20px",
+                    marginLeft: "10px",
+                    border: "none",
+                    borderRadius: "5px",
+                  }}
+                >
+                  Logout
+                </button>
+              </Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
-        <div>
-          <Link href="/authentication/logout">
-            <button
-              style={{
-                backgroundColor: "red",
-                color: "white",
-                padding: "10px 20px",
-                marginRight: "20px",
-                border: "none",
-                borderRadius: "5px",
-              }}
-            >
-              Logout
-            </button>
-          </Link>
-        </div>
       </Navbar>
 
       <div className="container min-vh-100 d-flex flex-column align-items-center justify-content-center bg-light dark:bg-dark">
@@ -248,6 +246,7 @@ export default function Capture({ userName }) {
         </h1>
         {!photo && (
           <div className="d-flex flex-column align-items-center position-relative">
+            <br />
             <Webcam
               audio={false}
               ref={webcamRef}

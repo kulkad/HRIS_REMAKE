@@ -45,7 +45,8 @@ export default function DashboardLayout({ children }) {
       "/pages/absen/geolocation",
       "/pages/settings",
       "/pages/surat",
-      "/pages/user/detailuser"
+      "/pages/user/detailuser",
+      "/pages/user/register"
     ];
 
     const isExcluded = excludedPaths.some((path) =>
