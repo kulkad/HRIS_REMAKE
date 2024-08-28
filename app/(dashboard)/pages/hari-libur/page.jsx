@@ -73,7 +73,7 @@ const HariLibur = () => {
         setWarna(response.data);
 
         // Mengambil warna latar belakang dari API
-        const backgroundColor = response.data.warna_sidebar;
+        const backgroundColor = response.data.warna_secondary;
 
         // Menghitung luminance dari warna latar belakang
         const luminance = getLuminance(backgroundColor);

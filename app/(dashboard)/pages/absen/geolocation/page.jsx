@@ -204,6 +204,7 @@ export default function Capture({ userName }) {
         </h1>
         {!photo && (
           <div className="d-flex flex-column align-items-center position-relative">
+            <br />
             <Webcam
               audio={false}
               ref={webcamRef}

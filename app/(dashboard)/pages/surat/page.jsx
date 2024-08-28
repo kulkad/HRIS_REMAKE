@@ -47,7 +47,8 @@ const Settings = () => {
         const response = await axios.get("http://localhost:5001/settings/1");
         setWarna(response.data);
 
-        const backgroundColor = response.data.warna_sidebar;
+        const backgroundColor = response.data.warna_secondary;
+
         const luminance = getLuminance(backgroundColor);
         setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
       } catch (error) {
@@ -63,8 +64,8 @@ const Settings = () => {
   // Fungsi untuk mendapatkan tanggal sekarang
   const getCurrentDate = () => {
     const now = new Date();
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return now.toLocaleDateString('id-ID', options);
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return now.toLocaleDateString("id-ID", options);
   };
 
   useEffect(() => {
@@ -205,14 +206,27 @@ const Settings = () => {
           </div>
         </div>
         <div className="body-surat flex flex-col">
-          <p className="mb-4 text-right">{suratPreview.kota}, {currentDate}</p>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis, laudantium dignissimos corrupti quis adipisci dolores cupiditate qui at reprehenderit a laboriosam enim itaque quo nam debitis? Fugit dolores commodi fuga.
-          Hic at eveniet autem ea alias dolores aliquam totam iure magnam repellat. Maxime animi voluptate ad nulla asperiores consequuntur deserunt sunt suscipit nobis reiciendis, et corrupti, impedit molestiae libero aperiam!</p>
+          <p className="mb-4 text-right">
+            {suratPreview.kota}, {currentDate}
+          </p>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis,
+            laudantium dignissimos corrupti quis adipisci dolores cupiditate qui
+            at reprehenderit a laboriosam enim itaque quo nam debitis? Fugit
+            dolores commodi fuga. Hic at eveniet autem ea alias dolores aliquam
+            totam iure magnam repellat. Maxime animi voluptate ad nulla
+            asperiores consequuntur deserunt sunt suscipit nobis reiciendis, et
+            corrupti, impedit molestiae libero aperiam!
+          </p>
         </div>
         <div className="footer-surat">
           <div className="sign-left">
             <p>Direktur,</p>
-            <img src={suratPreview.url_signature} alt="Signature" className="signature" />
+            <img
+              src={suratPreview.url_signature}
+              alt="Signature"
+              className="signature"
+            />
             <p>{suratPreview.direktur}</p>
           </div>
         </div>

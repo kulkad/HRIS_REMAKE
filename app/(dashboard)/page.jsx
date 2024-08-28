@@ -36,11 +36,12 @@ const HomePage = () => {
     tidakHadir: 0,
   });
 
+  const sortedUsers = users.sort((a, b) => a.name.localeCompare(b.name)); // Mengurutkan semua pengguna
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+  const currentUsers = sortedUsers.slice(indexOfFirstUser, indexOfLastUser); // Menggunakan pengguna yang sudah diurutkan
 
-  const totalPages = Math.ceil(users.length / usersPerPage);
+  const totalPages = Math.ceil(sortedUsers.length / usersPerPage); // Menghitung total halaman berdasarkan pengguna yang sudah diurutkan
 
   // Untuk mengganti warna dari database
   const [data, setData] = useState({});
@@ -306,9 +307,9 @@ const HomePage = () => {
                     <Card.Text>
                       <strong>Nama:</strong> {user.name}
                       <br />
-                      <strong>Email:</strong> {user.email}
-                      <br />
                       <strong>Role:</strong> {user.role.nama_role}
+                      <br />
+                      <strong>Status:</strong> {user.status}
                     </Card.Text>
                   </Card.Body>
                 </Card>

@@ -46,12 +46,19 @@ const NavbarVertical = (props) => {
 
         // Mengambil warna latar belakang dari API
         const backgroundColor = response.data.warna_sidebar;
+        // Mengatur variabel CSS
+        document.documentElement.style.setProperty(
+          "--sidebar-bg-color",
+          backgroundColor
+        );
 
         // Menghitung luminance dari warna latar belakang
         const luminance = getLuminance(backgroundColor);
+        const colorForTextColor = luminance > 0.5 ? "#000000" : "#FFFFFF";
+        document.documentElement.style.setProperty('--sidebar-text-color', colorForTextColor);
 
         // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
-        setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
+        setTextColor(colorForTextColor);
       } catch (error) {
         console.error("Error fetching Settings:", error);
       } finally {
