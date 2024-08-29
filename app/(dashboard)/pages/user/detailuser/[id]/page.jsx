@@ -206,13 +206,13 @@ const DetailUser = () => {
 
       // Signature dan nama direktur
       if (surat.url_signature) {
-        doc.addImage(surat.url_signature, "PNG", 15, pageHeight - 40, 24, 24);
+        doc.addImage(surat.url_signature, "PNG", 10, pageHeight - 49, 24, 24);
       }
-      doc.text("Direktur,", 15, pageHeight - 45); // Menambahkan teks "Direktur"
-      doc.text(surat.direktur, 15, pageHeight - 20); // Nama direktur di bawah signature
+      doc.text("Direktur,", 14, pageHeight - 52); // Menambahkan teks "Direktur"
+      doc.text(surat.direktur, 14, pageHeight - 20); // Nama direktur di bawah signature
 
       // Save the PDF
-      doc.save(`Attendance_Report_${moment().format("MMMM_YYYY")}.pdf`);
+      doc.save(`${user.name}_Attendance_Report_${moment().format("MMMM_YYYY")}.pdf`);
     } else {
       console.error("Referensi elemen tidak valid");
     }
