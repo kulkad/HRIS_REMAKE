@@ -38,10 +38,10 @@ const Login = () => {
       console.log("Respons dari backend:", response.data);
       localStorage.setItem("user", JSON.stringify(response.data));
 
-      const userRole = response.data.roleId;
-      console.log("User Role ID:", userRole);
+      const userRole = response.data.nama_role;
+      console.log("User Role:", userRole);
 
-      if (userRole === 4 || userRole === 16 || userRole === 13) {
+      if (userRole === "Admin" || userRole === "Manager" || userRole === "Karyawan") {
         console.log("Redirecting to /");
         router.push('/');
       } else {

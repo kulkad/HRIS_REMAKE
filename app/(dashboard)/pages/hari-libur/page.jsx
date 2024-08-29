@@ -49,6 +49,7 @@ const HariLibur = () => {
   const [textColor, setTextColor] = useState("#FFFFFF");
 
   const [user, setUser] = useState([]); // untuk keamanan agar tidak bocor datanya
+
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
@@ -56,37 +57,39 @@ const HariLibur = () => {
     } else {
       setUser(JSON.parse(userData));
     }
+  }, []);
 
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:5001/hari-libur");
-        setHariLibur(response.data);
-        // console.log(response.data);
-      } catch (error) {
-        console.error("Error fetching Hari Libur:", error);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("http://localhost:5001/hari-libur");
+      setHariLibur(response.data);
+      // console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching Hari Libur:", error);
+    }
+  };
 
-    const fetchSettings = async () => {
-      try {
-        const response = await axios.get("http://localhost:5001/settings/1");
-        setWarna(response.data);
+  const fetchSettings = async () => {
+    try {
+      const response = await axios.get("http://localhost:5001/settings/1");
+      setWarna(response.data);
 
-        // Mengambil warna latar belakang dari API
-        const backgroundColor = response.data.warna_secondary;
+      // Mengambil warna latar belakang dari API
+      const backgroundColor = response.data.warna_secondary;
 
-        // Menghitung luminance dari warna latar belakang
-        const luminance = getLuminance(backgroundColor);
+      // Menghitung luminance dari warna latar belakang
+      const luminance = getLuminance(backgroundColor);
 
-        // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
-        setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
-      } catch (error) {
-        console.error("Error fetching Settings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
+      setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
+    } catch (error) {
+      console.error("Error fetching Settings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchSettings();
     fetchData();
   }, []);
@@ -121,11 +124,19 @@ const HariLibur = () => {
 
   const saveData = async (e) => {
     e.preventDefault();
+    const formData = new FormData();
+    formData.append("nama_libur", nama_libur);
+    formData.append("tanggal_hari_libur", tanggal_hari_libur);
     try {
-      const response = await axios.post("http://localhost:5001/hari-libur", {
-        nama_libur,
-        tanggal_hari_libur,
-      });
+      const response = await axios.post(
+        "http://localhost:5001/hari-libur",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       // Tambahkan data baru ke state hariLibur tanpa refresh
       setHariLibur([...hariLibur, response.data]);
       Swal.fire(
@@ -134,6 +145,7 @@ const HariLibur = () => {
         "success"
       );
       closeCreateModal();
+      fetchData();
     } catch (error) {
       console.log(error);
     }

@@ -40,7 +40,6 @@ const Roles = () => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
-  const [role, setRole] = useState("All");
   const [roleId, setRoleId] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -49,60 +48,59 @@ const Roles = () => {
   const [nama_role, setNama_role] = useState("");
   const [jam_pulang, setJam_pulang] = useState("");
   const [denda, setDenda] = useState("");
-  
-// Untuk mengganti warna dari database
-const [warna, setWarna] = useState({});
-const [loading, setLoading] = useState({});
-const [textColor, setTextColor] = useState("#FFFFFF");
 
-useEffect(() => {
-  const fetchSettings = async () => {
-    try {
-      const response = await axios.get("http://localhost:5001/settings/1");
-      setWarna(response.data);
+  // Untuk mengganti warna dari database
+  const [warna, setWarna] = useState({});
+  const [loading, setLoading] = useState({});
+  const [textColor, setTextColor] = useState("#FFFFFF");
 
-      // Mengambil warna latar belakang dari API
-      const backgroundColor = response.data.warna_secondary;
-
-      // Menghitung luminance dari warna latar belakang
-      const luminance = getLuminance(backgroundColor);
-
-      // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
-      setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
-    } catch (error) {
-      console.error("Error fetching Settings:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchSettings();
-}, []);
-
-  const [searchQuery, setSearchQuery] = useState("");
-
-  // Fetch roles on component mount
   useEffect(() => {
-    const fetchRoles = async () => {
+    const fetchSettings = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/roles");
-        setRoles(response.data);
+        const response = await axios.get("http://localhost:5001/settings/1");
+        setWarna(response.data);
 
-        // Filter dan urutkan data setelah diambil
-        const filtered = response.data
-          .filter((role) =>
-            role.nama_role.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-          .sort((a, b) =>
-            a.nama_role.toLowerCase().localeCompare(b.nama_role.toLowerCase())
-          );
+        // Mengambil warna latar belakang dari API
+        const backgroundColor = response.data.warna_secondary;
 
-        setFilteredUsers(filtered);
+        // Menghitung luminance dari warna latar belakang
+        const luminance = getLuminance(backgroundColor);
+
+        // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
+        setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
       } catch (error) {
-        console.error("Error fetching roles:", error);
+        console.error("Error fetching Settings:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
+    fetchSettings();
+  }, []);
+
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const fetchRoles = async () => {
+    try {
+      const response = await axios.get("http://localhost:5001/roles");
+      setRoles(response.data);
+
+      // Filter dan urutkan data setelah diambil
+      const filtered = response.data
+        .filter((role) =>
+          role.nama_role.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+        .sort((a, b) =>
+          a.nama_role.toLowerCase().localeCompare(b.nama_role.toLowerCase())
+        );
+
+      setFilteredUsers(filtered);
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchRoles();
   }, []);
 
@@ -155,58 +153,87 @@ useEffect(() => {
     formData.append("nama_role", nama_role);
     formData.append("jam_pulang", jam_pulang);
     formData.append("denda_telat", denda);
-  
+
     try {
-      const response = await axios.post("http://localhost:5001/roles", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      const response = await axios.post(
+        "http://localhost:5001/roles",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      const newRole = response.data;
+
+      // Tambahkan role baru ke dalam state `roles` dan `filteredUsers`
+      const updatedRoles = [...roles, newRole];
+
+      // Urutkan ulang data berdasarkan nama_role secara alfabetis
+      const sortedRoles = updatedRoles.sort((a, b) => {
+        const nameA = a.nama_role ? a.nama_role.toLowerCase() : ""; // Cek apakah a.nama_role ada
+        const nameB = b.nama_role ? b.nama_role.toLowerCase() : ""; // Cek apakah b.nama_role ada
+        return nameA.localeCompare(nameB);
       });
-      setRoles(prevRoles => [...prevRoles, response.data]);
-      setFilteredUsers(prevUsers => [...prevUsers, response.data]); // Update filteredUsers
+
+      // Update state dengan data yang telah diurutkan
+      setRoles(sortedRoles);
+      setFilteredUsers(sortedRoles);
+
       Swal.fire({
         title: "Berhasil!",
         text: "Berhasil menambahkan!",
         icon: "success",
       });
+
       closeCreateModal();
       fetchRoles();
     } catch (error) {
-      console.log(error);
+      console.error("Error saving data:", error);
     }
   };
-  
+
   const updateData = async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("nama_role", nama_role);
     formData.append("jam_pulang", jam_pulang);
     formData.append("denda_telat", denda);
-  
+
     try {
       await axios.patch(`http://localhost:5001/roles/${roleId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      setRoles(prevRoles => prevRoles.map(role =>
-        role.id === roleId ? { ...role, nama_role, jam_pulang, denda_telat: denda } : role
-      ));
-      setFilteredUsers(prevUsers => prevUsers.map(role =>
-        role.id === roleId ? { ...role, nama_role, jam_pulang, denda_telat: denda } : role
-      )); // Update filteredUsers
+
+      const updatedRoles = roles.map((role) =>
+        role.id === roleId
+          ? { ...role, nama_role, jam_pulang, denda_telat: denda }
+          : role
+      );
+
+      // Urutkan ulang data setelah mengedit data, dengan pengecekan nama_role
+      const sortedRoles = updatedRoles.sort((a, b) => {
+        const nameA = a.nama_role ? a.nama_role.toLowerCase() : "";
+        const nameB = b.nama_role ? b.nama_role.toLowerCase() : "";
+        return nameA.localeCompare(nameB);
+      });
+
+      setRoles(sortedRoles);
+      setFilteredUsers(sortedRoles);
+
       Swal.fire({
         title: "Berhasil!",
         text: "Berhasil mengupdate!",
         icon: "success",
       });
       closeEditModal();
-      fetchRoles();
     } catch (error) {
       console.log(error);
     }
   };
-  
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -216,23 +243,6 @@ useEffect(() => {
       setUser(JSON.parse(userData));
     }
   }, []);
-
-    const fetchRoles = async () => {
-      try {
-        const response = await axios.get("http://localhost:5001/roles", {
-          withCredentials: true,
-        });
-        setRoles(response.data);
-        setFilteredUsers(response.data);
-      } catch (error) {
-        console.error("Error fetching users:", error.message);
-        Swal.fire({
-          title: "Error!",
-          text: `Error fetching users: ${error.message}`,
-          icon: "error",
-        });
-      }
-    };
 
   if (!user) {
     return (
@@ -245,7 +255,7 @@ useEffect(() => {
       </div>
     );
   }
-  
+
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
@@ -265,8 +275,10 @@ useEffect(() => {
       if (result.isConfirmed) {
         try {
           await axios.delete(`http://localhost:5001/roles/${id}`);
-          setRoles(prevRoles => prevRoles.filter(role => role.id !== id));
-          setFilteredUsers(prevUsers => prevUsers.filter(role => role.id !== id)); // Update filteredUsers
+          setRoles((prevRoles) => prevRoles.filter((role) => role.id !== id));
+          setFilteredUsers((prevUsers) =>
+            prevUsers.filter((role) => role.id !== id)
+          ); // Update filteredUsers
           Swal.fire({
             title: "Deleted!",
             text: "User telah berhasil dihapus!.",
@@ -286,7 +298,9 @@ useEffect(() => {
           <Col lg={12} md={12} xs={12}>
             <div className="d-flex justify-content-between align-items-center mx-5">
               <div className="mb-2 mb-lg-0">
-                <h3 className="mb-0" style={{ color: textColor }}>Role</h3>
+                <h3 className="mb-0" style={{ color: textColor }}>
+                  Role
+                </h3>
               </div>
               <div>
                 <Button onClick={openCreateModal} className="btn btn-white">
@@ -297,7 +311,7 @@ useEffect(() => {
           </Col>
           <Col lg={12} md={12} xs={12}>
             <div className="bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
-            {successMessage && (
+              {successMessage && (
                 <p className="text-green-600">{successMessage}</p>
               )}
               <input
@@ -306,7 +320,8 @@ useEffect(() => {
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className="form-control w-50"
-              /> <br />
+              />{" "}
+              <br />
               {filteredUsers.length === 0 ? (
                 <p className="text-center py-4">Tidak ada data</p>
               ) : (
@@ -321,7 +336,7 @@ useEffect(() => {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredUsers.map((role) => (
+                      {currentUsers.map((role) => (
                         <tr key={role.id}>
                           <td>{role.nama_role}</td>
                           <td>{role.jam_pulang}</td>
@@ -384,7 +399,6 @@ useEffect(() => {
                   ))}
                 </div>
               )}
-
               <Pagination className="d-flex justify-content-center mt-4">
                 {Array.from({
                   length: Math.ceil(filteredUsers.length / usersPerPage),
