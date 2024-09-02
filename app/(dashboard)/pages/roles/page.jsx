@@ -133,7 +133,7 @@ const Roles = () => {
 
   const openEditModal = (role) => {
     setNama_role(role.nama_role);
-    setJam_pulang(role.jam_pulang);
+    setJam_pulang(role.jam_pulang.substring(0, 8));
     setDenda(role.denda_telat);
     setRoleId(role.id);
     setShowEditModal(true);
@@ -470,6 +470,7 @@ const Roles = () => {
               <Form.Label>Jam Pulang</Form.Label>
               <Form.Control
                 type="time"
+                step="1"
                 value={jam_pulang}
                 onChange={(e) => setJam_pulang(e.target.value)}
               />

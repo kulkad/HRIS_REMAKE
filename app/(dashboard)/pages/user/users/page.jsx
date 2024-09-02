@@ -135,7 +135,11 @@ const Users = () => {
     formData.append("confPassword", confPassword);
 
     if (password !== confPassword) {
-      alert("Password dan Konfirmasi Password Tidak Cocok");
+      Swal.fire({
+        title: "Error!",
+        text: "Password dan Konfirmasi Password Tidak Cocok",
+        icon: "error",
+      });
       return;
     }
 
