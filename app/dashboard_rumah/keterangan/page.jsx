@@ -8,6 +8,7 @@ import moment from "moment";
 import Link from "next/link";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf"; // Pastikan jsPDF diimpor
+import 'moment/locale/id'; // Impor locale Indonesia
 
 // Main component
 const WebinarCard = () => {
@@ -24,6 +25,10 @@ const WebinarCard = () => {
   const [showModal, setShowModal] = useState(false);
   const [surat, setSurat] = useState({});
   const componentRef = useRef(); // Reference for printing
+
+  useEffect(() => {
+    moment.locale('id'); // Set locale ke Indonesia
+  }, []);
 
   useEffect(() => {
     const fetchSurat = async () => {
@@ -44,7 +49,7 @@ const WebinarCard = () => {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://localhost:3000/login";
+      window.location.href = "http://localhost:3000/authentication/login";
     } else {
       setUser(JSON.parse(userData));
     }
@@ -228,7 +233,7 @@ const WebinarCard = () => {
                       <h3 className="mb-4 text-center">{user && user.name}</h3>
                       <div className="mb-4">
                         <div className="mb-3 lh-1">
-                          <span>{moment().format("dddd, MMMM Do YYYY")}</span>
+                          <span>{moment().format("dddd, D MMMM YYYY")}</span>
                         </div>
                         <div className="lh-1">
                           <span>

@@ -234,8 +234,11 @@ const Users = () => {
         const matchesRole = user?.role?.nama_role
           ?.toLowerCase()
           .includes(searchQuery.toLowerCase());
+        const matchesStatus = user?.status
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase()); // Tambahkan pencarian status
 
-        return matchesName || matchesEmail || matchesRole; // Filter berdasarkan nama, email, atau role
+        return matchesName || matchesEmail || matchesRole || matchesStatus; // Filter berdasarkan nama, email, role, atau status
       })
       .sort((a, b) => {
         const nameA = a.name.toLowerCase();
@@ -335,7 +338,7 @@ const Users = () => {
               <div className="d-flex justify-content-between mb-3">
                 <input
                   type="text"
-                  placeholder="Cari Nama"
+                  placeholder="Cari"
                   value={searchQuery}
                   onChange={handleSearchChange}
                   className="form-control w-50"

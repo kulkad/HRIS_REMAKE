@@ -7,7 +7,6 @@ import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Swal from "sweetalert2";
-import Image from "next/image";
 import { Navbar, Container, Nav } from "react-bootstrap";
 
 const FaceComparison = () => {
@@ -77,6 +76,18 @@ const FaceComparison = () => {
   };
 
   const calculateSimilarity = async () => {
+    const currentTime = getCurrentTime24HourFormat(); // Ambil waktu saat ini
+    if (currentTime >= jamAlpha) {
+      // Ganti batasAbsen dengan jamAlpha
+      Swal.fire({
+        title: "Gagal!",
+        text: "Tidak dapat melakukan absen saat ini!",
+        icon: "error",
+      });
+      setIsSubmitting(false);
+      return; // Kembali dan tidak melanjutkan proses absen
+    }
+
     capture(setImage2, imageRef2);
 
     const img2 = imageRef2.current;
@@ -138,18 +149,47 @@ const FaceComparison = () => {
         });
         Swal.fire({
           title: "Berhasil!",
-          text: "Absen berhasil !",
+          text: "Absen berhasil!",
           icon: "success",
         });
       } catch (error) {
         console.error("Error mengirim data absen:", error);
-        alert(`Gagal absen: ${error.response?.data?.msg || error.message}`);
+        Swal.fire({
+          title: "Gagal!",
+          text: error.response?.data?.msg || error.message,
+          icon: "error",
+        });
       }
     } else {
+      if (!isWithinBounds) {
+        Swal.fire({
+          title: "Gagal!",
+          text: "Anda berada di luar jangkauan kantor!",
+          icon: "error",
+        });
+        setIsSubmitting(false);
+        return; // Kembali dan tidak melanjutkan proses absen
+      }
+
+      // Tambahkan logika untuk menangani wajah yang tidak terdaftar
+      if (!matchedUser) {
+        Swal.fire({
+          title: "Peringatan!",
+          text: "Wajah belum terdaftar.",
+          icon: "warning",
+        });
+      }
       setSimilarity("Wajah tidak dikenali");
     }
 
+    // Reset state setelah proses selesai
     setIsSubmitting(false); // Mengaktifkan kembali tombol setelah proses selesai
+
+    // Reset currentUser dan absenSuccess jika user sudah absen
+    if (currentUser && currentUser.id === matchedUser?.id) {
+      setCurrentUser(null); // Reset currentUser setelah absen
+      setAbsenSuccess(false); // Reset absenSuccess
+    }
   };
 
   const getLocationFromIP = async () => {
@@ -203,19 +243,17 @@ const FaceComparison = () => {
     return withinBounds;
   };
 
-  useEffect(() => {
-    const fetchJamAlpha = async () => {
-      try {
-        const response = await axios.get("http://localhost:5001/alpha/1");
-        setJamAlpha(response.data.jam_alpha);
-      } catch (error) {
-        console.error("Error mengambil jam alpha:", error);
-        alert(
-          "Gagal mengambil jam alpha. Silakan periksa server dan endpoint."
-        );
-      }
-    };
+  const fetchJamAlpha = async () => {
+    try {
+      const response = await axios.get("http://localhost:5001/alpha/1");
+      setJamAlpha(response.data.jam_alpha);
+    } catch (error) {
+      console.error("Error mengambil jam alpha:", error);
+      alert("Gagal mengambil jam alpha. Silakan periksa server dan endpoint.");
+    }
+  };
 
+  useEffect(() => {
     fetchJamAlpha();
 
     if (navigator.geolocation) {
@@ -251,30 +289,6 @@ const FaceComparison = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true); // Nonaktifkan tombol selama proses berlangsung
-    // console.log("Submit button clicked");
-
-    const currentTime = getCurrentTime24HourFormat();
-
-    if (currentTime >= jamAlpha) {
-      Swal.fire({
-        title: "Gagal!",
-        text: "Tidak dapat melakukan absen karena waktu telah melewati jam Alpha!",
-        icon: "error",
-      });
-      setIsSubmitting(false);
-      return; // Kembali dan tidak melanjutkan proses absen
-    }
-
-    if (!isWithinBounds) {
-      Swal.fire({
-        title: "Gagal!",
-        text: "Anda berada di luar jangkauan kantor!",
-        icon: "error",
-      });
-      setIsSubmitting(false);
-      return; // Kembali dan tidak melanjutkan proses absen
-    }
-
     calculateSimilarity();
   };
 
@@ -333,38 +347,27 @@ const FaceComparison = () => {
             <img ref={imageRef2} className="d-none" alt="Captured Image" />
           </div>
           <form onSubmit={handleSubmit}>
-          <button
-            className="btn btn-primary mt-3"
-            onClick={() => {
-              if (!isSubmitting) {
-                if (isWithinBounds) {
-                  setIsSubmitting(true); // Menonaktifkan tombol setelah diklik
-                  calculateSimilarity();
-                } else {
-                  alert(
-                    "Anda berada di luar area kantor. Absen tidak diizinkan."
-                  );
+            <button
+              className="btn btn-primary mt-3"
+              onClick={() => {
+                if (!isSubmitting) {
+                  if (isWithinBounds) {
+                    setIsSubmitting(true); // Menonaktifkan tombol setelah diklik
+                    calculateSimilarity();
+                  } else {
+                    alert(
+                      "Anda berada di luar area kantor. Absen tidak diizinkan."
+                    );
+                  }
+                } else if (isSubmitting) {
+                  handleSubmit();
                 }
-              } else if (isSubmitting) {
-                handleSubmit();
-              }
-            }}
-            disabled={isSubmitting} // Menonaktifkan tombol jika isSubmitting adalah true
-          >
-            {isSubmitting ? "Sedang memproses..." : "Absen"}
-          </button>
+              }}
+              disabled={isSubmitting} // Menonaktifkan tombol jika isSubmitting adalah true
+            >
+              {isSubmitting ? "Sedang memproses..." : "Absen"}
+            </button>
           </form>
-          {similarity && (
-            <p className="text-danger font-weight-bold mt-3">
-              Maaf, wajah tidak dikenali
-            </p>
-          )}
-          {absenSuccess && currentUser && (
-            <p className="text-success font-weight-bold mt-3">
-              Hai {currentUser?.name}, absen berhasil! Silahkan melanjutkan
-              aktifitas anda!
-            </p>
-          )}
           {!isWithinBounds && (
             <p className="text-danger font-weight-bold mt-3">
               Anda berada di luar area kantor. Absen tidak diizinkan.
@@ -372,6 +375,7 @@ const FaceComparison = () => {
           )}
         </div>
       </div>
+      <br />
     </>
   );
 };

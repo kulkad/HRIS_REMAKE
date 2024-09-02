@@ -19,7 +19,7 @@ export default function Capture({ userName }) {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://localhost:3000/login";
+      window.location.href = "http://localhost:3000/authentication/login";
     } else {
       const parsedUserData = JSON.parse(userData);
       setUser(parsedUserData);
