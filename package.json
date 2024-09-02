@@ -68,7 +68,7 @@
         "simplebar-react": "^3.2.4",
         "skeleton": "^0.1.2",
         "styled-components": "^6.1.12",
-        "sweetalert2": "^11.12.3",
+        "sweetalert2": "^11.12.4",
         "uuid": "^9.0.0"
     }
 }

@@ -188,7 +188,7 @@ export default function Capture({ userName }) {
 
       Swal.fire({
         title: "Berhasil!",
-        text: "Datamu berhasil terkirim! Silahkan melanjutkan ke absen hadir!",
+        text: "Datamu berhasil terkirim!",
         icon: "success",
       });
     } catch (error) {
