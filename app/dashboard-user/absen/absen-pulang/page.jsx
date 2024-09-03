@@ -118,7 +118,6 @@ const FaceComparison = () => {
           } catch (error) {
             console.error("Error fetching user role:", error);
           }
-
           break; // Keluar dari loop setelah menemukan user yang cocok
         }
       }
@@ -192,8 +191,8 @@ const FaceComparison = () => {
         });
         setAlasanSuccess(true);
         Swal.fire({
-          title: "Absen pulang dan Alasan terkirim !",
-          text: `Hai ${currentUser.name}, Absen pulang dan Alasan telah terkirim!`,
+          title: "Data terkirim !",
+          text: `Hai ${currentUser.name}, data sudah dikirim!`,
           icon: "success",
           confirmButtonText: "Close",
         }).then(() => {
@@ -298,9 +297,6 @@ const FaceComparison = () => {
                   </div>
                 </form>
               </div>
-              <p className="text-danger font-weight-bold mt-3">
-                Anda hanya dapat absen pulang setelah jam 4 sore.
-              </p>
             </>
           )}
         </div>
