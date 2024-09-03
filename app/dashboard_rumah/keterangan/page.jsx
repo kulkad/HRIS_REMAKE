@@ -27,10 +27,20 @@ const WebinarCard = () => {
   const componentRef = useRef(); // Reference for printing
 
   useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (!userData) {
+      window.location.href = "http://localhost:3000/authentication/login";
+    } else {
+      setUser(JSON.parse(userData));
+    }
     moment.locale('id'); // Set locale ke Indonesia
-  }, []);
+    fetchSurat();
 
-  useEffect(() => {
+    if (user) {
+      fetchAbsens();
+    }
+  }, [user]);
+
     const fetchSurat = async () => {
       try {
         const response = await axios.get("http://localhost:5001/surats/1");
@@ -43,19 +53,6 @@ const WebinarCard = () => {
       }
     };
 
-    fetchSurat();
-  }, []);
-
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (!userData) {
-      window.location.href = "http://localhost:3000/authentication/login";
-    } else {
-      setUser(JSON.parse(userData));
-    }
-  }, []);
-
-  useEffect(() => {
     const fetchAbsens = async () => {
       try {
         const response = await axios.get("http://localhost:5001/absens");
@@ -73,11 +70,6 @@ const WebinarCard = () => {
         setLoading(false);
       }
     };
-
-    if (user) {
-      fetchAbsens();
-    }
-  }, [user]);
 
   const hitungAbsenBulanIni = (dataAbsen) => {
     const today = new Date();
@@ -131,44 +123,6 @@ const WebinarCard = () => {
 
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
-
-  // Function to download PDF with multi-page support
-  const handleDownloadPDF = async () => {
-    if (componentRef.current) {
-      const canvas = await html2canvas(componentRef.current);
-
-      const imgWidth = 180;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      const doc = new jsPDF("p", "mm", "a4"); // Instansiasi jsPDF
-      const pageHeight = doc.internal.pageSize.height;
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      doc.setFontSize(12);
-      doc.text(surat.kop_surat, 15, 15);
-      doc.text(surat.alamat_lengkap, 15, 25);
-      doc.text(`${surat.kota}, ${moment().format("DD MMMM YYYY")}`, 15, 35);
-
-      while (heightLeft >= 0) {
-        const imgData = canvas.toDataURL("image/png");
-        doc.addImage(imgData, "PNG", 15, position + 40, imgWidth, imgHeight);
-        heightLeft -= pageHeight - 50;
-        position = heightLeft - imgHeight;
-        if (heightLeft > 0) {
-          doc.addPage();
-        }
-      }
-
-      // Director's signature
-      doc.text("Direktur,", 15, imgHeight + 55);
-      doc.addImage(surat.url_signature, "PNG", 15, imgHeight + 60, 24, 24);
-      doc.text(surat.direktur, 15, imgHeight + 85);
-
-      doc.save(`Attendance_Report_${moment().format("MMMM_YYYY")}.pdf`);
-    } else {
-      console.error("Referensi elemen tidak valid");
-    }
-  };
 
   return (
     <>

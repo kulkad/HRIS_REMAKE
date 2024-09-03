@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { Card, Pagination } from "react-bootstrap";
 import "react-loading-skeleton/dist/skeleton.css";
-// import node module libraries
 import { Fragment } from "react";
 import { Container, Col, Row } from "react-bootstrap";
 import axios from "axios";
@@ -50,7 +49,6 @@ const HomePage = () => {
 
   const [textColor, setTextColor] = useState("#FFFFFF");
 
-  useEffect(() => {
     const fetchSettings = async () => {
       try {
         const response = await axios.get("http://localhost:5001/settings/1");
@@ -70,9 +68,6 @@ const HomePage = () => {
         setLoading(false);
       }
     };
-
-    fetchSettings();
-  }, []);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -147,7 +142,7 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    // Memanggil fungsi untuk mendapatkan users dan absens
+    fetchSettings();
     fetchUsers();
     fetchAbsens();
   }, []);

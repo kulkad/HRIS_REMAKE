@@ -4,10 +4,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-// import node module libraries
 import { Fragment } from "react";
 import { Container, Col, Row, Pagination } from "react-bootstrap";
-import { format } from "date-fns"; // import date-fns
+import { format } from "date-fns";
 
 // Fungsi untuk menghitung luminance
 const getLuminance = (hex) => {
@@ -36,31 +35,38 @@ const DataAbsen = () => {
   const [warna, setWarna] = useState({});
   const [textColor, setTextColor] = useState("#FFFFFF");
 
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const response = await axios.get("http://localhost:5001/settings/1");
-        setWarna(response.data);
+  const fetchSettings = async () => {
+    try {
+      const response = await axios.get("http://localhost:5001/settings/1");
+      setWarna(response.data);
 
-        // Mengambil warna latar belakang dari API
-        const backgroundColor = response.data.warna_secondary;
+      // Mengambil warna latar belakang dari API
+      const backgroundColor = response.data.warna_secondary;
 
-        // Menghitung luminance dari warna latar belakang
-        const luminance = getLuminance(backgroundColor);
+      // Menghitung luminance dari warna latar belakang
+      const luminance = getLuminance(backgroundColor);
 
-        // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
-        setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
-      } catch (error) {
-        console.error("Error fetching Settings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
+      setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
+    } catch (error) {
+      console.error("Error fetching Settings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchSettings();
-  }, []);
+  const fetchAbsens = async () => {
+    try {
+      const response = await axios.get("http://localhost:5001/absens");
+      setData(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching absens:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // Cek data pengguna dari localStorage
   useEffect(() => {
     const userData = localStorage.getItem("user");
 
@@ -84,20 +90,7 @@ const DataAbsen = () => {
         console.log(parsedUserData);
       }
     }
-  }, []);
-
-  useEffect(() => {
-    const fetchAbsens = async () => {
-      try {
-        const response = await axios.get("http://localhost:5001/absens");
-        setData(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error("Error fetching absens:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    fetchSettings();
     fetchAbsens();
   }, []);
 
@@ -209,8 +202,8 @@ const DataAbsen = () => {
                     <th>Tanggal</th>
                     <th>Waktu</th>
                     <th>Keterangan</th>
-                    <th>Keterangan tidak berangkat</th>
-                    <th>Alasan tidak berangkat</th>
+                    <th>Geolocation</th>
+                    <th>Alasan</th>
                   </tr>
                 </thead>
                 <tbody>

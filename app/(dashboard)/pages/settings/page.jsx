@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { useRouter } from "next/router";
 
 // Daftar warna yang akan ditampilkan sebagai blok warna
 const colors = [
@@ -32,8 +31,6 @@ const colors = [
   "#FF1493",
   "#FF4500",
 ];
-
-
 
 // Fungsi untuk menghitung luminance
 const getLuminance = (hex) => {
@@ -66,9 +63,9 @@ const Settings = () => {
     } else {
       setUser(JSON.parse(userData));
     }
+    fetchSettings();
   }, []);
 
-  useEffect(() => {
     const fetchSettings = async () => {
       try {
         const response = await axios.get("http://localhost:5001/settings/1");
@@ -88,9 +85,6 @@ const Settings = () => {
         setLoading(false);
       }
     };
-
-    fetchSettings();
-  }, []);
 
   const updateColorSetting = async (e) => {
     e.preventDefault();

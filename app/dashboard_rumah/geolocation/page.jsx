@@ -24,9 +24,7 @@ export default function Capture({ userName }) {
       const parsedUserData = JSON.parse(userData);
       setUser(parsedUserData);
     }
-  }, []);
-
-  useEffect(() => {
+    
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {

@@ -1,15 +1,13 @@
-'use client'
+"use client";
 
-// import node module libraries
-import { Row, Col, Card, Form, Button } from 'react-bootstrap';
-import Head from 'next/head';
-import axios from 'axios';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { Row, Col, Card, Form, Button } from "react-bootstrap";
+import Head from "next/head";
+import axios from "axios";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { MdOutlineAlternateEmail } from "react-icons/md";
 import { RiCheckDoubleLine } from "react-icons/ri";
 import { FiLock } from "react-icons/fi";
-
 
 const Login = () => {
   const router = useRouter();
@@ -18,18 +16,12 @@ const Login = () => {
   const [confPassword, setConfPassword] = useState("");
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    console.log("Component mounted");
-  }, []);
-
   const handleLogin = async (e) => {
     e.preventDefault();
     if (password !== confPassword) {
       return setError("Password dan Konfirmasi Password Tidak Cocok");
     }
-
     console.log("Data dikirim ke backend:", { email, password });
-
     try {
       const response = await axios.post("http://localhost:5001/login", {
         email,
@@ -41,14 +33,17 @@ const Login = () => {
       const userRole = response.data.nama_role;
       console.log("User Role:", userRole);
 
-      if (userRole === "Admin" || userRole === "Manager" || userRole === "Karyawan") {
+      if (
+        userRole === "Admin" ||
+        userRole === "Manager" ||
+        userRole === "Karyawan"
+      ) {
         console.log("Redirecting to /");
-        router.push('/');
+        router.push("/");
       } else {
         console.log("Redirecting to /dashboard-user");
-        router.push('/dashboard_rumah/geolocation');
+        router.push("/dashboard_rumah/geolocation");
       }
-    
     } catch (err) {
       console.error("Kesalahan saat login:", err);
       if (err.response) {
@@ -60,11 +55,15 @@ const Login = () => {
       } else if (err.request) {
         // Permintaan dibuat tetapi tidak ada respons
         console.error("Permintaan yang dibuat tidak ada respons:", err.request);
-        setError("Tidak ada respons dari server. Periksa koneksi jaringan Anda atau coba lagi nanti.");
+        setError(
+          "Tidak ada respons dari server. Periksa koneksi jaringan Anda atau coba lagi nanti."
+        );
       } else {
         // Sesuatu terjadi dalam pengaturan permintaan yang memicu kesalahan
         console.error("Error:", err.message);
-        setError("Terjadi kesalahan saat mengatur permintaan. Silakan coba lagi.");
+        setError(
+          "Terjadi kesalahan saat mengatur permintaan. Silakan coba lagi."
+        );
       }
     }
   };
@@ -103,9 +102,9 @@ const Login = () => {
               <Form.Group className="mb-3" controlId="password">
                 <Form.Label>Password</Form.Label>
                 <div className="input-group">
-                    <span className="input-group-text d-flex align-items-center justify-content-center rounded">
+                  <span className="input-group-text d-flex align-items-center justify-content-center rounded">
                     <FiLock />
-                    </span>
+                  </span>
                   <Form.Control
                     type="password"
                     placeholder="**************"
@@ -114,14 +113,14 @@ const Login = () => {
                     required
                     className="rounded"
                   />
-                  </div>
+                </div>
               </Form.Group>
               <Form.Group className="mb-3" controlId="confPassword">
                 <Form.Label>Konfirmasi Password</Form.Label>
                 <div className="input-group">
-                    <span className="input-group-text d-flex align-items-center justify-content-center rounded">
+                  <span className="input-group-text d-flex align-items-center justify-content-center rounded">
                     <RiCheckDoubleLine />
-                    </span>
+                  </span>
                   <Form.Control
                     type="password"
                     placeholder="**************"
@@ -143,6 +142,6 @@ const Login = () => {
       </Col>
     </Row>
   );
-}
+};
 
 export default Login;

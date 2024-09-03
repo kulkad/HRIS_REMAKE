@@ -11,13 +11,12 @@ import {
   Form,
   Table,
   Pagination,
-  DropdownButton,
   Dropdown,
   Card,
   Button,
   Modal,
 } from "react-bootstrap";
-import { EmojiSmile, TrashFill } from "react-bootstrap-icons";
+import { TrashFill } from "react-bootstrap-icons";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import Swal from "sweetalert2";
 
@@ -54,29 +53,25 @@ const Roles = () => {
   const [loading, setLoading] = useState({});
   const [textColor, setTextColor] = useState("#FFFFFF");
 
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const response = await axios.get("http://localhost:5001/settings/1");
-        setWarna(response.data);
+  const fetchSettings = async () => {
+    try {
+      const response = await axios.get("http://localhost:5001/settings/1");
+      setWarna(response.data);
 
-        // Mengambil warna latar belakang dari API
-        const backgroundColor = response.data.warna_secondary;
+      // Mengambil warna latar belakang dari API
+      const backgroundColor = response.data.warna_secondary;
 
-        // Menghitung luminance dari warna latar belakang
-        const luminance = getLuminance(backgroundColor);
+      // Menghitung luminance dari warna latar belakang
+      const luminance = getLuminance(backgroundColor);
 
-        // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
-        setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
-      } catch (error) {
-        console.error("Error fetching Settings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSettings();
-  }, []);
+      // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
+      setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
+    } catch (error) {
+      console.error("Error fetching Settings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -101,7 +96,14 @@ const Roles = () => {
   };
 
   useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (!userData) {
+      window.location.href = "http://localhost:3000/authentication/login";
+    } else {
+      setUser(JSON.parse(userData));
+    }
     fetchRoles();
+    fetchSettings();
   }, []);
 
   // Handle search input change
@@ -234,15 +236,6 @@ const Roles = () => {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (!userData) {
-      window.location.href = "http://localhost:3000/authentication/login";
-    } else {
-      setUser(JSON.parse(userData));
-    }
-  }, []);
 
   if (!user) {
     return (

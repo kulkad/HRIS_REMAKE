@@ -57,7 +57,18 @@ const HariLibur = () => {
     } else {
       setUser(JSON.parse(userData));
     }
-  }, []);
+    fetchSettings();
+    fetchData();
+    // Filter data berdasarkan searchQuery
+    const filtered = hariLibur
+      .filter(
+        (libur) =>
+          libur.nama_libur &&
+          libur.nama_libur.toLowerCase().includes(searchQuery.toLowerCase()) // Periksa apakah nama_libur ada
+      )
+      .sort((a, b) => a.nama_libur.localeCompare(b.nama_libur)); // Tambahkan pengurutan
+    setFilteredHariLibur(filtered); // Simpan hasil filter ke state
+  }, [searchQuery, hariLibur]);
 
   const fetchData = async () => {
     try {
@@ -88,11 +99,6 @@ const HariLibur = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchSettings();
-    fetchData();
-  }, []);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -198,18 +204,6 @@ const HariLibur = () => {
       }
     });
   };
-
-  useEffect(() => {
-    // Filter data berdasarkan searchQuery
-    const filtered = hariLibur
-      .filter(
-        (libur) =>
-          libur.nama_libur &&
-          libur.nama_libur.toLowerCase().includes(searchQuery.toLowerCase()) // Periksa apakah nama_libur ada
-      )
-      .sort((a, b) => a.nama_libur.localeCompare(b.nama_libur)); // Tambahkan pengurutan
-    setFilteredHariLibur(filtered); // Simpan hasil filter ke state
-  }, [searchQuery, hariLibur]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;

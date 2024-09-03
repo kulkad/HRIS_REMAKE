@@ -26,7 +26,6 @@ const DetailUser = () => {
   const [surat, setSurat] = useState({});
   const componentRef = useRef(null);
 
-  useEffect(() => {
     const fetchSurat = async () => {
       try {
         const response = await axios.get("http://localhost:5001/surats/1");
@@ -38,9 +37,6 @@ const DetailUser = () => {
         setLoading(false);
       }
     };
-
-    fetchSurat();
-  }, []);
 
   const updateStatus = async () => {
     try {
@@ -101,6 +97,7 @@ const DetailUser = () => {
   };
 
   useEffect(() => {
+    fetchSurat();
     fetchUserData();
   }, [id]);
 

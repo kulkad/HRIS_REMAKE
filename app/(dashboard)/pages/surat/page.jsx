@@ -39,9 +39,11 @@ const Settings = () => {
     } else {
       setUser(JSON.parse(userData));
     }
+    fetchSettings();
+    setCurrentDate(getCurrentDate());
+    loadSuratPreview();
   }, []);
 
-  useEffect(() => {
     const fetchSettings = async () => {
       try {
         const response = await axios.get("http://localhost:5001/settings/1");
@@ -58,19 +60,12 @@ const Settings = () => {
       }
     };
 
-    fetchSettings();
-  }, []);
-
   // Fungsi untuk mendapatkan tanggal sekarang
   const getCurrentDate = () => {
     const now = new Date();
     const options = { year: "numeric", month: "long", day: "numeric" };
     return now.toLocaleDateString("id-ID", options);
   };
-
-  useEffect(() => {
-    setCurrentDate(getCurrentDate());
-  }, []);
 
   const updateLetterSetting = async (e) => {
     e.preventDefault();
@@ -118,10 +113,6 @@ const Settings = () => {
       console.error("Error fetching Surat Preview:", error);
     }
   };
-
-  useEffect(() => {
-    loadSuratPreview();
-  }, []);
 
   return (
     <div className="settings-container mt-5">

@@ -4,7 +4,6 @@ import React, { useState, useEffect, Fragment } from "react";
 
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import Link from "next/link";
 import axios from "axios";
 import {
   Container,
@@ -12,13 +11,11 @@ import {
   Row,
   Form,
   Table,
-  DropdownButton,
   Dropdown,
   Card,
   Button,
   Modal,
 } from "react-bootstrap";
-import { EmojiSmile, TrashFill } from "react-bootstrap-icons";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import Swal from "sweetalert2";
 
@@ -49,7 +46,6 @@ const Users = () => {
   const [loading, setLoading] = useState({});
   const [textColor, setTextColor] = useState("#FFFFFF");
 
-  useEffect(() => {
     const fetchSettings = async () => {
       try {
         const response = await axios.get("http://localhost:5001/settings/1");
@@ -69,9 +65,6 @@ const Users = () => {
         setLoading(false);
       }
     };
-
-    fetchSettings();
-  }, []);
 
   const openEditModal = (alpha) => {
     setjam_alpha(alpha.jam_alpha);
@@ -124,9 +117,10 @@ const Users = () => {
     } else {
       setUser(JSON.parse(userData));
     }
+    fetchSettings();
+    fetchJam_Alpha();
   }, []);
 
-  useEffect(() => {
     const fetchJam_Alpha = async () => {
       try {
         const response = await axios.get("http://localhost:5001/alpha", {
@@ -142,9 +136,6 @@ const Users = () => {
         });
       }
     };
-
-    fetchJam_Alpha();
-  }, []);
 
   if (!user) {
     return (

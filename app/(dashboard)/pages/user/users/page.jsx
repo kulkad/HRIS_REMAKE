@@ -60,29 +60,25 @@ const Users = () => {
   const [warna, setWarna] = useState({});
   const [textColor, setTextColor] = useState("#FFFFFF");
 
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const response = await axios.get("http://localhost:5001/settings/1");
-        setWarna(response.data);
+  const fetchSettings = async () => {
+    try {
+      const response = await axios.get("http://localhost:5001/settings/1");
+      setWarna(response.data);
 
-        // Mengambil warna latar belakang dari API
-        const backgroundColor = response.data.warna_secondary;
+      // Mengambil warna latar belakang dari API
+      const backgroundColor = response.data.warna_secondary;
 
-        // Menghitung luminance dari warna latar belakang
-        const luminance = getLuminance(backgroundColor);
+      // Menghitung luminance dari warna latar belakang
+      const luminance = getLuminance(backgroundColor);
 
-        // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
-        setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
-      } catch (error) {
-        console.error("Error fetching Settings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSettings();
-  }, []);
+      // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
+      setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
+    } catch (error) {
+      console.error("Error fetching Settings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -142,7 +138,6 @@ const Users = () => {
       });
       return;
     }
-
     try {
       const response = await axios.post(
         "http://localhost:5001/users",
@@ -178,15 +173,6 @@ const Users = () => {
     }
   };
 
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (!userData) {
-      window.location.href = "http://localhost:3000/authentication/login";
-    } else {
-      setUser(JSON.parse(userData));
-    }
-  }, []);
-
   const fetchUsersByRole = async () => {
     try {
       const endpoint =
@@ -203,30 +189,16 @@ const Users = () => {
   };
 
   useEffect(() => {
-    fetchUsersByRole();
-  }, [role, roleId]); // Tambahkan roleId ke dependencies
-
-  const fetchRoles = async () => {
-    try {
-      const response = await axios.get("http://localhost:5001/roles", {
-        withCredentials: true,
-      });
-      setRoles(response.data);
-    } catch (error) {
-      console.error("Error fetching roles:", error.message);
-      Swal.fire({
-        title: "Error!",
-        text: `Error fetching roles: ${error.message}`,
-        icon: "error",
-      });
+    const userData = localStorage.getItem("user");
+    if (!userData) {
+      window.location.href = "http://localhost:3000/authentication/login";
+    } else {
+      setUser(JSON.parse(userData));
     }
-  };
-
-  useEffect(() => {
+    fetchSettings();
+    fetchUsersByRole();
     fetchRoles();
-  }, []);
 
-  useEffect(() => {
     const filtered = usersByRole
       .filter((user) => {
         const matchesName = user?.name
@@ -250,7 +222,23 @@ const Users = () => {
         return nameA.localeCompare(nameB); // Mengurutkan berdasarkan nama
       });
     setFilteredUsers(filtered);
-  }, [searchQuery, usersByRole]);
+  }, [role, roleId, searchQuery, usersByRole]); // Tambahkan roleId ke dependencies
+
+  const fetchRoles = async () => {
+    try {
+      const response = await axios.get("http://localhost:5001/roles", {
+        withCredentials: true,
+      });
+      setRoles(response.data);
+    } catch (error) {
+      console.error("Error fetching roles:", error.message);
+      Swal.fire({
+        title: "Error!",
+        text: `Error fetching roles: ${error.message}`,
+        icon: "error",
+      });
+    }
+  };
 
   if (!user) {
     return (

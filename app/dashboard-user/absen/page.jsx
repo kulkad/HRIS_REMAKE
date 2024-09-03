@@ -57,6 +57,37 @@ const FaceComparison = () => {
     useEffect(() => {
     loadModels();
     fetchUserPhotos();
+
+    fetchJamAlpha();
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          //console.log(`Latitude: ${latitude}, Longitude: ${longitude}`); // Log lokasi pengguna
+          setLocation({ latitude, longitude });
+
+          const withinBounds = isWithinOfficeBounds(
+            latitude,
+            longitude,
+            officeLat,
+            officeLng,
+            allowedRadius
+          );
+          setIsWithinBounds(withinBounds);
+          //console.log(`Within Bounds: ${withinBounds}`); // Log hasil perhitungan bounds
+        },
+        (error) => {
+          console.error("Error obtaining location:", error);
+          getLocationFromIP(); // Fallback to IP-based location
+        }
+      );
+    } else {
+      console.log(
+        "Geolocation is not supported by this browser. Using IP-based location as fallback."
+      );
+      getLocationFromIP(); // Fallback to IP-based location
+    }
   }, []);
 
   const capture = (setImage, imageRef) => {
@@ -249,39 +280,6 @@ const FaceComparison = () => {
       alert("Gagal mengambil jam alpha. Silakan periksa server dan endpoint.");
     }
   };
-
-  useEffect(() => {
-    fetchJamAlpha();
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          //console.log(`Latitude: ${latitude}, Longitude: ${longitude}`); // Log lokasi pengguna
-          setLocation({ latitude, longitude });
-
-          const withinBounds = isWithinOfficeBounds(
-            latitude,
-            longitude,
-            officeLat,
-            officeLng,
-            allowedRadius
-          );
-          setIsWithinBounds(withinBounds);
-          //console.log(`Within Bounds: ${withinBounds}`); // Log hasil perhitungan bounds
-        },
-        (error) => {
-          console.error("Error obtaining location:", error);
-          getLocationFromIP(); // Fallback to IP-based location
-        }
-      );
-    } else {
-      console.log(
-        "Geolocation is not supported by this browser. Using IP-based location as fallback."
-      );
-      getLocationFromIP(); // Fallback to IP-based location
-    }
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

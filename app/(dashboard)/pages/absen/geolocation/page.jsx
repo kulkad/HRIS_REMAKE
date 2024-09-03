@@ -22,9 +22,7 @@ export default function Capture({ userName }) {
       const parsedUserData = JSON.parse(userData);
       setUser(parsedUserData);
     }
-  }, []);
 
-  useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -115,7 +113,7 @@ export default function Capture({ userName }) {
         const marginTop = 6;
         let currentTextY = canvasRef.current.height - 130 + 30 + marginTop;
 
-        if (location.latitude && location.longitude) {  
+        if (location.latitude && location.longitude) {
           context.fillText(
             `Lokasi Anda: ${location.latitude}, ${location.longitude}`,
             textX,
@@ -129,14 +127,14 @@ export default function Capture({ userName }) {
 
         const image = canvasRef.current.toDataURL("image/png"); // Pastikan format PNG
         setPhoto(image);
-        
+
         // Tambahkan console.log di sini
         console.log("Isi foto yang dicapture:", image);
       };
     };
 
     img.src = imageSrc;
-  };  
+  };
 
   const retakePhoto = () => {
     setPhoto(null);
@@ -160,11 +158,11 @@ export default function Capture({ userName }) {
 
   const submitData = async (e) => {
     e.preventDefault();
-  
+
     const date = new Date();
     const formattedDate = date.toISOString().split("T")[0];
     const formattedTime = date.toTimeString().split(" ")[0];
-  
+
     try {
       // Kirim data dalam format JSON
       const response = await axios.post(
@@ -183,96 +181,93 @@ export default function Capture({ userName }) {
           },
         }
       );
-  
+
       Swal.fire({
         title: "Berhasil!",
-        text: "Datamu berhasil terkirim! Silahkan melanjutkan ke absen hadir!",
+        text: "Data sudah dikirim! Silahkan melanjutkan aktivitas!",
         icon: "success",
       });
     } catch (error) {
       console.error("Error Kirim Data", error);
     }
-  
+
     console.log("Location:", location);
     console.log("Photo:", photo);
   };
 
   return (
     <div className="container min-vh-100 d-flex flex-column align-items-center justify-content-center bg-light dark:bg-dark">
-        <h1 className="display-4 mt-7 font-bold mb-5 position-absolute top-0 start-0 ms-4 text-dark dark:text-white">
-          {/* Geolocation */}
-        </h1>
-        {!photo && (
-          <div className="d-flex flex-column align-items-center position-relative">
-            <br />
-            <Webcam
-              audio={false}
-              ref={webcamRef}
-              screenshotFormat="image/png" // Ubah format menjadi PNG
-              className="rounded-circle w-100"
-              videoConstraints={{
-                facingMode: "user",
-              }}
-              style={{ transform: "scaleX(-1)" }}
-            />
-            <button
-              onClick={capturePhoto}
-              className="btn btn-primary mt-4"
-              disabled={
-                location.latitude === null || location.longitude === null
-              }
-            >
-              Ambil Foto
+      <h1 className="display-4 mt-7 font-bold mb-5 position-absolute top-0 start-0 ms-4 text-dark dark:text-white">
+        {/* Geolocation */}
+      </h1>
+      {!photo && (
+        <div className="d-flex flex-column align-items-center position-relative">
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/png" // Ubah format menjadi PNG
+            className="rounded-circle w-100"
+            videoConstraints={{
+              facingMode: "user",
+            }}
+            style={{ transform: "scaleX(-1)" }}
+          />
+          <button
+            onClick={capturePhoto}
+            className="btn btn-primary mt-4"
+            disabled={location.latitude === null || location.longitude === null}
+          >
+            Ambil Foto
+          </button>
+        </div>
+      )}
+      {photo && (
+        <div className="mt-4 d-flex flex-column align-items-center">
+          <img
+            src={photo}
+            alt="Captured"
+            className="border border-secondary mt-2"
+          />
+          <div className="d-flex gap-2 mt-4">
+            <button onClick={retakePhoto} className="btn btn-secondary">
+              Retake Photo
             </button>
           </div>
-        )}
-        {photo && (
-          <div className="mt-4 d-flex flex-column align-items-center">
-            <img
-              src={photo}
-              alt="Captured"
-              className="border border-secondary mt-2"
-            />
-            <div className="d-flex gap-2 mt-4">
-              <button onClick={retakePhoto} className="btn btn-secondary">
-                Retake Photo
-              </button>
-            </div>
-            <div className="mt-4 w-100 d-flex justify-content-center">
-              <form className="w-100">
-                <div className="d-flex align-items-center">
-                  <div className="form-group me-2 w-50">
-                    <select 
-                      className="form-select" 
-                      value={keterangan} // Tambahkan ini
-                      onChange={(e) => setKeterangan(e.target.value)}
-                    >
-                      <option value="Izin">Izin</option>
-                      <option value="Sakit">Sakit</option>
-                    </select>
-                  </div>
-                  <textarea
-                    id="chat"
-                    rows="1"
-                    className="form-control me-2"
-                    placeholder="Alasan..."
-                    value={alasan}
-                    onChange={(e) => setAlasan(e.target.value)}
-                  ></textarea>
-                  <button onClick={submitData} className="btn btn-primary">
-                    Kirim
-                  </button>
+          <div className="mt-4 w-100 d-flex justify-content-center">
+            <form className="w-100">
+              <div className="d-flex align-items-center">
+                <div className="form-group me-2 w-50">
+                  <select
+                    className="form-select"
+                    value={keterangan} // Tambahkan ini
+                    onChange={(e) => setKeterangan(e.target.value)}
+                  >
+                    <option value="Izin">Izin</option>
+                    <option value="Sakit">Sakit</option>
+                  </select>
                 </div>
-              </form>
-            </div>
+                <textarea
+                  id="chat"
+                  rows="1"
+                  className="form-control me-2"
+                  placeholder="Alasan..."
+                  value={alasan}
+                  onChange={(e) => setAlasan(e.target.value)}
+                ></textarea>
+                <button onClick={submitData} className="btn btn-primary">
+                  Kirim
+                </button>
+              </div>
+            </form>
           </div>
-        )}
-        <canvas
-          ref={canvasRef}
-          className="d-none"
-          width="480"
-          height="320"
-        ></canvas>
-      </div>
+        </div>
+      )}
+      <canvas
+        ref={canvasRef}
+        className="d-none"
+        width="480"
+        height="320"
+      ></canvas>
+    </div>
   );
 }
