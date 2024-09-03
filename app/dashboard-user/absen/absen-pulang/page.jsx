@@ -25,17 +25,14 @@ const FaceComparison = () => {
   const webcamRef = useRef(null);
   const imageRef2 = useRef(null);
 
-  useEffect(() => {
-    const loadModels = async () => {
-      const MODEL_URL = "/models";
-      await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-      await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-      await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-      await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
-      setInitializing(false);
-    };
-    loadModels();
-  }, []);
+  const loadModels = async () => {
+    const MODEL_URL = "/models";
+    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+    await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+    await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+    await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+    setInitializing(false);
+  };
 
   const fetchUserPhotos = async () => {
     try {
@@ -47,16 +44,9 @@ const FaceComparison = () => {
   };
 
   useEffect(() => {
+    loadModels();
     fetchUserPhotos();
   }, []);
-
-  const checkTime = () => {
-    const now = new Date();
-    const hour = now.getHours();
-    if (hour >= jamPulangRole) {
-      setIsAfterBack(true);
-    }
-  };
 
   const capture = (setImage, imageRef) => {
     const imageSrc = webcamRef.current.getScreenshot();
@@ -66,72 +56,88 @@ const FaceComparison = () => {
 
   const calculateSimilarity = async () => {
     capture(setImage2, imageRef2);
-  
+
     const img2 = imageRef2.current;
     let isAbsenSuccess = false;
     let matchedUser = null;
-  
+    let pulangRole = null; // Variabel lokal untuk menyimpan jam pulang
+    let canLeave = false; // Variabel lokal untuk mengecek apakah sudah saatnya pulang
+
     for (let userPhoto of userPhotos) {
       if (!userPhoto.url_foto_absen) {
-        console.error("User photo URL is null or undefined:", userPhoto);
         continue;
       }
-  
+
       const img1 = new Image();
       img1.crossOrigin = "anonymous";
       img1.src = userPhoto.url_foto_absen;
       await new Promise((resolve) => (img1.onload = resolve));
-  
+
       const detection1 = await faceapi
         .detectSingleFace(img1, new faceapi.SsdMobilenetv1Options())
         .withFaceLandmarks()
         .withFaceDescriptor();
-  
+
       const detection2 = await faceapi
         .detectSingleFace(img2, new faceapi.SsdMobilenetv1Options())
         .withFaceLandmarks()
         .withFaceDescriptor();
-  
+
       if (detection1 && detection2) {
         const distance = faceapi.euclideanDistance(
           detection1.descriptor,
           detection2.descriptor
         );
         const similarityScore = Math.min((1 - distance) * 100, 100).toFixed(2);
-  
+
         if (similarityScore >= 60) {
           isAbsenSuccess = true;
           setSimilarity(similarityScore);
           matchedUser = userPhoto;
-  
-          // Pengecekan roleId hanya untuk pengguna yang cocok
-          const userRoleResponse = await axios.get(
-            `http://localhost:5001/users/${userPhoto.id}`
-          );
-          const pulangRole = userRoleResponse.data.role.jam_pulang; 
-          setJamPulangRole(pulangRole);
-          break;
+
+          try {
+            const userRoleResponse = await axios.get(
+              `http://localhost:5001/users/${userPhoto.id}`
+            );
+            pulangRole = userRoleResponse.data.role.jam_pulang; // Mendapatkan jam pulang dari user yang cocok
+            setJamPulangRole(pulangRole);
+
+            // Cek apakah sudah saatnya pulang berdasarkan pulangRole
+            const now = new Date();
+            const [pulangHour, pulangMinute] = pulangRole
+              .split(":")
+              .map(Number); // Mengubah string jam_pulang menjadi angka
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+
+            // Jika jam saat ini lebih dari atau sama dengan pulangRole, maka user bisa pulang
+            canLeave =
+              currentHour > pulangHour ||
+              (currentHour === pulangHour && currentMinute >= pulangMinute);
+            console.log(`Jam Pulang: ${pulangRole}, Bisa Pulang: ${canLeave}`);
+          } catch (error) {
+            console.error("Error fetching user role:", error);
+          }
+
+          break; // Keluar dari loop setelah menemukan user yang cocok
         }
       }
     }
-  
+
     if (isAbsenSuccess && matchedUser) {
       setAbsenSuccess(true);
       setCurrentUser(matchedUser);
-      checkTime(); // Pindahkan checkTime ke sini agar pengecekan dilakukan setelah jamPulangRole di-set
-      
-      if (isAfterBack) {
+
+      if (canLeave) {
         try {
           await axios.patch(`http://localhost:5001/absen/${matchedUser.id}`, {
             userId: matchedUser.id,
           });
           Swal.fire({
             title: "Absen Pulang",
-            text: `Hai ${matchedUser.name}, absen pulang berhasil! Hati-hati saat sedang perjalanan pulang ya!`,
+            text: `Hai ${matchedUser.name}. Hati-hati diperjalanan pulang yaa!`,
             icon: "success",
             confirmButtonText: "Close",
-          }).then(() => {
-            window.location.reload(); // Refresh the page
           });
         } catch (error) {
           console.error("Error posting absen:", error);
@@ -142,27 +148,10 @@ const FaceComparison = () => {
             confirmButtonText: "Close",
           });
         }
-      }
-    } else {
-      setSimilarity("Tidak dapat mendeteksi wajah");
-      Swal.fire({
-        title: "Absen Gagal",
-        text: "Tidak dapat mendeteksi wajah",
-        icon: "error",
-        confirmButtonText: "Close",
-      });
-    }
-    setIsSubmitting(false); // Mengaktifkan kembali tombol setelah proses selesai
-  };  
-
-  const handleAbsenClick = () => {
-    if (!isSubmitting) {
-      setIsSubmitting(true); // Menonaktifkan tombol setelah diklik
-      calculateSimilarity();
-      if (!isAfterBack) {
+      } else {
         Swal.fire({
           title: "Belum saatnya pulang",
-          text: "Belum saatnya untuk pulang. Berikan alasan mengapa kamu harus pulang terlebih dahulu.",
+          text: "Belum saatnya untuk pulang. Berikan alasan anda!",
           icon: "warning",
           showCancelButton: true,
           cancelButtonText: "Batal",
@@ -173,6 +162,23 @@ const FaceComparison = () => {
           }
         });
       }
+    } else {
+      setSimilarity("Tidak dapat mendeteksi wajah");
+      Swal.fire({
+        title: "Absen Gagal",
+        text: "Tidak dapat mendeteksi wajah",
+        icon: "error",
+        confirmButtonText: "Close",
+      });
+    }
+
+    setIsSubmitting(false);
+  };
+
+  const handleAbsenClick = () => {
+    if (!isSubmitting) {
+      setIsSubmitting(true);
+      calculateSimilarity();
     }
   };
 
@@ -191,7 +197,7 @@ const FaceComparison = () => {
           icon: "success",
           confirmButtonText: "Close",
         }).then(() => {
-          window.location.reload(); // Refresh the page
+          window.location.reload();
         });
       } catch (error) {
         console.error("Error posting reason:", error);
@@ -205,7 +211,6 @@ const FaceComparison = () => {
         });
       }
     }
-    console.log("fungsi jalan");
   };
 
   if (initializing) {
@@ -267,16 +272,16 @@ const FaceComparison = () => {
           </button>
           {!isAfterBack && showReasonField && (
             <>
-              <h3 className="mb-10 text-lg text-danger font-weight-bold">
+              <h3 className="mb-3 mt-4 text-lg text-danger font-weight-bold">
                 Berikan alasan pulang lebih cepat
               </h3>
-              <div className="d-flex flex-column align-items-center mt-4">
-                <form className="w-50" onSubmit={handleSubmitReason}>
+              <div className="d-flex flex-column align-items-center mt-2">
+                <form className="w-75" onSubmit={handleSubmitReason}>
                   <div className="d-flex align-items-center">
-                    <div className="form-group me-2">
+                    <div className="form-group me-2 flex-grow-1">
                       <textarea
                         id="reason"
-                        rows="1"
+                        rows="2"
                         className="form-control me-2"
                         placeholder="Keterangan..."
                         value={reason}

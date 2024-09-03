@@ -113,8 +113,7 @@ const Settings = () => {
   const loadSuratPreview = async () => {
     try {
       const response = await axios.get("http://localhost:5001/surats/1");
-      setSuratPreview(response.data); // Set the entire response object to suratPreview
-      // console.log(response.data);
+      setSuratPreview(response.data);
     } catch (error) {
       console.error("Error fetching Surat Preview:", error);
     }
@@ -125,7 +124,7 @@ const Settings = () => {
   }, []);
 
   return (
-    <div className="settings-container">
+    <div className="settings-container mt-5">
       <form className="settings-form" onSubmit={updateLetterSetting}>
         <h2>Surat</h2>
         <div className="form-group">
@@ -240,6 +239,7 @@ const Settings = () => {
           background-color: #f9f9f9;
           border-radius: 8px;
           box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          margin-top: 3rem;
         }
 
         .settings-form {

@@ -25,9 +25,8 @@ const FaceComparison = () => {
 
   const officeLat = -6.770397; // Latitude kantor
   const officeLng = 108.461445; // Longitude kantor
-  const allowedRadius = 10000000; // Radius yang diizinkan dalam meter
+  const allowedRadius = 100000; // Kalau di laptop kurang akurat, jadi diubah saja
 
-  useEffect(() => {
     const loadModels = async () => {
       const MODEL_URL = "/models";
       try {
@@ -41,23 +40,22 @@ const FaceComparison = () => {
         console.error("Error loading models:", error);
       }
     };
+    
+    const fetchUserPhotos = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/userfotoabsen");
+        setUserPhotos(response.data);
+        console.log("Foto pengguna berhasil diambil");
+      } catch (error) {
+        console.error("Error mengambil foto pengguna");
+        alert(
+          "Gagal mengambil foto pengguna. Silakan periksa server dan endpoint."
+        );
+      }
+    };
+    
+    useEffect(() => {
     loadModels();
-  }, []);
-
-  const fetchUserPhotos = async () => {
-    try {
-      const response = await axios.get("http://localhost:5001/userfotoabsen");
-      setUserPhotos(response.data);
-      console.log("Foto pengguna berhasil diambil");
-    } catch (error) {
-      console.error("Error mengambil foto pengguna");
-      alert(
-        "Gagal mengambil foto pengguna. Silakan periksa server dan endpoint."
-      );
-    }
-  };
-
-  useEffect(() => {
     fetchUserPhotos();
   }, []);
 
@@ -78,7 +76,6 @@ const FaceComparison = () => {
   const calculateSimilarity = async () => {
     const currentTime = getCurrentTime24HourFormat(); // Ambil waktu saat ini
     if (currentTime >= jamAlpha) {
-      // Ganti batasAbsen dengan jamAlpha
       Swal.fire({
         title: "Gagal!",
         text: "Tidak dapat melakukan absen saat ini!",
@@ -149,7 +146,7 @@ const FaceComparison = () => {
         });
         Swal.fire({
           title: "Berhasil!",
-          text: "Absen berhasil!",
+          text: `Hai ${matchedUser.name}. Selamat melanjutkan aktivitas anda!`,
           icon: "success",
         });
       } catch (error) {

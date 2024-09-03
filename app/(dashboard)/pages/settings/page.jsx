@@ -119,7 +119,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="settings-container">
+    <div className="settings-container mt-5">
       <h2>Tema</h2>
       <form className="settings-form" onSubmit={updateColorSetting}>
         <div className="form-group">
@@ -184,6 +184,7 @@ const Settings = () => {
           background-color: #f9f9f9;
           border-radius: 8px;
           box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          margin-top: 3rem;
         }
 
         .settings-form {

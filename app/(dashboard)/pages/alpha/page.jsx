@@ -89,20 +89,31 @@ const Users = () => {
     formData.append("jam_alpha", jam_alpha);
 
     try {
-      await axios.patch(`http://localhost:5001/alpha/1`, formData, {
+      const response = await axios.patch(`http://localhost:5001/alpha/1`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      
+      // Perbarui state alpha dengan data yang baru
+      setAlpha(prevAlpha => prevAlpha.map(item => 
+        item.id === 1 ? {...item, jam_alpha: jam_alpha} : item
+      ));
+
       Swal.fire({
         title: "Berhasil!",
         text: "Berhasil mengupdate!",
         icon: "success",
-      }).then(() => {
-        window.location.reload();
       });
+      
+      closeEditModal();
     } catch (error) {
       console.log(error);
+      Swal.fire({
+        title: "Error!",
+        text: "Gagal mengupdate data.",
+        icon: "error",
+      });
     }
   };
 
@@ -245,6 +256,7 @@ const Users = () => {
               <Form.Label>Jam Alpha</Form.Label>
               <Form.Control
                 type="time"
+                step="1"
                 value={jam_alpha}
                 onChange={(e) => setjam_alpha(e.target.value)}
               />

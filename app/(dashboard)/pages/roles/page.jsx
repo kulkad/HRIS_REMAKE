@@ -434,6 +434,7 @@ const Roles = () => {
               <Form.Label>Jam Pulang</Form.Label>
               <Form.Control
                 type="time"
+                step="1"
                 value={jam_pulang}
                 onChange={(e) => setJam_pulang(e.target.value)}
               />
