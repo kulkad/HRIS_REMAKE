@@ -62,7 +62,7 @@ const DaftarAbsen = () => {
       const formData = new FormData();
       formData.append("photo", photo);
 
-      const response = await axios.patch("http://localhost:5001/userAbsen", {
+      const response = await axios.patch("http://89.116.187.91:5001/userAbsen", {
         headers: {
           "Content-Type": "application/json",
         },

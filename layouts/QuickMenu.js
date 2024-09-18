@@ -28,7 +28,7 @@ const QuickMenu = () => {
       try {
         const userData = JSON.parse(localStorage.getItem("user"));
         if (userData && userData.id) {
-          const response = await axios.get(`http://localhost:5001/users/${userData.id}`);
+          const response = await axios.get(`http://89.116.187.91:5001/users/${userData.id}`);
           setUser(response.data);
         }
       } catch (error) {
@@ -70,7 +70,7 @@ const QuickMenu = () => {
 
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5001/users/${userOne.id}`);
+        const response = await axios.get(`http://89.116.187.91:5001/users/${userOne.id}`);
         setUser(response.data);
         console.log(response.data);
       } catch (error) {
@@ -319,7 +319,7 @@ const EditFotoProfile = ({ show, onHide, user }) => {
 
     try {
       const response = await axios.patch(
-        `http://localhost:5001/updateuser/${user.id}`,
+        `http://89.116.187.91:5001/updateuser/${user.id}`,
         formData,
         {
           headers: {

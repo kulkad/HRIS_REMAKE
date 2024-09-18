@@ -28,7 +28,7 @@ const DetailUser = () => {
 
     const fetchSurat = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/surats/1");
+        const response = await axios.get("http://89.116.187.91:5001/surats/1");
         setSurat(response.data);
         console.log(response.data);
       } catch (error) {
@@ -41,7 +41,7 @@ const DetailUser = () => {
   const updateStatus = async () => {
     try {
       const response = await axios.patch(
-        `http://localhost:5001/update/status/${id}`,
+        `http://89.116.187.91:5001/update/status/${id}`,
         {
           status: user.status,
         }
@@ -77,13 +77,13 @@ const DetailUser = () => {
     try {
       // Fetching user details
       const userResponse = await axios.get(
-        `http://localhost:5001/users/${id}`
+        `http://89.116.187.91:5001/users/${id}`
       );
       setUser(userResponse.data); // Update state user dengan data terbaru
 
       // Fetching user's attendance records
       const absenResponse = await axios.get(
-        `http://localhost:5001/detailuser/${id}`
+        `http://89.116.187.91:5001/detailuser/${id}`
       );
       const allAttendanceData = absenResponse.data;
 

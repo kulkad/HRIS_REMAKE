@@ -19,7 +19,7 @@ export default function Capture({ userName }) {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://localhost:3000/authentication/login";
+      window.location.href = "http://89.116.187.91:3000/authentication/login";
     } else {
       const parsedUserData = JSON.parse(userData);
       setUser(parsedUserData);
@@ -168,7 +168,7 @@ export default function Capture({ userName }) {
     try {
       // Kirim data dalam format JSON
       const response = await axios.post(
-        "http://localhost:5001/absen/geolocation",
+        "http://89.116.187.91:5001/absen/geolocation",
         {
           userId: user.id,
           lat: location.latitude,

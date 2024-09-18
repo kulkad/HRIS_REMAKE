@@ -53,7 +53,7 @@ const HariLibur = () => {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://localhost:3000/authentication/login";
+      window.location.href = "http://89.116.187.91:3000/authentication/login";
     } else {
       setUser(JSON.parse(userData));
     }
@@ -72,7 +72,7 @@ const HariLibur = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:5001/hari-libur");
+      const response = await axios.get("http://89.116.187.91:5001/hari-libur");
       setHariLibur(response.data);
       // console.log(response.data);
     } catch (error) {
@@ -82,7 +82,7 @@ const HariLibur = () => {
 
   const fetchSettings = async () => {
     try {
-      const response = await axios.get("http://localhost:5001/settings/1");
+      const response = await axios.get("http://89.116.187.91:5001/settings/1");
       setWarna(response.data);
 
       // Mengambil warna latar belakang dari API
@@ -135,7 +135,7 @@ const HariLibur = () => {
     formData.append("tanggal_hari_libur", tanggal_hari_libur);
     try {
       const response = await axios.post(
-        "http://localhost:5001/hari-libur",
+        "http://89.116.187.91:5001/hari-libur",
         formData,
         {
           headers: {
@@ -160,7 +160,7 @@ const HariLibur = () => {
   const updateData = async (e) => {
     e.preventDefault();
     try {
-      await axios.patch(`http://localhost:5001/hari-libur/${selectedLiburId}`, {
+      await axios.patch(`http://89.116.187.91:5001/hari-libur/${selectedLiburId}`, {
         nama_libur,
         tanggal_hari_libur,
       });
@@ -191,7 +191,7 @@ const HariLibur = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`http://localhost:5001/hari-libur/${id}`);
+          await axios.delete(`http://89.116.187.91:5001/hari-libur/${id}`);
           setHariLibur(hariLibur.filter((libur) => libur.id !== id));
           Swal.fire(
             "Deleted!",

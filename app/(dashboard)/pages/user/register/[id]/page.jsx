@@ -60,7 +60,7 @@ const DaftarAbsen = () => {
       formData.append("file", blob, "photo.png");
 
       const updateResponse = await axios.patch(
-        `http://localhost:5001/userAbsen/${id}`,
+        `http://89.116.187.91:5001/userAbsen/${id}`,
         formData,
         {
           headers: {

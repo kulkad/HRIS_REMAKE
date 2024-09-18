@@ -59,7 +59,7 @@ const Settings = () => {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://localhost:3000/authentication/login";
+      window.location.href = "http://89.116.187.91:3000/authentication/login";
     } else {
       setUser(JSON.parse(userData));
     }
@@ -68,7 +68,7 @@ const Settings = () => {
 
     const fetchSettings = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/settings/1");
+        const response = await axios.get("http://89.116.187.91:5001/settings/1");
         setWarna(response.data);
 
         // Mengambil warna latar belakang dari API
@@ -89,7 +89,7 @@ const Settings = () => {
   const updateColorSetting = async (e) => {
     e.preventDefault();
     try {
-      await axios.patch(`http://localhost:5001/settings/1`, {
+      await axios.patch(`http://89.116.187.91:5001/settings/1`, {
         warna_primary,
         warna_secondary,
         warna_sidebar,

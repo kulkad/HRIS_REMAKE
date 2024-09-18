@@ -43,7 +43,7 @@ const FaceComparison = () => {
     
     const fetchUserPhotos = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/userfotoabsen");
+        const response = await axios.get("http://89.116.187.91:5001/userfotoabsen");
         setUserPhotos(response.data);
         console.log("Foto pengguna berhasil diambil");
       } catch (error) {
@@ -169,7 +169,7 @@ const FaceComparison = () => {
       // console.log("Absen berhasil untuk user:", matchedUser);
       try {
         const currentTime = getCurrentTime24HourFormat();
-        await axios.post("http://localhost:5001/absen", {
+        await axios.post("http://89.116.187.91:5001/absen", {
           userId: matchedUser.id,
           waktu_datang: currentTime,
           lat: location.latitude,
@@ -273,7 +273,7 @@ const FaceComparison = () => {
 
   const fetchJamAlpha = async () => {
     try {
-      const response = await axios.get("http://localhost:5001/alpha/1");
+      const response = await axios.get("http://89.116.187.91:5001/alpha/1");
       setJamAlpha(response.data.jam_alpha);
     } catch (error) {
       console.error("Error mengambil jam alpha:", error);

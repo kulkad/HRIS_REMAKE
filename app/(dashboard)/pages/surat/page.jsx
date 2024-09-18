@@ -35,7 +35,7 @@ const Settings = () => {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://localhost:3000/authentication/login";
+      window.location.href = "http://89.116.187.91:3000/authentication/login";
     } else {
       setUser(JSON.parse(userData));
     }
@@ -46,7 +46,7 @@ const Settings = () => {
 
     const fetchSettings = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/settings/1");
+        const response = await axios.get("http://89.116.187.91:5001/settings/1");
         setWarna(response.data);
 
         const backgroundColor = response.data.warna_secondary;
@@ -79,7 +79,7 @@ const Settings = () => {
     formData.append("kota", kota);
     formData.append("direktur", direktur);
     try {
-      await axios.patch(`http://localhost:5001/surats/1`, formData, {
+      await axios.patch(`http://89.116.187.91:5001/surats/1`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -107,7 +107,7 @@ const Settings = () => {
   // Function to load the letter preview
   const loadSuratPreview = async () => {
     try {
-      const response = await axios.get("http://localhost:5001/surats/1");
+      const response = await axios.get("http://89.116.187.91:5001/surats/1");
       setSuratPreview(response.data);
     } catch (error) {
       console.error("Error fetching Surat Preview:", error);

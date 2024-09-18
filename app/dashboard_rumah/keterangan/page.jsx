@@ -6,8 +6,6 @@ import { Navbar, Nav, Container, Modal, Button, Table } from "react-bootstrap";
 import axios from "axios";
 import moment from "moment";
 import Link from "next/link";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf"; // Pastikan jsPDF diimpor
 import 'moment/locale/id'; // Impor locale Indonesia
 
 // Main component
@@ -29,7 +27,7 @@ const WebinarCard = () => {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://localhost:3000/authentication/login";
+      window.location.href = "http://89.116.187.91:3000/authentication/login";
     } else {
       setUser(JSON.parse(userData));
     }
@@ -43,7 +41,7 @@ const WebinarCard = () => {
 
     const fetchSurat = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/surats/1");
+        const response = await axios.get("http://89.116.187.91:5001/surats/1");
         setSurat(response.data);
         console.log(response.data);
       } catch (error) {
@@ -55,7 +53,7 @@ const WebinarCard = () => {
 
     const fetchAbsens = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/absens");
+        const response = await axios.get("http://89.116.187.91:5001/absens");
         const userAbsens = response.data.filter(
           (absen) => absen.userId === user.id
         );

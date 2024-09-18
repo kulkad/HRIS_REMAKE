@@ -51,7 +51,7 @@ const HomePage = () => {
 
     const fetchSettings = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/settings/1");
+        const response = await axios.get("http://89.116.187.91:5001/settings/1");
         setData(response.data);
 
         // Mengambil warna latar belakang dari API
@@ -75,7 +75,7 @@ const HomePage = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:5001/users");
+      const response = await axios.get("http://89.116.187.91:5001/users");
       setUsers(response.data); // Update state with fetched users
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -86,7 +86,7 @@ const HomePage = () => {
 
   const fetchAbsens = async () => {
     try {
-      const response = await axios.get("http://localhost:5001/absens");
+      const response = await axios.get("http://89.116.187.91:5001/absens");
       setAbsens(response.data); // Update state with fetched absens
       hitungAbsenBulanIni(response.data);
       hitungAbsenHariIni(response.data);

@@ -11,7 +11,7 @@ const DetailUser = () => {
   useEffect(() => {
     const userData = localStorage.getItem('user');
     if (!userData) {
-      window.location.href = 'http://localhost:3000/authentication/login';
+      window.location.href = 'http://89.116.187.91:3000/authentication/login';
     } else {
       const parsedUserData = JSON.parse(userData);
       if (Array.isArray(parsedUserData)) {

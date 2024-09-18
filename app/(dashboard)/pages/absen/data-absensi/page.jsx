@@ -37,7 +37,7 @@ const DataAbsen = () => {
 
   const fetchSettings = async () => {
     try {
-      const response = await axios.get("http://localhost:5001/settings/1");
+      const response = await axios.get("http://89.116.187.91:5001/settings/1");
       setWarna(response.data);
 
       // Mengambil warna latar belakang dari API
@@ -57,7 +57,7 @@ const DataAbsen = () => {
 
   const fetchAbsens = async () => {
     try {
-      const response = await axios.get("http://localhost:5001/absens");
+      const response = await axios.get("http://89.116.187.91:5001/absens");
       setData(response.data);
       console.log(response.data);
     } catch (error) {
@@ -72,7 +72,7 @@ const DataAbsen = () => {
 
     if (!userData) {
       // Jika tidak ada data pengguna, arahkan ke halaman login
-      window.location.href = "http://localhost:3000/authentication/login";
+      window.location.href = "http://89.116.187.91:3000/authentication/login";
     } else {
       const parsedUserData = JSON.parse(userData);
 
@@ -84,7 +84,7 @@ const DataAbsen = () => {
       ) {
         // Jika nama_role tidak sesuai, arahkan ke halaman geolocation
         window.location.href =
-          "http://localhost:3000/dashboard_rumah/geolocation";
+          "http://89.116.187.91:3000/dashboard_rumah/geolocation";
       } else {
         setUser(parsedUserData);
         console.log(parsedUserData);

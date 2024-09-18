@@ -41,7 +41,7 @@ const NavbarVertical = (props) => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/settings/1");
+        const response = await axios.get("http://89.116.187.91:5001/settings/1");
         setData(response.data);
 
         // Mengambil warna latar belakang dari API
@@ -72,7 +72,7 @@ const NavbarVertical = (props) => {
   useEffect(() => {
     const fetchLetter = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/surats/1");
+        const response = await axios.get("http://89.116.187.91:5001/surats/1");
         setLetter(response.data);
       } catch (error) {
         console.error("Error fetching Settings:", error);

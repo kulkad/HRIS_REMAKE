@@ -27,7 +27,7 @@ export default function DashboardLayout({ children }) {
     // Fetch settings dari API
     const fetchSettings = async() => {
         try {
-            const response = await axios.get("http://localhost:5001/settings/1");
+            const response = await axios.get("http://89.116.187.91:5001/settings/1");
             setData(response.data);
         } catch (error) {
             console.error("Error fetching Settings:", error);
@@ -41,7 +41,7 @@ export default function DashboardLayout({ children }) {
 
         if (!userData) {
             // Jika tidak ada data pengguna, arahkan ke halaman login
-            window.location.href = "http://localhost:3000/authentication/login";
+            window.location.href = "http://89.116.187.91:3000/authentication/login";
         } else {
             const parsedUserData = JSON.parse(userData);
 
@@ -53,7 +53,7 @@ export default function DashboardLayout({ children }) {
             ) {
                 // Jika nama_role tidak sesuai, arahkan ke halaman geolocation
                 window.location.href =
-                    "http://localhost:3000/dashboard_rumah/geolocation";
+                    "http://89.116.187.91:3000/dashboard_rumah/geolocation";
             } else {
                 setUser(parsedUserData);
                 console.log(parsedUserData);

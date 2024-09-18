@@ -62,7 +62,7 @@ const Users = () => {
 
   const fetchSettings = async () => {
     try {
-      const response = await axios.get("http://localhost:5001/settings/1");
+      const response = await axios.get("http://89.116.187.91:5001/settings/1");
       setWarna(response.data);
 
       // Mengambil warna latar belakang dari API
@@ -140,7 +140,7 @@ const Users = () => {
     }
     try {
       const response = await axios.post(
-        "http://localhost:5001/users",
+        "http://89.116.187.91:5001/users",
         formData,
         {
           headers: {
@@ -177,8 +177,8 @@ const Users = () => {
     try {
       const endpoint =
         role === "All"
-          ? "http://localhost:5001/users"
-          : `http://localhost:5001/userbyrole/${roleId}`; // Ganti dengan roleId
+          ? "http://89.116.187.91:5001/users"
+          : `http://89.116.187.91:5001/userbyrole/${roleId}`; // Ganti dengan roleId
       const response = await axios.get(endpoint, {
         withCredentials: true,
       });
@@ -226,7 +226,7 @@ const Users = () => {
 
   const fetchRoles = async () => {
     try {
-      const response = await axios.get("http://localhost:5001/roles", {
+      const response = await axios.get("http://89.116.187.91:5001/roles", {
         withCredentials: true,
       });
       setRoles(response.data);
@@ -270,7 +270,7 @@ const Users = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`http://localhost:5001/users/${userId}`);
+          await axios.delete(`http://89.116.187.91:5001/users/${userId}`);
 
           // Hapus user dari state usersByRole
           const updatedUsers = usersByRole.filter((user) => user.id !== userId);

@@ -23,7 +23,7 @@ const Login = () => {
     }
     console.log("Data dikirim ke backend:", { email, password });
     try {
-      const response = await axios.post("http://localhost:5001/login", {
+      const response = await axios.post("http://89.116.187.91:5001/login", {
         email,
         password,
       });

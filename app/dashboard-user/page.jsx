@@ -16,7 +16,7 @@ const DashboardUser = () => {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://localhost:3000/authentication/login";
+      window.location.href = "http://89.116.187.91:3000/authentication/login";
     } else {
       setUser(JSON.parse(userData));
       // Redirect to absen hadir page on loading dashboard user

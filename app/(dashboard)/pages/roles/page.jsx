@@ -55,7 +55,7 @@ const Roles = () => {
 
   const fetchSettings = async () => {
     try {
-      const response = await axios.get("http://localhost:5001/settings/1");
+      const response = await axios.get("http://89.116.187.91:5001/settings/1");
       setWarna(response.data);
 
       // Mengambil warna latar belakang dari API
@@ -77,7 +77,7 @@ const Roles = () => {
 
   const fetchRoles = async () => {
     try {
-      const response = await axios.get("http://localhost:5001/roles");
+      const response = await axios.get("http://89.116.187.91:5001/roles");
       setRoles(response.data);
 
       // Filter dan urutkan data setelah diambil
@@ -98,7 +98,7 @@ const Roles = () => {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://localhost:3000/authentication/login";
+      window.location.href = "http://89.116.187.91:3000/authentication/login";
     } else {
       setUser(JSON.parse(userData));
     }
@@ -158,7 +158,7 @@ const Roles = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5001/roles",
+        "http://89.116.187.91:5001/roles",
         formData,
         {
           headers: {
@@ -204,7 +204,7 @@ const Roles = () => {
     formData.append("denda_telat", denda);
 
     try {
-      await axios.patch(`http://localhost:5001/roles/${roleId}`, formData, {
+      await axios.patch(`http://89.116.187.91:5001/roles/${roleId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -267,7 +267,7 @@ const Roles = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`http://localhost:5001/roles/${id}`);
+          await axios.delete(`http://89.116.187.91:5001/roles/${id}`);
           setRoles((prevRoles) => prevRoles.filter((role) => role.id !== id));
           setFilteredUsers((prevUsers) =>
             prevUsers.filter((role) => role.id !== id)

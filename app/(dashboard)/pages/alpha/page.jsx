@@ -48,7 +48,7 @@ const Users = () => {
 
     const fetchSettings = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/settings/1");
+        const response = await axios.get("http://89.116.187.91:5001/settings/1");
         setWarna(response.data);
 
         // Mengambil warna latar belakang dari API
@@ -82,7 +82,7 @@ const Users = () => {
     formData.append("jam_alpha", jam_alpha);
 
     try {
-      const response = await axios.patch(`http://localhost:5001/alpha/1`, formData, {
+      const response = await axios.patch(`http://89.116.187.91:5001/alpha/1`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -113,7 +113,7 @@ const Users = () => {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://localhost:3000/authentication/login";
+      window.location.href = "http://89.116.187.91:3000/authentication/login";
     } else {
       setUser(JSON.parse(userData));
     }
@@ -123,7 +123,7 @@ const Users = () => {
 
     const fetchJam_Alpha = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/alpha", {
+        const response = await axios.get("http://89.116.187.91:5001/alpha", {
           withCredentials: true,
         });
         setAlpha(response.data);
