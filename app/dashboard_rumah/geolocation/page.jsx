@@ -6,7 +6,7 @@ import Webcam from "react-webcam";
 import Swal from "sweetalert2";
 import { Navbar, Nav, Container } from "react-bootstrap";
 import axios from "axios";
-import { API_Frontend, API_Backend } from "../api/hello.js";
+import { API_Frontend, API_Backend } from "../../api/hello.js";
 
 export default function Capture() {
   const webcamRef = useRef(null);
