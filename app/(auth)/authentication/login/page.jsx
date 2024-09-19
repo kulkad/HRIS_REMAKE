@@ -3,11 +3,12 @@
 import { Row, Col, Card, Form, Button } from "react-bootstrap";
 import Head from "next/head";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { MdOutlineAlternateEmail } from "react-icons/md";
 import { RiCheckDoubleLine } from "react-icons/ri";
 import { FiLock } from "react-icons/fi";
+import { API_Backend } from "../../../api/hello.js";
 
 const Login = () => {
   const router = useRouter();
@@ -21,17 +22,14 @@ const Login = () => {
     if (password !== confPassword) {
       return setError("Password dan Konfirmasi Password Tidak Cocok");
     }
-    console.log("Data dikirim ke backend:", { email, password });
     try {
-      const response = await axios.post("http://89.116.187.91:5001/login", {
+      const response = await axios.post(`${API_Backend}/login`, { // Ganti URL
         email,
         password,
       });
-      console.log("Respons dari backend:", response.data);
       localStorage.setItem("user", JSON.stringify(response.data));
 
       const userRole = response.data.nama_role;
-      console.log("User Role:", userRole);
 
       if (
         userRole === "Admin" ||

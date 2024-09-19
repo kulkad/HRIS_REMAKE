@@ -1,24 +1,37 @@
-'use client'
+'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios'; // Impor axios untuk memanggil backend
+import { API_Backend } from "../../../api/hello.js";
 
 const Logout = () => {
   const router = useRouter();
   const [showAnimation, setShowAnimation] = useState(true);
 
   useEffect(() => {
-    // Clear user data from local storage
-    localStorage.removeItem("user");
+    const logoutUser = async () => {
+      try {
+        // Memanggil fungsi logout dari backend
+        await axios.delete(`${API_Backend}/logout`);
+        
+        // Menghapus data user dari localStorage
+        localStorage.removeItem("user");
 
-    // Set timeout for animation
-    const timer = setTimeout(() => {
-      setShowAnimation(false);
-      // Redirect to login page
-      router.push("/authentication/login");
-    }, 2000); // 2 seconds for animation
+        // Menunggu animasi selesai sebelum redirect
+        setTimeout(() => {
+          setShowAnimation(false);
+          // Redirect ke halaman login
+          router.push("/authentication/login");
+        }, 2000); // 2 detik untuk animasi
+      } catch (error) {
+        console.error("Error saat logout:", error);
+      }
+    };
 
-    return () => clearTimeout(timer);
+    logoutUser();
+
+    return () => clearTimeout();
   }, [router]);
 
   return (
@@ -29,7 +42,7 @@ const Logout = () => {
       </div>
     )
   );
-}
+};
 
 const styles = {
   container: {
