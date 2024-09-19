@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { API_Frontend, API_Backend } from "../../../api/hello.js";
 
 // Daftar warna yang akan ditampilkan sebagai blok warna
 const colors = [
@@ -57,18 +58,12 @@ const Settings = () => {
   const [textColor, setTextColor] = useState("#FFFFFF");
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (!userData) {
-      window.location.href = "http://89.116.187.91:3000/authentication/login";
-    } else {
-      setUser(JSON.parse(userData));
-    }
     fetchSettings();
   }, []);
 
     const fetchSettings = async () => {
       try {
-        const response = await axios.get("http://89.116.187.91:5001/settings/1");
+        const response = await axios.get(`${API_Backend}/settings/1`);
         setWarna(response.data);
 
         // Mengambil warna latar belakang dari API
@@ -89,7 +84,7 @@ const Settings = () => {
   const updateColorSetting = async (e) => {
     e.preventDefault();
     try {
-      await axios.patch(`http://89.116.187.91:5001/settings/1`, {
+      await axios.patch(`${API_Backend}/settings/1`, {
         warna_primary,
         warna_secondary,
         warna_sidebar,
@@ -99,7 +94,7 @@ const Settings = () => {
         text: "Berhasil mengupdate warna!",
         icon: "success",
       }).then(() => {
-        window.location.reload();
+        window.location.href = `${API_Frontend}/authentication/login`;
       });
     } catch (error) {
       console.log(error.response.data);

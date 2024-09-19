@@ -6,10 +6,13 @@ import Webcam from "react-webcam";
 import Swal from "sweetalert2";
 import { Navbar, Nav, Container } from "react-bootstrap";
 import axios from "axios";
+import { API_Frontend, API_Backend } from "../api/hello.js";
 
-export default function Capture({ userName }) {
+export default function Capture() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
+  const [letter, setLetter] = useState({});
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState();
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState({ latitude: null, longitude: null });
@@ -19,7 +22,7 @@ export default function Capture({ userName }) {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://89.116.187.91:3000/authentication/login";
+      window.location.href = `${API_Frontend}/authentication/login`;
     } else {
       const parsedUserData = JSON.parse(userData);
       setUser(parsedUserData);
@@ -62,6 +65,21 @@ export default function Capture({ userName }) {
     });
   };
 
+  const fetchLetter = async () => {
+    try {
+      const response = await axios.get("http://89.116.187.91:5001/surats/1");
+      setLetter(response.data);
+    } catch (error) {
+      console.error("Error fetching Settings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    fetchLetter();
+  }, []);
+
   const capturePhoto = () => {
     const imageSrc = webcamRef.current.getScreenshot({ format: "image/png" }); // Ubah format screenshot menjadi PNG
     const context = canvasRef.current.getContext("2d");
@@ -94,7 +112,7 @@ export default function Capture({ userName }) {
       );
 
       const logoImg = new Image();
-      logoImg.src = "/images/assets/gmt-ultra-full-extra-hd.png";
+      logoImg.src = letter.url;
       logoImg.onload = () => {
         const logoWidth = 70;
         const logoHeight = 70;
@@ -168,7 +186,7 @@ export default function Capture({ userName }) {
     try {
       // Kirim data dalam format JSON
       const response = await axios.post(
-        "http://89.116.187.91:5001/absen/geolocation",
+        `${API_Backend}/absen/geolocation`,
         {
           userId: user.id,
           lat: location.latitude,

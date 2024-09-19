@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import Image from "next/image";
+import { API_Frontend, API_Backend } from "../../../api/hello.js";
 
 // Fungsi untuk menghitung luminance
 const getLuminance = (hex) => {
@@ -35,7 +37,7 @@ const Settings = () => {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://89.116.187.91:3000/authentication/login";
+      window.location.href = `${API_Frontend}/authentication/login`;
     } else {
       setUser(JSON.parse(userData));
     }
@@ -44,21 +46,21 @@ const Settings = () => {
     loadSuratPreview();
   }, []);
 
-    const fetchSettings = async () => {
-      try {
-        const response = await axios.get("http://89.116.187.91:5001/settings/1");
-        setWarna(response.data);
+  const fetchSettings = async () => {
+    try {
+      const response = await axios.get(`${API_Backend}/settings/1`);
+      setWarna(response.data);
 
-        const backgroundColor = response.data.warna_secondary;
+      const backgroundColor = response.data.warna_secondary;
 
-        const luminance = getLuminance(backgroundColor);
-        setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
-      } catch (error) {
-        console.error("Error fetching Settings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      const luminance = getLuminance(backgroundColor);
+      setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
+    } catch (error) {
+      console.error("Error fetching Settings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Fungsi untuk mendapatkan tanggal sekarang
   const getCurrentDate = () => {
@@ -79,7 +81,7 @@ const Settings = () => {
     formData.append("kota", kota);
     formData.append("direktur", direktur);
     try {
-      await axios.patch(`http://89.116.187.91:5001/surats/1`, formData, {
+      await axios.patch(`${API_Backend}/surats/1`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -107,7 +109,7 @@ const Settings = () => {
   // Function to load the letter preview
   const loadSuratPreview = async () => {
     try {
-      const response = await axios.get("http://89.116.187.91:5001/surats/1");
+      const response = await axios.get(`${API_Backend}/surats/1`);
       setSuratPreview(response.data);
     } catch (error) {
       console.error("Error fetching Surat Preview:", error);
@@ -188,7 +190,14 @@ const Settings = () => {
       <div className="surat-preview-container">
         <div className="kop-surat">
           <div className="header-left">
-            <img src={suratPreview.url} alt="Logo" className="logo" />
+            <Image
+              src={suratPreview.url}
+              alt="Logo"
+              className="logo"
+              width={80}
+              height={80}
+            />{" "}
+            {/* Ganti img dengan Image */}
             <div>
               <h3>{suratPreview.kop_surat}</h3>
               <h5>{suratPreview.alamat_lengkap}</h5>
@@ -212,16 +221,18 @@ const Settings = () => {
         <div className="footer-surat">
           <div className="sign-left">
             <p>Direktur,</p>
-            <img
+            <Image
               src={suratPreview.url_signature}
               alt="Signature"
               className="signature"
-            />
+              width={80}
+              height={80}
+            />{" "}
+            {/* Ganti img dengan Image */}
             <p>{suratPreview.direktur}</p>
           </div>
         </div>
       </div>
-
       <style jsx>{`
         .settings-container {
           max-width: 600px;

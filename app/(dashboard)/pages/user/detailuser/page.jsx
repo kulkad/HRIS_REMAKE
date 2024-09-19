@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { IoIosArrowBack } from 'react-icons/io';
-
+import { API_Frontend } from "../../../../api/hello.js";
 
 const DetailUser = () => {
   const [users, setUsers] = useState([]);
@@ -11,7 +11,7 @@ const DetailUser = () => {
   useEffect(() => {
     const userData = localStorage.getItem('user');
     if (!userData) {
-      window.location.href = 'http://89.116.187.91:3000/authentication/login';
+      window.location.href = `${API_Frontend}/authentication/login`; // Ganti URL
     } else {
       const parsedUserData = JSON.parse(userData);
       if (Array.isArray(parsedUserData)) {

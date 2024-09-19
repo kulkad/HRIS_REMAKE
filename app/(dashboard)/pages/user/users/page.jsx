@@ -20,6 +20,7 @@ import {
 import { EmojiSmile, PersonVcard, TrashFill } from "react-bootstrap-icons";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import Swal from "sweetalert2";
+import { API_Frontend, API_Backend } from "../../../../api/hello.js";
 
 // Fungsi untuk menghitung luminance
 const getLuminance = (hex) => {
@@ -62,7 +63,7 @@ const Users = () => {
 
   const fetchSettings = async () => {
     try {
-      const response = await axios.get("http://89.116.187.91:5001/settings/1");
+      const response = await axios.get(`${API_Backend}/settings/1`);
       setWarna(response.data);
 
       // Mengambil warna latar belakang dari API
@@ -140,7 +141,7 @@ const Users = () => {
     }
     try {
       const response = await axios.post(
-        "http://89.116.187.91:5001/users",
+        `${API_Backend}/users`,
         formData,
         {
           headers: {
@@ -177,8 +178,8 @@ const Users = () => {
     try {
       const endpoint =
         role === "All"
-          ? "http://89.116.187.91:5001/users"
-          : `http://89.116.187.91:5001/userbyrole/${roleId}`; // Ganti dengan roleId
+          ? `${API_Backend}/users`
+          : `${API_Backend}/userbyrole/${roleId}`; // Ganti dengan roleId
       const response = await axios.get(endpoint, {
         withCredentials: true,
       });
@@ -191,7 +192,7 @@ const Users = () => {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://localhost:3000/authentication/login";
+      window.location.href = `${API_Frontend}/authentication/login`;
     } else {
       setUser(JSON.parse(userData));
     }
@@ -226,7 +227,7 @@ const Users = () => {
 
   const fetchRoles = async () => {
     try {
-      const response = await axios.get("http://89.116.187.91:5001/roles", {
+      const response = await axios.get(`${API_Backend}/roles`, {
         withCredentials: true,
       });
       setRoles(response.data);
@@ -270,7 +271,7 @@ const Users = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`http://89.116.187.91:5001/users/${userId}`);
+          await axios.delete(`${API_Backend}/users/${userId}`);
 
           // Hapus user dari state usersByRole
           const updatedUsers = usersByRole.filter((user) => user.id !== userId);

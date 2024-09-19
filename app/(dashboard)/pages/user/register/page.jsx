@@ -3,11 +3,10 @@
 import React, { useRef, useState, useEffect } from "react";
 import * as faceapi from "face-api.js";
 import Webcam from "react-webcam";
-import { LuImagePlus } from "react-icons/lu";
-import { VscSend } from "react-icons/vsc";
 import axios from "axios";
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
+import { API_Frontend, API_Backend } from "../../../../api/hello.js";
 
 const DaftarAbsen = () => {
   const webcamRef = useRef(null);
@@ -62,7 +61,7 @@ const DaftarAbsen = () => {
       const formData = new FormData();
       formData.append("photo", photo);
 
-      const response = await axios.patch("http://89.116.187.91:5001/userAbsen", {
+      const response = await axios.patch(`${API_Backend}/userAbsen`, {
         headers: {
           "Content-Type": "application/json",
         },

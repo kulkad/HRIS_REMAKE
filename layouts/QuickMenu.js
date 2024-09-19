@@ -12,6 +12,7 @@ import {
   ListGroup,
 } from "react-bootstrap";
 import useMounted from "hooks/useMounted";
+import { API_Frontend, API_Backend } from "../app/api/hello.js";
 
 const QuickMenu = () => {
   const hasMounted = useMounted();
@@ -28,7 +29,7 @@ const QuickMenu = () => {
       try {
         const userData = JSON.parse(localStorage.getItem("user"));
         if (userData && userData.id) {
-          const response = await axios.get(`http://89.116.187.91:5001/users/${userData.id}`);
+          const response = await axios.get(`${API_Backend}/users/${userData.id}`);
           setUser(response.data);
         }
       } catch (error) {
@@ -41,36 +42,11 @@ const QuickMenu = () => {
     fetchUserData();
   }, []);
 
-  // // Update photo URL to ensure fresh data
-  // const getProfileImageUrl = () => {
-  //   const userData = localStorage.getItem("user");
-  //   if (userData) {
-  //     const parsedUser = JSON.parse(userData);
-  //     return parsedUser.url
-  //       ? `${parsedUser.url}?t=${new Date().getTime()}`
-  //       : "/images/assets/gmt-ultra-full-extra-hd.png";
-  //   }
-  //   return "/images/assets/gmt-ultra-full-extra-hd.png";
-  // };
-
-  // const [profileImageUrl, setProfileImageUrl] = useState(getProfileImageUrl());
-
-  // useEffect(() => {
-  //   const updateProfileImage = () => {
-  //     setProfileImageUrl(getProfileImageUrl());
-  //   };
-
-  //   // Simulate fetching user data every few seconds
-  //   const intervalId = setInterval(updateProfileImage, 3000);
-
-  //   return () => clearInterval(intervalId);
-  // }, []);
-
   useEffect(() => {
 
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`http://89.116.187.91:5001/users/${userOne.id}`);
+        const response = await axios.get(`${API_Backend}/users/${userOne.id}`);
         setUser(response.data);
         console.log(response.data);
       } catch (error) {

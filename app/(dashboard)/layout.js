@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation"; // Gunakan usePathname dari next/navigation
 import axios from "axios"; // Jangan lupa import axios jika belum
+import { API_Frontend, API_Backend } from "../api/hello.js";
 
 // Import file scss tema
 import "styles/theme.scss";
@@ -27,7 +28,7 @@ export default function DashboardLayout({ children }) {
     // Fetch settings dari API
     const fetchSettings = async() => {
         try {
-            const response = await axios.get("http://89.116.187.91:5001/settings/1");
+            const response = await axios.get(`${API_Backend}/settings/1`);
             setData(response.data);
         } catch (error) {
             console.error("Error fetching Settings:", error);
@@ -41,7 +42,7 @@ export default function DashboardLayout({ children }) {
 
         if (!userData) {
             // Jika tidak ada data pengguna, arahkan ke halaman login
-            window.location.href = "http://89.116.187.91:3000/authentication/login";
+            window.location.href = `${API_Frontend}/authentication/login`;
         } else {
             const parsedUserData = JSON.parse(userData);
 

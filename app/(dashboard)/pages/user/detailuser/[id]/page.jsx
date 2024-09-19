@@ -10,6 +10,7 @@ import jsPDF from "jspdf"; // Pastikan jsPDF diimpor
 import moment from "moment";
 import "moment/locale/id"; // Impor locale bahasa Indonesia
 import Swal from "sweetalert2";
+import { API_Backend } from "../../../../../api/hello.js";
 
 const DetailUser = () => {
   const [user, setUser] = useState(null);
@@ -28,7 +29,7 @@ const DetailUser = () => {
 
     const fetchSurat = async () => {
       try {
-        const response = await axios.get("http://89.116.187.91:5001/surats/1");
+        const response = await axios.get(`${API_Backend}/surats/1`); // Ganti URL
         setSurat(response.data);
         console.log(response.data);
       } catch (error) {
@@ -41,7 +42,7 @@ const DetailUser = () => {
   const updateStatus = async () => {
     try {
       const response = await axios.patch(
-        `http://89.116.187.91:5001/update/status/${id}`,
+        `${API_Backend}/update/status/${id}`, // Ganti URL
         {
           status: user.status,
         }
@@ -77,13 +78,13 @@ const DetailUser = () => {
     try {
       // Fetching user details
       const userResponse = await axios.get(
-        `http://89.116.187.91:5001/users/${id}`
+        `${API_Backend}/users/${id}` // Ganti URL
       );
       setUser(userResponse.data); // Update state user dengan data terbaru
 
       // Fetching user's attendance records
       const absenResponse = await axios.get(
-        `http://89.116.187.91:5001/detailuser/${id}`
+        `${API_Backend}/detailuser/${id}` // Ganti URL
       );
       const allAttendanceData = absenResponse.data;
 

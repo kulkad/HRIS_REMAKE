@@ -7,6 +7,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { Fragment } from "react";
 import { Container, Col, Row } from "react-bootstrap";
 import axios from "axios";
+import { API_Backend } from "../api/hello.js";
 
 // Fungsi untuk menghitung luminance
 const getLuminance = (hex) => {
@@ -44,30 +45,27 @@ const HomePage = () => {
 
   // Untuk mengganti warna dari database
   const [data, setData] = useState({});
-
-  const [user, setUser] = useState([]); // untuk keamanan agar tidak bocor datanya
-
   const [textColor, setTextColor] = useState("#FFFFFF");
 
-    const fetchSettings = async () => {
-      try {
-        const response = await axios.get("http://89.116.187.91:5001/settings/1");
-        setData(response.data);
+  const fetchSettings = async () => {
+    try {
+      const response = await axios.get(`${API_Backend}/settings/1`);
+      setData(response.data);
 
-        // Mengambil warna latar belakang dari API
-        const backgroundColor = response.data.warna_secondary;
+      // Mengambil warna latar belakang dari API
+      const backgroundColor = response.data.warna_secondary;
 
-        // Menghitung luminance dari warna latar belakang
-        const luminance = getLuminance(backgroundColor);
+      // Menghitung luminance dari warna latar belakang
+      const luminance = getLuminance(backgroundColor);
 
-        // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
-        setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
-      } catch (error) {
-        console.error("Error fetching Settings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
+      setTextColor(luminance > 0.5 ? "#000000" : "#FFFFFF");
+    } catch (error) {
+      console.error("Error fetching Settings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -75,7 +73,7 @@ const HomePage = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://89.116.187.91:5001/users");
+      const response = await axios.get(`${API_Backend}/users`);
       setUsers(response.data); // Update state with fetched users
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -86,7 +84,7 @@ const HomePage = () => {
 
   const fetchAbsens = async () => {
     try {
-      const response = await axios.get("http://89.116.187.91:5001/absens");
+      const response = await axios.get(`${API_Backend}/absens`);
       setAbsens(response.data); // Update state with fetched absens
       hitungAbsenBulanIni(response.data);
       hitungAbsenHariIni(response.data);
@@ -195,7 +193,10 @@ const HomePage = () => {
                   <p className="mt-3 mb-0 text-sm">
                     <span className="text-nowrap">
                       <strong className="font-weight-bold">
-                        {users.filter((user) => user.status === "Non-Aktif").length}
+                        {
+                          users.filter((user) => user.status === "Non-Aktif")
+                            .length
+                        }
                       </strong>{" "}
                       User tidak aktif
                     </span>

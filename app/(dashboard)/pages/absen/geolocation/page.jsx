@@ -4,14 +4,15 @@ import React, { useState, useRef, useEffect } from "react";
 import Webcam from "react-webcam";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { API_Backend } from "../../../../api/hello.js";
 
-export default function Capture({ userName }) {
+export default function Capture() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   const [user, setUser] = useState();
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState({ latitude: null, longitude: null });
-  const [keterangan, setKeterangan] = useState("Izin"); // Ubah nilai awal menjadi "Izin"
+  const [keterangan, setKeterangan] = useState("Izin");
   const [alasan, setAlasan] = useState(null);
 
   useEffect(() => {
@@ -158,7 +159,7 @@ export default function Capture({ userName }) {
     try {
       // Kirim data dalam format JSON
       const response = await axios.post(
-        "http://89.116.187.91:5001/absen/geolocation",
+        API_Backend, // Ubah URL ke API Backend
         {
           userId: user.id,
           lat: location.latitude,

@@ -7,6 +7,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { Fragment } from "react";
 import { Container, Col, Row, Pagination } from "react-bootstrap";
 import { format } from "date-fns";
+import { API_Frontend, API_Backend } from "../../../../api/hello.js";
 
 // Fungsi untuk menghitung luminance
 const getLuminance = (hex) => {
@@ -29,7 +30,7 @@ const DataAbsen = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
 
   // Untuk mengganti warna dari database
   const [warna, setWarna] = useState({});
@@ -37,7 +38,7 @@ const DataAbsen = () => {
 
   const fetchSettings = async () => {
     try {
-      const response = await axios.get("http://89.116.187.91:5001/settings/1");
+      const response = await axios.get(`${API_Backend}/settings/1`);
       setWarna(response.data);
 
       // Mengambil warna latar belakang dari API
@@ -57,7 +58,7 @@ const DataAbsen = () => {
 
   const fetchAbsens = async () => {
     try {
-      const response = await axios.get("http://89.116.187.91:5001/absens");
+      const response = await axios.get(`${API_Backend}/absens`); // Ganti dengan API_Backend
       setData(response.data);
       console.log(response.data);
     } catch (error) {
@@ -72,7 +73,7 @@ const DataAbsen = () => {
 
     if (!userData) {
       // Jika tidak ada data pengguna, arahkan ke halaman login
-      window.location.href = "http://89.116.187.91:3000/authentication/login";
+      window.location.href = `${API_Frontend}/authentication/login`; // Ganti dengan API_Frontend
     } else {
       const parsedUserData = JSON.parse(userData);
 
@@ -84,7 +85,7 @@ const DataAbsen = () => {
       ) {
         // Jika nama_role tidak sesuai, arahkan ke halaman geolocation
         window.location.href =
-          "http://89.116.187.91:3000/dashboard_rumah/geolocation";
+          `${API_Frontend}/dashboard_rumah/geolocation`; // Ganti dengan API_Frontend
       } else {
         setUser(parsedUserData);
         console.log(parsedUserData);

@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { Nav, Navbar } from 'react-bootstrap';
 // import sub components
 import QuickMenu from 'layouts/QuickMenu';
+import { API_Frontend, API_Backend } from "../../app/api/hello";
 
 const NavbarTop = (props) => {
 	// Untuk mengganti warna dari database
@@ -17,7 +18,7 @@ const NavbarTop = (props) => {
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const response = await axios.get("http://89.116.187.91:5001/settings/1");
+                const response = await axios.get(`${API_Backend}/settings/1`); // Ganti URL
                 setData(response.data);
             } catch (error) {
                 console.error("Error fetching Settings:", error);

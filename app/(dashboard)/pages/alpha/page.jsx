@@ -18,6 +18,7 @@ import {
 } from "react-bootstrap";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import Swal from "sweetalert2";
+import { API_Frontend, API_Backend } from "../../../api/hello.js";
 
 // Fungsi untuk menghitung luminance
 const getLuminance = (hex) => {
@@ -48,7 +49,7 @@ const Users = () => {
 
     const fetchSettings = async () => {
       try {
-        const response = await axios.get("http://89.116.187.91:5001/settings/1");
+        const response = await axios.get(`${API_Backend}/settings/1`);
         setWarna(response.data);
 
         // Mengambil warna latar belakang dari API
@@ -82,7 +83,7 @@ const Users = () => {
     formData.append("jam_alpha", jam_alpha);
 
     try {
-      const response = await axios.patch(`http://89.116.187.91:5001/alpha/1`, formData, {
+      const response = await axios.patch(`${API_Backend}/alpha/1`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -113,7 +114,7 @@ const Users = () => {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://89.116.187.91:3000/authentication/login";
+      window.location.href = `${API_Frontend}/authentication/login`;
     } else {
       setUser(JSON.parse(userData));
     }
@@ -123,7 +124,7 @@ const Users = () => {
 
     const fetchJam_Alpha = async () => {
       try {
-        const response = await axios.get("http://89.116.187.91:5001/alpha", {
+        const response = await axios.get(`${API_Backend}/alpha`, {
           withCredentials: true,
         });
         setAlpha(response.data);

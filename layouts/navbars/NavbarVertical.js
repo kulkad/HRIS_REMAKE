@@ -10,6 +10,7 @@ import { ListGroup, Card, Image, Badge } from "react-bootstrap";
 import Accordion from "react-bootstrap/Accordion";
 import AccordionContext from "react-bootstrap/AccordionContext";
 import { useAccordionButton } from "react-bootstrap/AccordionButton";
+import { API_Frontend, API_Backend } from "../../app/api/hello";
 
 // import simple bar scrolling used for notification item scrolling
 import SimpleBar from "simplebar-react";
@@ -38,49 +39,46 @@ const NavbarVertical = (props) => {
   const [loading, setLoading] = useState(true);
   const [textColor, setTextColor] = useState("#FFFFFF");
 
+  const fetchSettings = async () => {
+    try {
+      const response = await axios.get(`${API_Backend}/settings/1`);
+      setData(response.data);
+
+      // Mengambil warna latar belakang dari API
+      const backgroundColor = response.data.warna_sidebar;
+      // Mengatur variabel CSS
+      document.documentElement.style.setProperty(
+        "--sidebar-bg-color",
+        backgroundColor
+      );
+
+      // Menghitung luminance dari warna latar belakang
+      const luminance = getLuminance(backgroundColor);
+      const colorForTextColor = luminance > 0.5 ? "#000000" : "#FFFFFF";
+      document.documentElement.style.setProperty('--sidebar-text-color', colorForTextColor);
+
+      // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
+      setTextColor(colorForTextColor);
+    } catch (error) {
+      console.error("Error fetching Settings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchLetter = async () => {
+    try {
+      const response = await axios.get(`${API_Backend}/surats/1`);
+      setLetter(response.data);
+    } catch (error) {
+      console.error("Error fetching Settings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const response = await axios.get("http://89.116.187.91:5001/settings/1");
-        setData(response.data);
-
-        // Mengambil warna latar belakang dari API
-        const backgroundColor = response.data.warna_sidebar;
-        // Mengatur variabel CSS
-        document.documentElement.style.setProperty(
-          "--sidebar-bg-color",
-          backgroundColor
-        );
-
-        // Menghitung luminance dari warna latar belakang
-        const luminance = getLuminance(backgroundColor);
-        const colorForTextColor = luminance > 0.5 ? "#000000" : "#FFFFFF";
-        document.documentElement.style.setProperty('--sidebar-text-color', colorForTextColor);
-
-        // Jika luminance rendah, gunakan teks putih, jika tinggi, gunakan teks hitam
-        setTextColor(colorForTextColor);
-      } catch (error) {
-        console.error("Error fetching Settings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchSettings();
-  }, []);
-
-  useEffect(() => {
-    const fetchLetter = async () => {
-      try {
-        const response = await axios.get("http://89.116.187.91:5001/surats/1");
-        setLetter(response.data);
-      } catch (error) {
-        console.error("Error fetching Settings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchLetter();
   }, []);
 

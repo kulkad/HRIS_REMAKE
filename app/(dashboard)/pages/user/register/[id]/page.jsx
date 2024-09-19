@@ -8,6 +8,7 @@ import { useParams } from "next/navigation";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Swal from "sweetalert2";
+import { API_Frontend, API_Backend } from "../../../../api/hello.js";
 
 const DaftarAbsen = () => {
   const { id } = useParams(); // Mengambil ID dari URL
@@ -60,7 +61,7 @@ const DaftarAbsen = () => {
       formData.append("file", blob, "photo.png");
 
       const updateResponse = await axios.patch(
-        `http://89.116.187.91:5001/userAbsen/${id}`,
+        `${API_Backend}/userAbsen/${id}`, // Ganti URL
         formData,
         {
           headers: {
@@ -77,7 +78,7 @@ const DaftarAbsen = () => {
         icon: "success",
       }).then(() => {
         // Pindah halaman setelah alert ditutup
-        window.location.href = "/pages/user/users";
+        window.location.href = `${API_Frontend}/pages/user/users`; // Ganti URL
       });
     } catch (error) {
       console.error("Error submitting data:", error.message);
@@ -86,7 +87,7 @@ const DaftarAbsen = () => {
         text: "Gagal mendaftarkan wajah !",
         icon: "error",
       }).then(() => {
-        window.location.href = "/pages/user/register";
+        window.location.href = `${API_Frontend}/pages/user/register`; // Ganti URL
       });
     }
   };

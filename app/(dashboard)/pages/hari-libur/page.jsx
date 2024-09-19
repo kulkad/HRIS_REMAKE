@@ -16,6 +16,7 @@ import {
 } from "react-bootstrap";
 import { TrashFill } from "react-bootstrap-icons";
 import Swal from "sweetalert2";
+import { API_Frontend, API_Backend } from "../../../api/hello.js";
 
 // Fungsi untuk menghitung luminance
 const getLuminance = (hex) => {
@@ -53,7 +54,7 @@ const HariLibur = () => {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://89.116.187.91:3000/authentication/login";
+      window.location.href = `${API_Frontend}/authentication/login`;
     } else {
       setUser(JSON.parse(userData));
     }
@@ -72,7 +73,7 @@ const HariLibur = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://89.116.187.91:5001/hari-libur");
+      const response = await axios.get(`${API_Backend}/hari-libur`);
       setHariLibur(response.data);
       // console.log(response.data);
     } catch (error) {
@@ -82,7 +83,7 @@ const HariLibur = () => {
 
   const fetchSettings = async () => {
     try {
-      const response = await axios.get("http://89.116.187.91:5001/settings/1");
+      const response = await axios.get(`${API_Backend}/settings/1`);
       setWarna(response.data);
 
       // Mengambil warna latar belakang dari API
@@ -135,7 +136,7 @@ const HariLibur = () => {
     formData.append("tanggal_hari_libur", tanggal_hari_libur);
     try {
       const response = await axios.post(
-        "http://89.116.187.91:5001/hari-libur",
+        `${API_Backend}/hari-libur`,
         formData,
         {
           headers: {
@@ -160,7 +161,7 @@ const HariLibur = () => {
   const updateData = async (e) => {
     e.preventDefault();
     try {
-      await axios.patch(`http://89.116.187.91:5001/hari-libur/${selectedLiburId}`, {
+      await axios.patch(`${API_Backend}/hari-libur/${selectedLiburId}`, {
         nama_libur,
         tanggal_hari_libur,
       });
@@ -191,7 +192,7 @@ const HariLibur = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`http://89.116.187.91:5001/hari-libur/${id}`);
+          await axios.delete(`${API_Backend}/hari-libur/${id}`);
           setHariLibur(hariLibur.filter((libur) => libur.id !== id));
           Swal.fire(
             "Deleted!",
