@@ -3,7 +3,7 @@
 import { Row, Col, Card, Form, Button } from "react-bootstrap";
 import Head from "next/head";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { MdOutlineAlternateEmail } from "react-icons/md";
 import { RiCheckDoubleLine } from "react-icons/ri";
