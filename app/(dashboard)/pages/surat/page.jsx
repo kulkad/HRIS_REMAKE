@@ -190,7 +190,7 @@ const Settings = () => {
       <div className="surat-preview-container">
         <div className="kop-surat">
           <div className="header-left">
-            <Image
+            <img
               src={suratPreview.url}
               alt="Logo"
               className="logo"
@@ -221,7 +221,7 @@ const Settings = () => {
         <div className="footer-surat">
           <div className="sign-left">
             <p>Direktur,</p>
-            <Image
+            <img
               src={suratPreview.url_signature}
               alt="Signature"
               className="signature"
