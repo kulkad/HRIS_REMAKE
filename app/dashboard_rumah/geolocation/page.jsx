@@ -42,7 +42,19 @@ export default function Capture() {
         { enableHighAccuracy: true }
       );
     }
+    fetchLetter();
   }, []);
+  
+  const fetchLetter = async () => {
+    try {
+      const response = await axios.get(`${API_Backend}/surats/1`);
+      setLetter(response.data);
+    } catch (error) {
+      console.error("Error fetching Settings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getFormattedDate = () => {
     const now = new Date();
@@ -64,21 +76,6 @@ export default function Capture() {
       hour12: false,
     });
   };
-
-  const fetchLetter = async () => {
-    try {
-      const response = await axios.get("http://89.116.187.91:5001/surats/1");
-      setLetter(response.data);
-    } catch (error) {
-      console.error("Error fetching Settings:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  useEffect(() => {
-    fetchLetter();
-  }, []);
 
   const capturePhoto = () => {
     const imageSrc = webcamRef.current.getScreenshot({ format: "image/png" }); // Ubah format screenshot menjadi PNG
@@ -112,7 +109,7 @@ export default function Capture() {
       );
 
       const logoImg = new Image();
-      logoImg.src = letter.url;
+      logoImg.src = "/images/assets/gmt-ultra-full-extra-hd.png";
       logoImg.onload = () => {
         const logoWidth = 70;
         const logoHeight = 70;
@@ -123,7 +120,7 @@ export default function Capture() {
         context.font = "17px Arial";
         context.fillStyle = "white";
         const textX = logoX + logoWidth + 5;
-        const nama = user.name;
+        const nama = user ? user.name : "Nama tidak tersedia"; // Tambahkan pengecekan
 
         context.fillText(
           `Nama: ${nama}`,

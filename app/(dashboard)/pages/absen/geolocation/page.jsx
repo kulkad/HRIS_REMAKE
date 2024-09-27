@@ -4,11 +4,13 @@ import React, { useState, useRef, useEffect } from "react";
 import Webcam from "react-webcam";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { API_Backend } from "../../../../api/hello.js";
+import { API_Frontend, API_Backend } from "../../../../api/hello.js";
 
 export default function Capture() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
+  const [letter, setLetter] = useState({});
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState();
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState({ latitude: null, longitude: null });
@@ -16,10 +18,12 @@ export default function Capture() {
   const [alasan, setAlasan] = useState(null);
 
   useEffect(() => {
-    // Ambil data user dari localStorage
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser)); // Set user dari localStorage
+    const userData = localStorage.getItem("user");
+    if (!userData) {
+      window.location.href = `${API_Frontend}/authentication/login`;
+    } else {
+      const parsedUserData = JSON.parse(userData);
+      setUser(parsedUserData);
     }
 
     if (navigator.geolocation) {
@@ -36,7 +40,19 @@ export default function Capture() {
         { enableHighAccuracy: true }
       );
     }
+    fetchLetter();
   }, []);
+  
+  const fetchLetter = async () => {
+    try {
+      const response = await axios.get(`${API_Backend}/surats/1`);
+      setLetter(response.data);
+    } catch (error) {
+      console.error("Error fetching Settings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getFormattedDate = () => {
     const now = new Date();
@@ -91,7 +107,7 @@ export default function Capture() {
       );
 
       const logoImg = new Image();
-      logoImg.src = "/images/assets/gmt-ultra-full-extra-hd.png";
+      logoImg.src = letter;
       logoImg.onload = () => {
         const logoWidth = 70;
         const logoHeight = 70;
@@ -102,7 +118,7 @@ export default function Capture() {
         context.font = "17px Arial";
         context.fillStyle = "white";
         const textX = logoX + logoWidth + 5;
-        const nama = user ? user.name : "Nama tidak tersedia"; // Tambahkan pengecekan
+        const nama = user ? user.name : "Nama tidak tersedia";
 
         context.fillText(
           `Nama: ${nama}`,

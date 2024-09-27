@@ -94,7 +94,7 @@ const Settings = () => {
         text: "Berhasil mengupdate warna!",
         icon: "success",
       }).then(() => {
-        window.location.href = `${API_Frontend}/authentication/login`;
+        window.location.href = `${API_Frontend}/pages/settings`;
       });
     } catch (error) {
       console.log(error.response.data);

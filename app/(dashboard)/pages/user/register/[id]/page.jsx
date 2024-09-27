@@ -8,7 +8,7 @@ import { useParams } from "next/navigation";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Swal from "sweetalert2";
-import { API_Frontend, API_Backend } from "../../../../api/hello.js";
+import { API_Frontend, API_Backend } from "../../../../../api/hello.js";
 
 const DaftarAbsen = () => {
   const { id } = useParams(); // Mengambil ID dari URL

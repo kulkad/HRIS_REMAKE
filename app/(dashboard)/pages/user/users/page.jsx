@@ -98,6 +98,13 @@ const Users = () => {
       setRole(selectedRoleName);
       setRoleId(selectedRoleId);
     }
+    fetchUsersByRole();
+
+    // Tambahkan logika untuk menyaring pengguna berdasarkan role
+    const filtered = usersByRole.filter((user) => {
+      return selectedRoleName === "All" || user.role.nama_role === selectedRoleName;
+    });
+    setFilteredUsers(filtered);
   };
 
   const openCreateModal = () => {
@@ -179,7 +186,7 @@ const Users = () => {
       const endpoint =
         role === "All"
           ? `${API_Backend}/users`
-          : `${API_Backend}/userbyrole/${roleId}`; // Ganti dengan roleId
+          : `${API_Backend}/userbyrole/${roleId}`;
       const response = await axios.get(endpoint, {
         withCredentials: true,
       });
@@ -351,7 +358,7 @@ const Users = () => {
               </div>
               {filteredUsers.length === 0 ? (
                 <p className="text-center py-4">
-                  Belum ada data, silahkan tambahkan data
+                Belum ada data, silahkan tambahkan dataelum ada data untuk role yang dipilih
                 </p>
               ) : (
                 <div className="d-none d-lg-block table-responsive">
