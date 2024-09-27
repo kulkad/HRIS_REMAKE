@@ -16,6 +16,12 @@ export default function Capture() {
   const [alasan, setAlasan] = useState(null);
 
   useEffect(() => {
+    // Ambil data user dari localStorage
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser)); // Set user dari localStorage
+    }
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -96,7 +102,7 @@ export default function Capture() {
         context.font = "17px Arial";
         context.fillStyle = "white";
         const textX = logoX + logoWidth + 5;
-        const nama = user.name;
+        const nama = user ? user.name : "Nama tidak tersedia"; // Tambahkan pengecekan
 
         context.fillText(
           `Nama: ${nama}`,
@@ -159,14 +165,14 @@ export default function Capture() {
     try {
       // Kirim data dalam format JSON
       const response = await axios.post(
-        API_Backend, // Ubah URL ke API Backend
+        `${API_Backend}/absen/geolocation`,
         {
           userId: user.id,
           lat: location.latitude,
           long: location.longitude,
           keterangan: keterangan,
           alasan: alasan,
-          foto: photo, // Kirim string base64 secara langsung
+          foto: photo,
         },
         {
           headers: {
