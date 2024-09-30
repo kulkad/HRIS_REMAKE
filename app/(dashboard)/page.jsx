@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
-import { Card, Pagination } from "react-bootstrap";
+import { Card, Pagination, Alert } from "react-bootstrap";
 import "react-loading-skeleton/dist/skeleton.css";
 import { Fragment } from "react";
 import { Container, Col, Row } from "react-bootstrap";
@@ -24,6 +24,7 @@ const getLuminance = (hex) => {
 
 const HomePage = () => {
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [users, setUsers] = useState([]); // State to store all users
   const [absens, setAbsens] = useState([]); // State to store all absens
   const [currentPage, setCurrentPage] = useState(1);
@@ -140,9 +141,21 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    fetchSettings();
-    fetchUsers();
-    fetchAbsens();
+    const checkLoginStatus = () => {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        setIsLoggedIn(true);
+        // Lanjutkan dengan mengambil data
+        fetchSettings();
+        fetchUsers();
+        fetchAbsens();
+      } else {
+        setIsLoggedIn(false);
+        setLoading(false);
+      }
+    };
+
+    checkLoginStatus();
   }, []);
 
   if (loading) {
@@ -153,6 +166,19 @@ const HomePage = () => {
         <Skeleton height={20} count={1} className="mb-4" />
         <Skeleton height={50} width={150} className="mb-4" />
         <Skeleton height={50} width={150} className="mb-4" />
+      </div>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <div className="container mt-5">
+        <Alert variant="warning">
+          <Alert.Heading>Anda belum login</Alert.Heading>
+          <p>
+            Silakan login terlebih dahulu untuk mengakses dashboard.
+          </p>
+        </Alert>
       </div>
     );
   }
