@@ -3,7 +3,6 @@ const nextConfig = {
   reactStrictMode: true,
   eslint: {
     ignoreDuringBuilds: true, // Mengabaikan error ESLint selama proses build
-    '@next/next/no-img-element': 'off', // Menonaktifkan aturan ini di seluruh proyek
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
@@ -14,6 +13,6 @@ const nextConfig = {
     }
     return config;
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
