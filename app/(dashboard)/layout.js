@@ -54,7 +54,7 @@ export default function DashboardLayout({ children }) {
             ) {
                 // Jika nama_role tidak sesuai, arahkan ke halaman geolocation
                 window.location.href =
-                    "http://89.116.187.91:3000/dashboard_rumah/geolocation";
+                    `${API_Frontend}/dashboard_rumah/geolocation`;
             } else {
                 setUser(parsedUserData);
                 console.log(parsedUserData);
