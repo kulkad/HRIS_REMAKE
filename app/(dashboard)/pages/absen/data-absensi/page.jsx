@@ -36,6 +36,8 @@ const DataAbsen = () => {
   const [warna, setWarna] = useState({});
   const [textColor, setTextColor] = useState("#FFFFFF");
 
+  const [roles, setRoles] = useState([]); // Tambahkan state untuk daftar peran
+
   const fetchSettings = async () => {
     try {
       const response = await axios.get(`${API_Backend}/settings/1`);
@@ -68,6 +70,17 @@ const DataAbsen = () => {
     }
   };
 
+  const fetchRoles = async () => {
+    try {
+      const response = await axios.get(`${API_Backend}/roles`, {
+        withCredentials: true,
+      });
+      setRoles(response.data);
+    } catch (error) {
+      console.error("Error fetching roles:", error.message);
+    }
+  };
+
   useEffect(() => {
     const userData = localStorage.getItem("user");
 
@@ -84,15 +97,15 @@ const DataAbsen = () => {
         parsedUserData.nama_role !== "Karyawan"
       ) {
         // Jika nama_role tidak sesuai, arahkan ke halaman geolocation
-        window.location.href =
-          `${API_Frontend}/dashboard_rumah/geolocation`; // Ganti dengan API_Frontend
+        window.location.href = `${API_Frontend}/dashboard_rumah/geolocation`; // Ganti dengan API_Frontend
       } else {
         setUser(parsedUserData);
-        console.log(parsedUserData);
+        // console.log(parsedUserData);
       }
     }
     fetchSettings();
     fetchAbsens();
+    fetchRoles(); // Panggil fetchRoles di useEffect
   }, []);
 
   const handleSearchChange = (e) => {
@@ -179,10 +192,11 @@ const DataAbsen = () => {
                 className="form-control w-25 ml-3"
               >
                 <option value="">Semua Role</option>
-                <option value="Manager">Manager</option>
-                <option value="Karyawan">Karyawan</option>
-                <option value="Magang">Magang</option>
-                <option value="Pkl">Pkl</option>
+                {roles.map((role) => (
+                  <option key={role.id} value={role.nama_role}>
+                    {role.nama_role}
+                  </option>
+                ))}
               </select>
               <input
                 type="date"
@@ -212,6 +226,12 @@ const DataAbsen = () => {
                     <tr>
                       <td colSpan="5">
                         <Skeleton count={5} />
+                      </td>
+                    </tr>
+                  ) : filteredData.length === 0 ? ( // Check if filteredData is empty
+                    <tr>
+                      <td colSpan="8" className="text-center py-4">
+                      Tidak ada data
                       </td>
                     </tr>
                   ) : (

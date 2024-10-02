@@ -358,7 +358,7 @@ const Users = () => {
               </div>
               {filteredUsers.length === 0 ? (
                 <p className="text-center py-4">
-                Belum ada data, silahkan tambahkan dataelum ada data untuk role yang dipilih
+                Tidak ada data
                 </p>
               ) : (
                 <div className="d-none d-lg-block table-responsive">
