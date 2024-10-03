@@ -295,7 +295,7 @@ const EditFotoProfile = ({ show, onHide, user }) => {
 
     try {
       const response = await axios.patch(
-        `http://89.116.187.91:5001/updateuser/${user.id}`,
+        `${API_Backend}/updateuser/${user.id}`,
         formData,
         {
           headers: {

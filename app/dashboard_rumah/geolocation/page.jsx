@@ -49,6 +49,7 @@ export default function Capture() {
     try {
       const response = await axios.get(`${API_Backend}/surats/1`);
       setLetter(response.data);
+      // console.log(response.data.url);
     } catch (error) {
       console.error("Error fetching Settings:", error);
     } finally {
@@ -109,7 +110,8 @@ export default function Capture() {
       );
 
       const logoImg = new Image();
-      logoImg.src = "/images/assets/gmt-ultra-full-extra-hd.png";
+      logoImg.crossOrigin = "Anonymous"; // Pastikan ini ada
+      logoImg.src = letter.url;
       logoImg.onload = () => {
         const logoWidth = 70;
         const logoHeight = 70;

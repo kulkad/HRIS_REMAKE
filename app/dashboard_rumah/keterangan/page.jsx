@@ -183,7 +183,7 @@ const WebinarCard = () => {
                       <h3 className="mb-4 text-center">
                         <img
                           src={user.url}
-                          className="img-fluid w-6 h-12 rounded-top-3 mb-4"
+                          className="img-fluid w-50 h-auto rounded-top-3 mb-4" 
                           alt="Profile"
                         />
                       </h3>

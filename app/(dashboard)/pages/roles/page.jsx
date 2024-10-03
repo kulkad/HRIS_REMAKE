@@ -393,7 +393,7 @@ const Roles = () => {
                   ))}
                 </div>
               )}
-              <Pagination className="d-flex justify-content-center mt-4">
+              <Pagination className="d-flex justify-content-center mt-4 flex-wrap">
                 {Array.from({
                   length: Math.ceil(filteredUsers.length / usersPerPage),
                 }).map((_, index) => (

@@ -47,6 +47,7 @@ export default function Capture() {
     try {
       const response = await axios.get(`${API_Backend}/surats/1`);
       setLetter(response.data);
+      // console.log(response.data.url);
     } catch (error) {
       console.error("Error fetching Settings:", error);
     } finally {
@@ -107,7 +108,8 @@ export default function Capture() {
       );
 
       const logoImg = new Image();
-      logoImg.src = letter;
+      logoImg.crossOrigin = "Anonymous"; // Pastikan ini ada
+      logoImg.src = letter.url;
       logoImg.onload = () => {
         const logoWidth = 70;
         const logoHeight = 70;
@@ -245,7 +247,7 @@ export default function Capture() {
           />
           <div className="d-flex gap-2 mt-4">
             <button onClick={retakePhoto} className="btn btn-secondary">
-              Retake Photo
+              Retake foto
             </button>
           </div>
           <div className="mt-4 w-100 d-flex justify-content-center">

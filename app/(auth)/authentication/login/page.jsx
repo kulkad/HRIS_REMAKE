@@ -76,7 +76,7 @@ const Login = () => {
           <Card.Body className="p-6">
             <div className="mb-4">
               <h1>HRIS CORPS</h1>
-              <p className="mb-6">Please enter your user information.</p>
+              <p className="mb-6">Masukan informasi anda</p>
               {error && <p style={{ color: "red" }}>{error}</p>}
             </div>
             <Form onSubmit={handleLogin}>

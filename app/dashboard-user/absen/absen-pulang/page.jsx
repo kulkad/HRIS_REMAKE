@@ -8,6 +8,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Swal from "sweetalert2";
 import { Navbar, Container, Nav } from "react-bootstrap";
+import { API_Backend } from "../../../api/hello.js";
 
 const FaceComparison = () => {
   const [initializing, setInitializing] = useState(true);
@@ -36,7 +37,7 @@ const FaceComparison = () => {
 
   const fetchUserPhotos = async () => {
     try {
-      const response = await axios.get("http://89.116.187.91:5001/userfotoabsen");
+      const response = await axios.get(`${API_Backend}/userfotoabsen`);
       setUserPhotos(response.data);
     } catch (error) {
       console.error("Error fetching user photos: ", error);
@@ -97,7 +98,7 @@ const FaceComparison = () => {
 
           try {
             const userRoleResponse = await axios.get(
-              `http://89.116.187.91:5001/users/${userPhoto.id}`
+              `${API_Backend}/users/${userPhoto.id}`
             );
             pulangRole = userRoleResponse.data.role.jam_pulang; // Mendapatkan jam pulang dari user yang cocok
             setJamPulangRole(pulangRole);
@@ -129,7 +130,7 @@ const FaceComparison = () => {
 
       if (canLeave) {
         try {
-          await axios.patch(`http://89.116.187.91:5001/absen/${matchedUser.id}`, {
+          await axios.patch(`${API_Backend}/absen/${matchedUser.id}`, {
             userId: matchedUser.id,
           });
           Swal.fire({
@@ -185,7 +186,7 @@ const FaceComparison = () => {
     event.preventDefault();
     if (currentUser) {
       try {
-        await axios.patch(`http://89.116.187.91:5001/absen/${currentUser.id}`, {
+        await axios.patch(`${API_Backend}/absen/${currentUser.id}`, {
           userId: currentUser.id,
           reason: reason,
         });

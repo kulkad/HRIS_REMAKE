@@ -203,6 +203,7 @@ const DataAbsen = () => {
                 value={searchDate}
                 onChange={handleDateChange}
                 className="form-control w-25 ml-3"
+                placeholder="mm/dd/yyyy"
               />
             </div>
 

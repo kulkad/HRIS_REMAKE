@@ -225,7 +225,7 @@ const DetailUser = () => {
         </div>
         <div className="card-body">
           <table className="table">
-            <thead className="thead-light">
+            <thead className="thead-light"> 
               <tr>
                 <th scope="col">Foto</th>
                 <th scope="col">Nama</th>

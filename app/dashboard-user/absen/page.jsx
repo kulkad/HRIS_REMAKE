@@ -8,6 +8,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Swal from "sweetalert2";
 import { Navbar, Container, Nav } from "react-bootstrap";
+import { API_Backend } from "../../api/hello.js";
 
 const FaceComparison = () => {
   const [initializing, setInitializing] = useState(true);
@@ -43,7 +44,7 @@ const FaceComparison = () => {
     
     const fetchUserPhotos = async () => {
       try {
-        const response = await axios.get("http://89.116.187.91:5001/userfotoabsen");
+        const response = await axios.get(`${API_Backend}/userfotoabsen`);
         setUserPhotos(response.data);
         console.log("Foto pengguna berhasil diambil");
       } catch (error) {
@@ -169,7 +170,7 @@ const FaceComparison = () => {
       // console.log("Absen berhasil untuk user:", matchedUser);
       try {
         const currentTime = getCurrentTime24HourFormat();
-        await axios.post("http://89.116.187.91:5001/absen", {
+        await axios.post(`${API_Backend}/absen`, { // Ganti IP dengan API_Backend
           userId: matchedUser.id,
           waktu_datang: currentTime,
           lat: location.latitude,
@@ -273,7 +274,7 @@ const FaceComparison = () => {
 
   const fetchJamAlpha = async () => {
     try {
-      const response = await axios.get("http://89.116.187.91:5001/alpha/1");
+      const response = await axios.get(`${API_Backend}/alpha/1`); // Ganti IP dengan API_Backend
       setJamAlpha(response.data.jam_alpha);
     } catch (error) {
       console.error("Error mengambil jam alpha:", error);
