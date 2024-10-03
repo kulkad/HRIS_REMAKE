@@ -119,7 +119,6 @@ const Users = () => {
     setConfPassword("");
     setFile("");
     setPreview("");
-    setRoleId(null); // Reset roleId setelah modal ditutup
   };
 
   const loadImage = (e) => {
