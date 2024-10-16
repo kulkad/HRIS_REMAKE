@@ -3,28 +3,19 @@
 import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import {
-  Card,
-  Table,
-  Dropdown,
-  Image,
   Navbar,
   Nav,
-  Button,
 } from "react-bootstrap";
 import "react-loading-skeleton/dist/skeleton.css";
-// import node module libraries
-import { Fragment } from "react";
-import Link from "next/link";
-import { Container, Col, Row } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 
 const DashboardUser = () => {
   const [user, setUser] = useState(null);
-  const [location, setLocation] = useState(null);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://89.116.187.91:3000/authentication/login";
+      window.location.href = `${API_Frontend}/authentication/login`;
     } else {
       setUser(JSON.parse(userData));
       // Redirect to absen hadir page on loading dashboard user

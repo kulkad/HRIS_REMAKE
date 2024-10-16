@@ -8,6 +8,7 @@ import {
 } from "react-bootstrap";
 import "react-loading-skeleton/dist/skeleton.css";
 import { Container } from "react-bootstrap";
+import { API_Frontend } from "../api/hello.js";
 
 const DashboardUser = () => {
   const [user, setUser] = useState(null);
@@ -16,7 +17,7 @@ const DashboardUser = () => {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
-      window.location.href = "http://89.116.187.91:3000/authentication/login";
+      window.location.href = `${API_Frontend}/authentication/login`;
     } else {
       setUser(JSON.parse(userData));
       // Redirect to absen hadir page on loading dashboard user
