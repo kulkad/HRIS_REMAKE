@@ -26,13 +26,7 @@ const Login = () => {
       const response = await axios.post(`${API_Backend}/login`, { // Ganti URL
         email,
         password,
-      }, {
-        withCredentials: true,
-        headers: {
-            'Access-Control-Allow-Origin': '*', 
-            'Content-Type': 'application/json'
-        }
-    });
+      }, { withCredentials: true });
       localStorage.setItem("user", JSON.stringify(response.data));
 
       const userRole = response.data.nama_role;
