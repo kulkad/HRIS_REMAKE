@@ -26,7 +26,15 @@ const Login = () => {
       const response = await axios.post(`${API_Backend}/login`, { // Ganti URL
         email,
         password,
-      }, { withCredentials: true });
+      }, { 
+        withCredentials: true,
+        headers: {
+          'Access-Control-Allow-Origin': '*', 
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    console.log(response);
       localStorage.setItem("user", JSON.stringify(response.data));
 
       const userRole = response.data.nama_role;
@@ -43,7 +51,8 @@ const Login = () => {
         router.push("/dashboard_rumah/geolocation");
       }
     } catch (err) {
-      console.error("Kesalahan saat login:", err);
+      console.error("Kesalahan saat login:", err.message);
+      console.log("Error response:", err.response);
       if (err.response) {
         // Server respons, tetapi ada status kode di luar kisaran 2xx
         console.error("Respons kesalahan data:", err.response.data);
