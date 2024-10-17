@@ -23,8 +23,7 @@ const Login = () => {
       return setError("Password dan Konfirmasi Password Tidak Cocok");
     }
     try {
-      // const response = await axios.post(`${API_Backend}/login`, { // Ganti URL
-      const response = await API_Backend.post(`/login`, { // Ganti URL
+      const response = await axios.post(`${API_Backend}/login`, { // Ganti URL
         email,
         password,
       }, {
