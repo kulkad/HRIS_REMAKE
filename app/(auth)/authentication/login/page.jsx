@@ -23,18 +23,11 @@ const Login = () => {
       return setError("Password dan Konfirmasi Password Tidak Cocok");
     }
     try {
-      const response = await axios.post(`${API_Backend}/login`, { // Ganti URL
+      const response = await axios.post(`${API_Backend}/login`, {
         email,
         password,
-      }, { 
-        withCredentials: true,
-        headers: {
-          'Access-Control-Allow-Origin': '*', 
-          'Content-Type': 'application/json',
-        },
       }
     );
-    console.log(response);
       localStorage.setItem("user", JSON.stringify(response.data));
 
       const userRole = response.data.nama_role;
