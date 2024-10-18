@@ -45,7 +45,6 @@ const Login = () => {
       }
     } catch (err) {
       console.error("Kesalahan saat login:", err.message);
-      console.log("Error response:", err.response);
       if (err.response) {
         // Server respons, tetapi ada status kode di luar kisaran 2xx
         console.error("Respons kesalahan data:", err.response.data);
