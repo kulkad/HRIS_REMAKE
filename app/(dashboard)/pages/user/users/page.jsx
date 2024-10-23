@@ -105,6 +105,13 @@ const Users = () => {
       return selectedRoleName === "All" || user.role.nama_role === selectedRoleName;
     });
     setFilteredUsers(filtered);
+    
+    // Tambahkan logika untuk menampilkan pesan jika tidak ada data
+    if (filtered.length === 0) {
+      setSuccessMessage("Tidak ada data untuk role yang dipilih.");
+    } else {
+      setSuccessMessage("");
+    }
   };
 
   const openCreateModal = () => {
@@ -357,7 +364,7 @@ const Users = () => {
               </div>
               {filteredUsers.length === 0 ? (
                 <p className="text-center py-4">
-                Tidak ada data
+                  Tidak ada data
                 </p>
               ) : (
                 <div className="d-none d-lg-block table-responsive">
@@ -381,7 +388,6 @@ const Users = () => {
                               ? user.role.nama_role
                               : "Role tidak tersedia"}
                           </td>
-
                           <td>{user.status}</td>
                           <td className="d-flex justify-content-center">
                             <Link

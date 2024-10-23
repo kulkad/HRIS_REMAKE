@@ -77,59 +77,58 @@ export default function Capture() {
   };
 
   const capturePhoto = () => {
-    const imageSrc = webcamRef.current.getScreenshot({ format: "image/png" }); // Ubah format screenshot menjadi PNG
+    const imageSrc = webcamRef.current.getScreenshot({ format: "image/jpeg", quality: 0.7 }); // Ubah format screenshot menjadi JPEG dan atur kualitas
+  
     const context = canvasRef.current.getContext("2d");
     const img = new Image();
-
+  
     img.onload = () => {
+      const targetWidth = 640; // Sesuaikan ukuran canvas untuk kompresi (contoh 640px)
+      const targetHeight = 480; // Sesuaikan sesuai proporsi gambar aslinya
+  
+      canvasRef.current.width = targetWidth;
+      canvasRef.current.height = targetHeight;
+  
+      // Mengisi background putih
       context.fillStyle = "white";
-      context.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-
-      context.translate(canvasRef.current.width, 0);
+      context.fillRect(0, 0, targetWidth, targetHeight);
+  
+      // Membalik gambar horizontal (untuk mirror efek kamera)
+      context.translate(targetWidth, 0);
       context.scale(-1, 1);
-      context.drawImage(
-        img,
-        0,
-        0,
-        canvasRef.current.width,
-        canvasRef.current.height
-      );
-      context.setTransform(1, 0, 0, 1, 0, 0);
-
+  
+      // Menggambar gambar ke canvas dengan ukuran baru
+      context.drawImage(img, 0, 0, targetWidth, targetHeight);
+      context.setTransform(1, 0, 0, 1, 0, 0); // Reset transformasi
+  
       const date = getFormattedDate();
       const time = getFormattedTime();
-
+  
+      // Tambahkan watermark abu-abu
       context.fillStyle = "rgba(128, 128, 128, 0.5)";
-      context.fillRect(
-        0,
-        canvasRef.current.height - 150,
-        canvasRef.current.width,
-        150
-      );
-
+      context.fillRect(0, targetHeight - 150, targetWidth, 150);
+  
       const logoImg = new Image();
-      logoImg.crossOrigin = "Anonymous"; // Pastikan ini ada
+      logoImg.crossOrigin = "Anonymous";
       logoImg.src = letter.url;
+  
       logoImg.onload = () => {
         const logoWidth = 70;
         const logoHeight = 70;
         const logoX = 10;
-        const logoY = canvasRef.current.height - 140;
+        const logoY = targetHeight - 140;
         context.drawImage(logoImg, logoX, logoY, logoWidth, logoHeight);
-
+  
         context.font = "17px Arial";
         context.fillStyle = "white";
         const textX = logoX + logoWidth + 5;
         const nama = user ? user.name : "Nama tidak tersedia";
-
-        context.fillText(
-          `Nama: ${nama}`,
-          textX,
-          canvasRef.current.height - 130
-        );
+  
+        context.fillText(`Nama: ${nama}`, textX, targetHeight - 130);
+  
         const marginTop = 6;
-        let currentTextY = canvasRef.current.height - 130 + 30 + marginTop;
-
+        let currentTextY = targetHeight - 130 + 30 + marginTop;
+  
         if (location.latitude && location.longitude) {
           context.fillText(
             `Lokasi Anda: ${location.latitude}, ${location.longitude}`,
@@ -138,20 +137,23 @@ export default function Capture() {
           );
           currentTextY += 30 + marginTop;
         }
+  
         context.fillText(`Tanggal: ${date}`, textX, currentTextY);
         currentTextY += 30 + marginTop;
         context.fillText(`Waktu: ${time}`, textX, currentTextY);
-
-        const image = canvasRef.current.toDataURL("image/png"); // Pastikan format PNG
+  
+        // Simpan gambar dalam format JPEG untuk ukuran file yang lebih kecil
+        const image = canvasRef.current.toDataURL("image/jpeg", 0.7); // 0.7 adalah kualitas gambar (diatur lebih rendah untuk file lebih kecil)
+  
         setPhoto(image);
-
-        // Tambahkan console.log di sini
+  
         console.log("Isi foto yang dicapture:", image);
       };
     };
-
+  
     img.src = imageSrc;
   };
+  
 
   const retakePhoto = () => {
     setPhoto(null);
@@ -222,7 +224,7 @@ export default function Capture() {
           <Webcam
             audio={false}
             ref={webcamRef}
-            screenshotFormat="image/png" // Ubah format menjadi PNG
+            screenshotFormat="image/jpeg" // Ubah format menjadi jpeg
             className="rounded-circle w-100"
             videoConstraints={{
               facingMode: "user",
@@ -250,7 +252,7 @@ export default function Capture() {
               Retake foto
             </button>
           </div>
-          <div className="mt-4 w-100 d-flex justify-content-center">
+          <div className="mt-4 w-100 d-flex justify-content-center" style={{ marginBottom: '20px' }}>
             <form className="w-100">
               <div className="d-flex align-items-center">
                 <div className="form-group me-2 w-50">

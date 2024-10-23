@@ -79,7 +79,7 @@ export default function Capture() {
   };
 
   const capturePhoto = () => {
-    const imageSrc = webcamRef.current.getScreenshot({ format: "image/png" }); // Ubah format screenshot menjadi PNG
+    const imageSrc = webcamRef.current.getScreenshot({ format: "image/jpeg" }); // Ubah format screenshot menjadi jpeg
     const context = canvasRef.current.getContext("2d");
     const img = new Image();
 
@@ -144,7 +144,7 @@ export default function Capture() {
         currentTextY += 30 + marginTop;
         context.fillText(`Waktu: ${time}`, textX, currentTextY);
 
-        const image = canvasRef.current.toDataURL("image/png"); // Pastikan format PNG
+        const image = canvasRef.current.toDataURL("image/jpeg"); // Pastikan format jpeg
         setPhoto(image);
 
         // Tambahkan console.log di sini
@@ -265,7 +265,7 @@ export default function Capture() {
             <Webcam
               audio={false}
               ref={webcamRef}
-              screenshotFormat="image/png" // Ubah format menjadi PNG
+              screenshotFormat="image/jpeg" // Ubah format menjadi jpeg
               className="rounded-circle w-100"
               videoConstraints={{
                 facingMode: "user",

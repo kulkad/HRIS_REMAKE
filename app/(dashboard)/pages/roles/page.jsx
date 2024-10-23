@@ -259,7 +259,7 @@ const Roles = () => {
   const confirmDelete = async (id) => {
     Swal.fire({
       title: "Apakah kamu yakin ingin menghapus ?",
-      text: "User yang dihapus tidak akan bisa dikembalikan !",
+      text: "Role yang dihapus tidak akan bisa dikembalikan !",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -275,11 +275,11 @@ const Roles = () => {
           ); // Update filteredUsers
           Swal.fire({
             title: "Deleted!",
-            text: "User telah berhasil dihapus!.",
+            text: "Role berhasil dihapus!.",
             icon: "success",
           });
         } catch (error) {
-          console.error("Error deleting user:", error.message);
+          console.error("Error deleting role:", error.message);
         }
       }
     });

@@ -121,7 +121,7 @@ const Settings = () => {
       <form className="settings-form" onSubmit={updateLetterSetting}>
         <h2>Surat</h2>
         <div className="form-group">
-          <label>Logo :</label>
+          <label>Logo (Juga untuk logo website) :</label>
           <input type="file" name="logo" onChange={handleLogoChange} />
         </div>
         <div className="form-group">
@@ -133,7 +133,7 @@ const Settings = () => {
           />
         </div>
         <div className="form-group">
-          <label>Nama Perusahaan :</label>
+          <label>Nama Perusahaan (Juga untuk nama website) :</label>
           <input
             type="text"
             name="nama_perusahaan"
