@@ -55,7 +55,6 @@ const Users = () => {
   const [file, setFile] = useState("");
   const [preview, setPreview] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedRole, setSelectedRole] = useState("");
 
   // Untuk mengganti warna dari database
   const [warna, setWarna] = useState({});
