@@ -146,6 +146,16 @@ const DataAbsen = () => {
   };
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const paginationItems = [];
+
+  // Menentukan halaman yang akan ditampilkan
+  for (let i = 1; i <= totalPages; i++) {
+    if (i <= 3 || i === totalPages || (currentPage - 1 <= i && i <= currentPage + 1)) {
+      paginationItems.push(i);
+    } else if (paginationItems[paginationItems.length - 1] !== '...') {
+      paginationItems.push('...');
+    }
+  }
 
   if (!user) {
     return (
@@ -277,14 +287,18 @@ const DataAbsen = () => {
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
                 />
-                {[...Array(totalPages)].map((_, pageIndex) => (
-                  <Pagination.Item
-                    key={pageIndex + 1}
-                    active={pageIndex + 1 === currentPage}
-                    onClick={() => handlePageChange(pageIndex + 1)}
-                  >
-                    {pageIndex + 1}
-                  </Pagination.Item>
+                {paginationItems.map((item, index) => (
+                  typeof item === 'number' ? (
+                    <Pagination.Item
+                      key={item}
+                      active={item === currentPage}
+                      onClick={() => handlePageChange(item)}
+                    >
+                      {item}
+                    </Pagination.Item>
+                  ) : (
+                    <Pagination.Ellipsis key={index} />
+                  )
                 ))}
                 <Pagination.Next
                   onClick={() => handlePageChange(currentPage + 1)}
