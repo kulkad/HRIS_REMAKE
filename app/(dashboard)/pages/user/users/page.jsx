@@ -143,6 +143,15 @@ const Users = () => {
     formData.append("password", password);
     formData.append("confPassword", confPassword);
 
+    // Tambahkan validasi untuk panjang password
+    if (password.length < 8) {
+      Swal.fire({
+          title: "Error!",
+          text: "Password minimal 8 karakter.",
+          icon: "error",
+      });
+      return;
+  } else {
     if (password !== confPassword) {
       Swal.fire({
         title: "Error!",
@@ -151,6 +160,7 @@ const Users = () => {
       });
       return;
     }
+  }
     try {
       const response = await axios.post(
         `${API_Backend}/users`,
