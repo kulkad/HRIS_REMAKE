@@ -491,7 +491,6 @@ const Users = () => {
                   ))}
                 </div>
               )}
-
               <Pagination className="d-flex justify-content-center mt-4">
                 {Array.from({
                   length: Math.ceil(filteredUsers.length / usersPerPage),

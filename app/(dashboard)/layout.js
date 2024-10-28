@@ -57,7 +57,7 @@ export default function DashboardLayout({ children }) {
                     `${API_Frontend}/dashboard_rumah/geolocation`;
             } else {
                 setUser(parsedUserData);
-                console.log(parsedUserData);
+                // console.log(parsedUserData);
             }
         }
         const excludedPaths = [
