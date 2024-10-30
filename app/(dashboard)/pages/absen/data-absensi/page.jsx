@@ -147,15 +147,30 @@ const DataAbsen = () => {
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const paginationItems = [];
-
-  // Menentukan halaman yang akan ditampilkan
-  for (let i = 1; i <= totalPages; i++) {
-    if (i <= 3 || i === totalPages || (currentPage - 1 <= i && i <= currentPage + 1)) {
-      paginationItems.push(i);
-    } else if (paginationItems[paginationItems.length - 1] !== '...') {
-      paginationItems.push('...');
-    }
+  
+// Menentukan halaman yang akan ditampilkan
+for (let i = 1; i <= totalPages; i++) {
+  if (
+    i === 1 || // Halaman pertama
+    i === totalPages || // Halaman terakhir
+    (i >= currentPage - 1 && i <= currentPage + 1) // Halaman di sekitar halaman saat ini
+  ) {
+    paginationItems.push(i);
+  } else if (
+    (i === 2 && currentPage > 4) || // Titik setelah halaman pertama
+    (i === totalPages - 1 && currentPage < totalPages - 3) // Titik sebelum halaman terakhir
+  ) {
+    paginationItems.push("...");
   }
+}
+
+  // for (let i = 1; i <= totalPages; i++) {
+  //   if (i <= 3 || i === totalPages || (currentPage - 1 <= i && i <= currentPage + 1)) {
+  //     paginationItems.push(i);
+  //   } else if (paginationItems[paginationItems.length - 1] !== '...') {
+  //     paginationItems.push('...');
+  //   }
+  // }
 
   if (!user) {
     return (
