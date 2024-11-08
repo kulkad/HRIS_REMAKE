@@ -16,7 +16,7 @@ import NavbarTop from "/layouts/navbars/NavbarTop";
 export default function DashboardLayout({ children }) {
     const pathname = usePathname(); // Dapatkan path saat ini
     const [data, setData] = useState({});
-    const [user, setUser] = useState([]); // State untuk menyimpan data pengguna
+    const [user, setUser] = useState(null); // Ubah ke `null` agar lebih mudah dalam pengecekan login
     const [loading, setLoading] = useState(true);
     const [showMenu, setShowMenu] = useState(true);
     const [isPageExcluded, setIsPageExcluded] = useState(false); // State untuk mengelola halaman yang dikecualikan
@@ -36,6 +36,7 @@ export default function DashboardLayout({ children }) {
             setLoading(false);
         }
     };
+
     // Cek apakah halaman saat ini termasuk dalam halaman yang dikecualikan
     useEffect(() => {
         const userData = localStorage.getItem("user");
@@ -60,6 +61,7 @@ export default function DashboardLayout({ children }) {
                 // console.log(parsedUserData);
             }
         }
+        
         const excludedPaths = [
             "/pages/absen/geolocation",
             "/pages/settings",
@@ -70,51 +72,40 @@ export default function DashboardLayout({ children }) {
 
         const isExcluded = excludedPaths.some((path) => pathname.startsWith(path));
         setIsPageExcluded(isExcluded);
-        fetchSettings();
+
+        // Hanya fetch settings jika user terautentikasi
+        if (userData) {
+            fetchSettings();
+        }
     }, [pathname]);
 
-    return ( <
-        div id = "db-wrapper"
-        className = { `${showMenu ? "" : "toggled"}` } >
-        <
-        div className = "navbar-vertical navbar"
-        style = {
-            { backgroundColor: data.warna_sidebar }
-        } >
-        <
-        NavbarVertical showMenu = { showMenu }
-        onClick = {
-            (value) => setShowMenu(value)
-        }
-        />{" "} < /
-        div > { " " } <
-        div id = "page-content" >
-        <
-        div className = "header" >
-        <
-        NavbarTop data = {
-            {
-                showMenu: showMenu,
-                SidebarToggleMenu: ToggleMenu,
-            }
-        }
-        />{" "} < /
-        div > { " " } <
-        div className = "pt-10 pb-21"
-        style = {
-            { backgroundColor: data.warna_secondary }
-        }
-        hidden = { isPageExcluded } // Sembunyikan div berdasarkan pengecualian halaman
-        >
-        <
-        /div>{" "} { user.length > 0 && (
-            <div id="page-content">
-                <div className="pt-10 pb-21" style={{ backgroundColor: data.warna_secondary }} hidden={isPageExcluded}>
+    // Jika loading atau tidak ada user yang terautentikasi, hanya render children tanpa sidebar atau bagian berwarna
+    if (loading || !user) {
+        return <>{children}</>;
+    }
+
+    return (
+        <div id="db-wrapper" className={`${showMenu ? "" : "toggled"}`}>
+            {/* Sidebar hanya ditampilkan jika user terautentikasi */}
+            {user && (
+                <div className="navbar-vertical navbar" style={{ backgroundColor: data.warna_sidebar }}>
+                    <NavbarVertical showMenu={showMenu} onClick={(value) => setShowMenu(value)} />
                 </div>
+            )}
+            <div id="page-content">
+                <div className="header">
+                    <NavbarTop data={{ showMenu: showMenu, SidebarToggleMenu: ToggleMenu }} />
+                </div>
+                
+                {/* Bagian yang diberi warna dari data hanya ditampilkan jika user terautentikasi */}
+                <div
+                    className="pt-10 pb-21"
+                    style={{ backgroundColor: data.warna_secondary }}
+                    hidden={isPageExcluded}
+                />
+                
                 {children}
             </div>
-        )} { " " } < /
-        div > { " " } <
-        /div>
+        </div>
     );
 }
