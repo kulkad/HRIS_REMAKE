@@ -107,7 +107,13 @@ export default function DashboardLayout({ children }) {
         hidden = { isPageExcluded } // Sembunyikan div berdasarkan pengecualian halaman
         >
         <
-        /div>{" "} { children } { " " } < /
+        /div>{" "} { user.length > 0 && (
+            <div id="page-content">
+                <div className="pt-10 pb-21" style={{ backgroundColor: data.warna_secondary }} hidden={isPageExcluded}>
+                </div>
+                {children}
+            </div>
+        )} { " " } < /
         div > { " " } <
         /div>
     );
