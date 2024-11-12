@@ -87,7 +87,7 @@ const Users = () => {
   const handleRoleChange = (e) => {
     const selectedRoleName = e.target.value;
     if (selectedRoleName === "") {
-      setRole("All");
+      setRole("");
       setRoleId(null);
     } else {
       const selectedRoleId = roles.find(
