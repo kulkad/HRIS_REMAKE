@@ -175,7 +175,14 @@ const FaceComparison = () => {
           waktu_datang: currentTime,
           lat: location.latitude,
           long: location.longitude,
-        });
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
         Swal.fire({
           title: "Berhasil!",
           text: `Hai ${matchedUser.name}. Selamat melanjutkan aktivitas anda!`,

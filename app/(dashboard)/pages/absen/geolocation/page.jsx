@@ -198,6 +198,7 @@ export default function Capture() {
           headers: {
             "Content-Type": "application/json",
           },
+          withCredentials: true,
         }
       );
 

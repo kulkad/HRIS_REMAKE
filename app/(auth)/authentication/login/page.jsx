@@ -36,7 +36,14 @@ const Login = () => {
       const response = await axios.post(`${API_Backend}/login`, {
         email,
         password,
-      });
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+  );
       localStorage.setItem("user", JSON.stringify(response.data));
 
       const userRole = response.data.nama_role;
