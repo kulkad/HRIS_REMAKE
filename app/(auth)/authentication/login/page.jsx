@@ -35,13 +35,11 @@ const Login = () => {
 
       const userRole = response.data.nama_role;
 
-      setTimeout(() => {
-        if (userRole === "Admin" || userRole === "Manager" || userRole === "Karyawan") {
-          router.push("/");
-        } else {
-          router.push("/dashboard_rumah/geolocation");
-        }
-      }, 2000);
+      if (userRole === "Admin" || userRole === "Manager" || userRole === "Karyawan") {
+        router.push("/");
+      } else {
+        router.push("/dashboard_rumah/geolocation");
+      }
 
     } catch (err) {
       setIsLoading(false);
@@ -69,7 +67,7 @@ const Login = () => {
     <Row className="align-items-center justify-content-center g-0 min-vh-100">
       {isLoading ? (
         <div style={styles.loadingContainer}>
-          <h1 style={styles.loadingText}>Logging In...</h1>
+          <h1 style={styles.loadingText}>Loading...</h1>
           <div style={styles.spinner}></div>
         </div>
       ) : (
