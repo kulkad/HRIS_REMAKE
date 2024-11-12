@@ -37,7 +37,7 @@ const getLuminance = (hex) => {
 
 const Users = () => {
   const [user, setUser] = useState(null);
-  const [usersByRole, setUsersByRole] = useState([]); // Pastikan diinisialisasi sebagai array
+  const [allUsers, setAllUsers] = useState([]); // State untuk menyimpan semua pengguna
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
@@ -86,25 +86,14 @@ const Users = () => {
 
   const handleRoleChange = (e) => {
     const selectedRoleName = e.target.value;
+    setRole(selectedRoleName);
 
-    if (selectedRoleName === "") {
-      setRole("All");
-      setRoleId(null);
-    } else {
-      const selectedRoleId = roles.find(
-        (role) => role.nama_role === selectedRoleName
-      )?.id;
-      setRole(selectedRoleName);
-      setRoleId(selectedRoleId);
-    }
-    fetchUsersByRole();
-
-    // Tambahkan logika untuk menyaring pengguna berdasarkan role
-    const filtered = usersByRole.filter((user) => {
+    // Filter pengguna berdasarkan role yang dipilih
+    const filtered = allUsers.filter((user) => {
       return selectedRoleName === "All" || user.role.nama_role === selectedRoleName;
     });
     setFilteredUsers(filtered);
-    
+
     // Tambahkan logika untuk menampilkan pesan jika tidak ada data
     if (filtered.length === 0) {
       setSuccessMessage("Tidak ada data untuk role yang dipilih.");
@@ -196,16 +185,13 @@ const Users = () => {
     }
   };
 
-  const fetchUsersByRole = async () => {
+  const fetchAllUsers = async () => {
     try {
-      const endpoint =
-        role === "All"
-          ? `${API_Backend}/users`
-          : `${API_Backend}/userbyrole/${roleId}`;
-      const response = await axios.get(endpoint, {
+      const response = await axios.get(`${API_Backend}/users`, {
         withCredentials: true,
       });
-      setUsersByRole(response.data);
+      setAllUsers(response.data);
+      setFilteredUsers(response.data); // Inisialisasi dengan semua pengguna
     } catch (error) {
       console.error("Error fetching users:", error.message);
     }
@@ -219,10 +205,13 @@ const Users = () => {
       setUser(JSON.parse(userData));
     }
     fetchSettings();
-    fetchUsersByRole();
+    fetchAllUsers(); // Panggil fetchAllUsers sekali saat komponen dimuat
     fetchRoles();
+  }, []);
 
-    const filtered = usersByRole
+  useEffect(() => {
+    // Filter pengguna berdasarkan query pencarian
+    const filtered = allUsers
       .filter((user) => {
         const matchesName = user?.name
           ?.toLowerCase()
@@ -235,22 +224,21 @@ const Users = () => {
           .includes(searchQuery.toLowerCase());
         const matchesStatus = user?.status
           ?.toLowerCase()
-          .includes(searchQuery.toLowerCase()); // Tambahkan pencarian status
+          .includes(searchQuery.toLowerCase());
 
-        return matchesName || matchesEmail || matchesRole || matchesStatus; // Filter berdasarkan nama, email, role, atau status
+        return matchesName || matchesEmail || matchesRole || matchesStatus;
       })
       .sort((a, b) => {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
-        return nameA.localeCompare(nameB); // Mengurutkan berdasarkan nama
+        return nameA.localeCompare(nameB);
       });
     setFilteredUsers(filtered);
-  }, [role, roleId, searchQuery, usersByRole]); // Tambahkan roleId ke dependencies
+  }, [searchQuery, allUsers]); // Bergantung pada searchQuery dan allUsers
 
   const fetchRoles = async () => {
     try {
       const response = await axios.get(`${API_Backend}/roles`, {
-        withCredentials: true,
       });
       setRoles(response.data);
     } catch (error) {

@@ -125,7 +125,6 @@ const Users = () => {
     const fetchJam_Alpha = async () => {
       try {
         const response = await axios.get(`${API_Backend}/alpha`, {
-          withCredentials: true,
         });
         setAlpha(response.data);
       } catch (error) {

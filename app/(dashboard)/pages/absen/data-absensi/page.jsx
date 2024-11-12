@@ -73,7 +73,6 @@ const DataAbsen = () => {
   const fetchRoles = async () => {
     try {
       const response = await axios.get(`${API_Backend}/roles`, {
-        withCredentials: true,
       });
       setRoles(response.data);
     } catch (error) {
