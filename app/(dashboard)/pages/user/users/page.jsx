@@ -93,13 +93,6 @@ const Users = () => {
       return selectedRoleName === "All" || user.role.nama_role === selectedRoleName;
     });
     setFilteredUsers(filtered);
-
-    // Tambahkan logika untuk menampilkan pesan jika tidak ada data
-    if (filtered.length === 0) {
-      setSuccessMessage("Tidak ada data untuk role yang dipilih.");
-    } else {
-      setSuccessMessage("");
-    }
   };
 
   const openCreateModal = () => {
