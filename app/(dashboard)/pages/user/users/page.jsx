@@ -88,11 +88,24 @@ const Users = () => {
     const selectedRoleName = e.target.value;
     setRole(selectedRoleName);
 
-    // Filter pengguna berdasarkan role yang dipilih
-    const filtered = allUsers.filter((user) => {
-      return selectedRoleName === "All" || user.role.nama_role === selectedRoleName;
-    });
-    setFilteredUsers(filtered);
+    // Jika "Semua Role" dipilih, tampilkan semua pengguna
+    if (selectedRoleName === "All") {
+      setFilteredUsers(allUsers);
+      setSuccessMessage(""); // Reset pesan sukses
+    } else {
+      // Filter pengguna berdasarkan role yang dipilih
+      const filtered = allUsers.filter((user) => {
+        return user.role.nama_role === selectedRoleName;
+      });
+      setFilteredUsers(filtered);
+
+      // Tambahkan logika untuk menampilkan pesan jika tidak ada data
+      if (filtered.length === 0) {
+        setSuccessMessage("Tidak ada data untuk role yang dipilih.");
+      } else {
+        setSuccessMessage("");
+      }
+    }
   };
 
   const openCreateModal = () => {
