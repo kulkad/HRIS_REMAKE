@@ -86,19 +86,21 @@ const Users = () => {
 
   const handleRoleChange = (e) => {
     const selectedRoleName = e.target.value;
-    setRole(selectedRoleName);
-
-    // Jika "Semua Role" dipilih, tampilkan semua pengguna
     if (selectedRoleName === "") {
-      setFilteredUsers(allUsers);
-      setSuccessMessage(""); // Reset pesan sukses
+      setRole("All");
+      setRoleId(null);
     } else {
-      // Filter pengguna berdasarkan role yang dipilih
-      const filtered = allUsers.filter((user) => {
-        return user.role.nama_role === selectedRoleName;
-      });
-      setFilteredUsers(filtered);
+      const selectedRoleId = roles.find(
+        (role) => role.nama_role === selectedRoleName
+      )?.id;
+      setRole(selectedRoleName);
+      setRoleId(selectedRoleId);
     }
+    // Filter pengguna berdasarkan role yang dipilih
+    const filtered = allUsers.filter((user) => {
+      return user.role.nama_role === selectedRoleName;
+    });
+    setFilteredUsers(filtered);
   };
 
   const openCreateModal = () => {
