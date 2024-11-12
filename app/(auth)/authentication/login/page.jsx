@@ -3,7 +3,7 @@
 import { Row, Col, Card, Form, Button } from "react-bootstrap";
 import Head from "next/head";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { MdOutlineAlternateEmail } from "react-icons/md";
 import { RiCheckDoubleLine } from "react-icons/ri";
@@ -16,15 +16,21 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [confPassword, setConfPassword] = useState("");
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     if (password !== confPassword) {
       return setError("Password dan Konfirmasi Password Tidak Cocok");
     }
-    
-    setIsLoading(true);
     
     try {
       const response = await axios.post(`${API_Backend}/login`, {
@@ -42,7 +48,6 @@ const Login = () => {
       }
 
     } catch (err) {
-      setIsLoading(false);
       console.error("Kesalahan saat login:", err.message);
       if (err.response) {
         console.error("Respons kesalahan data:", err.response.data);
@@ -67,7 +72,7 @@ const Login = () => {
     <Row className="align-items-center justify-content-center g-0 min-vh-100">
       {isLoading ? (
         <div style={styles.loadingContainer}>
-          <h1 style={styles.loadingText}>Loading...</h1>
+          <h1 style={styles.loadingText}>Memuat...</h1>
           <div style={styles.spinner}></div>
         </div>
       ) : (
