@@ -160,7 +160,7 @@ const Users = () => {
           withCredentials: true,
         }
       );
-
+      console.log(response)
       // Menambahkan user baru ke state usersByRole dan filteredUsers
       const newUser = response.data;
       setUsersByRole((prevUsers) => [...prevUsers, newUser]);
