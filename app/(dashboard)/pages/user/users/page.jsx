@@ -89,7 +89,7 @@ const Users = () => {
     setRole(selectedRoleName);
 
     // Jika "Semua Role" dipilih, tampilkan semua pengguna
-    if (selectedRoleName === "All") {
+    if (selectedRoleName === "") {
       setFilteredUsers(allUsers);
       setSuccessMessage(""); // Reset pesan sukses
     } else {
@@ -98,13 +98,6 @@ const Users = () => {
         return user.role.nama_role === selectedRoleName;
       });
       setFilteredUsers(filtered);
-
-      // Tambahkan logika untuk menampilkan pesan jika tidak ada data
-      if (filtered.length === 0) {
-        setSuccessMessage("Tidak ada data untuk role yang dipilih.");
-      } else {
-        setSuccessMessage("");
-      }
     }
   };
 
