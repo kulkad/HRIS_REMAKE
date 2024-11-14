@@ -165,7 +165,6 @@ const Users = () => {
       console.log("Coba : ", response);
       // Menambahkan user baru ke state usersByRole dan filteredUsers
       const newUser = response.data;
-      setUsersByRole((prevUsers) => [...prevUsers, newUser]);
       setFilteredUsers((prevUsers) => [...prevUsers, newUser]);
 
       Swal.fire({
@@ -286,8 +285,8 @@ const Users = () => {
           await axios.delete(`${API_Backend}/users/${userId}`);
 
           // Hapus user dari state usersByRole
-          const updatedUsers = usersByRole.filter((user) => user.id !== userId);
-          setUsersByRole(updatedUsers);
+          // const updatedUsers = usersByRole.filter((user) => user.id !== userId);
+          // setUsersByRole(updatedUsers);
 
           // Hapus user dari state filteredUsers juga
           const updatedFilteredUsers = filteredUsers.filter(

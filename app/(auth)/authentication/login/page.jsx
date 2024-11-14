@@ -1,6 +1,6 @@
 "use client";
 
-import { Row, Col, Card, Form, Button } from "react-bootstrap";
+import { Row, Col, Card, Form, Button, Skeleton } from "react-bootstrap";
 import Head from "next/head";
 import axios from "axios";
 import { useState, useEffect } from "react";
@@ -80,7 +80,7 @@ const Login = () => {
       {isLoading ? (
         <div style={styles.loadingContainer}>
           <h1 style={styles.loadingText}>Memuat...</h1>
-          <div style={styles.spinner}></div>
+          <Skeleton height={50} count={3} />
         </div>
       ) : (
         <Col xxl={4} lg={6} md={8} xs={12} className="py-8 py-xl-0">
