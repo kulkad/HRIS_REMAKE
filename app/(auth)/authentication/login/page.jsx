@@ -1,10 +1,11 @@
 "use client";
 
-import { Row, Col, Card, Form, Button, Skeleton } from "react-bootstrap";
+import { Row, Col, Card, Form, Button } from "react-bootstrap";
 import Head from "next/head";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import "react-loading-skeleton/dist/skeleton.css";
 import { MdOutlineAlternateEmail } from "react-icons/md";
 import { RiCheckDoubleLine } from "react-icons/ri";
 import { FiLock } from "react-icons/fi";
@@ -78,10 +79,13 @@ const Login = () => {
   return (
     <Row className="align-items-center justify-content-center g-0 min-vh-100">
       {isLoading ? (
-        <div style={styles.loadingContainer}>
-          <h1 style={styles.loadingText}>Memuat...</h1>
-          <Skeleton height={50} count={3} />
-        </div>
+       <div className="container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
+       <Skeleton height={40} count={1} className="mb-4" />
+       <Skeleton height={20} count={1} className="mb-4" />
+       <Skeleton height={20} count={1} className="mb-4" />
+       <Skeleton height={50} width={150} className="mb-4" />
+       <Skeleton height={50} width={150} className="mb-4" />
+     </div>
       ) : (
         <Col xxl={4} lg={6} md={8} xs={12} className="py-8 py-xl-0">
           <Head>
