@@ -165,7 +165,6 @@ const Users = () => {
           withCredentials: true,
         }
       );
-      console.log("Coba : ", response);
       // Menambahkan user baru ke state usersByRole dan filteredUsers
       const newUser = response.data;
       setFilteredUsers((prevUsers) => [...prevUsers, newUser]);
