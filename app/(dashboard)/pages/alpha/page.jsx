@@ -3,7 +3,6 @@
 import React, { useState, useEffect, Fragment } from "react";
 
 import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
 import axios from "axios";
 import {
   Container,
