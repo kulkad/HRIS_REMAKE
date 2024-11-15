@@ -239,7 +239,7 @@ const Roles = () => {
     }
   };
 
-  if (!user) {
+  if (!user || loading) {
     return (
       <div className="w-full bg-white dark:bg-slate-900 dark:text-white max-w-md mx-auto rounded-lg shadow-md overflow-hidden md:max-w-2xl p-4">
         <Skeleton height={40} count={1} className="mb-4" />

@@ -17,6 +17,7 @@ import {
 import { TrashFill } from "react-bootstrap-icons";
 import Swal from "sweetalert2";
 import { API_Frontend, API_Backend } from "../../../api/hello.js";
+import Skeleton from "react-loading-skeleton";
 
 // Fungsi untuk menghitung luminance
 const getLuminance = (hex) => {
@@ -216,6 +217,18 @@ const HariLibur = () => {
         .slice(indexOfFirstItem, indexOfLastItem); // Gunakan filteredHariLibur jika ada query pencarian
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  if (loading) {
+    return (
+      <div className="container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
+        <Skeleton height={40} count={1} className="mb-4" />
+        <Skeleton height={20} count={1} className="mb-4" />
+        <Skeleton height={20} count={1} className="mb-4" />
+        <Skeleton height={50} width={150} className="mb-4" />
+        <Skeleton height={50} width={150} className="mb-4" />
+      </div>
+    );
+  }
 
   return (
     <Fragment>

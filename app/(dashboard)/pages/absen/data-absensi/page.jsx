@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { Fragment } from "react";
 import { Container, Col, Row, Pagination } from "react-bootstrap";
@@ -171,7 +170,7 @@ for (let i = 1; i <= totalPages; i++) {
   //   }
   // }
 
-  if (!user) {
+  if (!user || loading) {
     return (
       <div className="w-full bg-white dark:bg-slate-900 dark:text-white max-w-md mx-auto rounded-lg shadow-md overflow-hidden md:max-w-2xl p-4">
         <Skeleton height={40} count={1} className="mb-4" />

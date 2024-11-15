@@ -4,9 +4,11 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { IoIosArrowBack } from 'react-icons/io';
 import { API_Frontend } from "../../../../api/hello.js";
+import Skeleton from 'react-loading-skeleton';
 
 const DetailUser = () => {
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -19,8 +21,21 @@ const DetailUser = () => {
       } else {
         setUsers([parsedUserData]);
       }
+      setLoading(false);
     }
   }, []);
+
+  if (loading) {
+    return (
+      <div className="container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
+        <Skeleton height={40} count={1} className="mb-4" />
+        <Skeleton height={20} count={1} className="mb-4" />
+        <Skeleton height={20} count={1} className="mb-4" />
+        <Skeleton height={50} width={150} className="mb-4" />
+        <Skeleton height={50} width={150} className="mb-4" />
+      </div>
+    );
+  }
 
   return (
     <div className="container mt-5">

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { API_Frontend, API_Backend } from "../../../api/hello.js";
+import Skeleton from "react-loading-skeleton";
 
 // Daftar warna yang akan ditampilkan sebagai blok warna
 const colors = [
@@ -106,6 +107,20 @@ const Settings = () => {
     if (type === "secondary") setWarna_secondary(color);
     if (type === "sidebar") setWarna_sidebar(color);
   };
+
+  if (loading) {
+    return (
+      <div className="settings-container mt-5">
+        <div className="container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
+          <Skeleton height={40} count={1} className="mb-4" />
+          <Skeleton height={20} count={1} className="mb-4" />
+          <Skeleton height={20} count={1} className="mb-4" />
+          <Skeleton height={50} width={150} className="mb-4" />
+          <Skeleton height={50} width={150} className="mb-4" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="settings-container mt-5">

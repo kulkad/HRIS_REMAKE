@@ -11,6 +11,7 @@ import moment from "moment";
 import "moment/locale/id"; // Impor locale bahasa Indonesia
 import Swal from "sweetalert2";
 import { API_Backend } from "../../../../../api/hello.js";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const DetailUser = () => {
   const [user, setUser] = useState(null);
@@ -137,7 +138,15 @@ const DetailUser = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
+        <Skeleton height={40} count={1} className="mb-4" />
+        <Skeleton height={20} count={1} className="mb-4" />
+        <Skeleton height={20} count={1} className="mb-4" />
+        <Skeleton height={50} width={150} className="mb-4" />
+        <Skeleton height={50} width={150} className="mb-4" />
+      </div>
+    );
   }
 
   if (!user) {

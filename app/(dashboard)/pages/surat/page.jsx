@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import Image from "next/image";
+import "react-loading-skeleton/dist/skeleton.css";
 import { API_Frontend, API_Backend } from "../../../api/hello.js";
 
 // Fungsi untuk menghitung luminance
@@ -115,6 +115,18 @@ const Settings = () => {
       console.error("Error fetching Surat Preview:", error);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
+        <Skeleton height={40} count={1} className="mb-4" />
+        <Skeleton height={20} count={1} className="mb-4" />
+        <Skeleton height={20} count={1} className="mb-4" />
+        <Skeleton height={50} width={150} className="mb-4" />
+        <Skeleton height={50} width={150} className="mb-4" />
+      </div>
+    );
+  }
 
   return (
     <div className="settings-container mt-5">
