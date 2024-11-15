@@ -41,7 +41,7 @@ const Users = () => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
-  const [role, setRole] = useState("All");
+  const [role, setRole] = useState("");
   const [roleId, setRoleId] = useState(null); // Tambahkan state untuk roleId
   const [roles, setRoles] = useState([]); // Tambahkan state untuk daftar peran
   const [successMessage, setSuccessMessage] = useState("");
@@ -323,7 +323,7 @@ const Users = () => {
                 </h3>
               </div>
               <div>
-                {role !== "All" && (
+                {role !== "" && (
                   <Button onClick={openCreateModal} className="btn btn-white">
                     Tambah Data
                   </Button>
@@ -346,7 +346,7 @@ const Users = () => {
                   className="form-control w-50"
                 />
                 <Form.Select
-                  value={role === "All" ? "" : role}
+                  value={role === "" ? "" : role}
                   onChange={handleRoleChange}
                   className="form-control w-auto"
                 >
@@ -393,7 +393,7 @@ const Users = () => {
                               <PersonVcard className="me-2 text-white" />
                               Detail
                             </Link>
-                            {role !== "All" && (
+                            {role !== "" && (
                               <Link
                                 href={`/pages/user/register/${user.id}?role=${
                                   user.role ? user.role.nama_role : ""
@@ -458,7 +458,7 @@ const Users = () => {
                               >
                                 <PersonVcard className="me-2" /> Detail
                               </Dropdown.Item>
-                              {role !== "All" && (
+                              {role !== "" && (
                                 <Dropdown.Item
                                   href={`/pages/user/register/${user.id}?role=${
                                     user.role ? user.role.nama_role : ""
