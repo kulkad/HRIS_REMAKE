@@ -31,7 +31,7 @@ const Settings = () => {
   const [currentDate, setCurrentDate] = useState("");
 
   const [warna, setWarna] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [textColor, setTextColor] = useState("#FFFFFF");
 
   useEffect(() => {
