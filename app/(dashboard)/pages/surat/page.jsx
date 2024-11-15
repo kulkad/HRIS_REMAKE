@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import "react-loading-skeleton/dist/skeleton.css";
+import Skeleton from "react-loading-skeleton";
 import { API_Frontend, API_Backend } from "../../../api/hello.js";
 
 // Fungsi untuk menghitung luminance
