@@ -20,7 +20,7 @@ import {
 import { EmojiSmile, PersonVcard, TrashFill } from "react-bootstrap-icons";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import Swal from "sweetalert2";
-import Skeleton from 'react-loading-skeleton';
+import "react-loading-skeleton/dist/skeleton.css";
 import { API_Frontend, API_Backend } from "../../../../api/hello.js";
 
 // Fungsi untuk menghitung luminance
