@@ -6,7 +6,7 @@ import axios from "axios";
 import { Menu } from 'react-feather';
 import Link from 'next/link';
 import { Nav, Navbar } from 'react-bootstrap';
-import "react-loading-skeleton/dist/skeleton.css";
+import Skeleton from 'react-loading-skeleton';
 // import sub components
 import QuickMenu from 'layouts/QuickMenu';
 import { API_Backend } from "../../app/api/hello";
