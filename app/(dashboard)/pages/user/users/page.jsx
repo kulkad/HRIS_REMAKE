@@ -41,7 +41,7 @@ const Users = () => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState("All");
   const [roleId, setRoleId] = useState(null); // Tambahkan state untuk roleId
   const [roles, setRoles] = useState([]); // Tambahkan state untuk daftar peran
   const [successMessage, setSuccessMessage] = useState("");
@@ -87,20 +87,21 @@ const Users = () => {
   const handleRoleChange = (e) => {
     const selectedRoleName = e.target.value;
     if (selectedRoleName === "") {
-      setRole("");
+      setRole("All");
       setRoleId(null);
+      setFilteredUsers(allUsers);
     } else {
       const selectedRoleId = roles.find(
         (role) => role.nama_role === selectedRoleName
       )?.id;
       setRole(selectedRoleName);
       setRoleId(selectedRoleId);
+      // Filter pengguna berdasarkan role yang dipilih
+      const filtered = allUsers.filter((user) => {
+        return user.role.nama_role === selectedRoleName;
+      });
+      setFilteredUsers(filtered);
     }
-    // Filter pengguna berdasarkan role yang dipilih
-    const filtered = allUsers.filter((user) => {
-      return user.role.nama_role === selectedRoleName;
-    });
-    setFilteredUsers(filtered);
   };
 
   const openCreateModal = () => {
@@ -323,7 +324,7 @@ const Users = () => {
                 </h3>
               </div>
               <div>
-                {role !== "" && (
+                {role !== "All" && (
                   <Button onClick={openCreateModal} className="btn btn-white">
                     Tambah Data
                   </Button>
@@ -346,7 +347,7 @@ const Users = () => {
                   className="form-control w-50"
                 />
                 <Form.Select
-                  value={role === "" ? "" : role}
+                  value={role === "All" ? "" : role}
                   onChange={handleRoleChange}
                   className="form-control w-auto"
                 >
@@ -393,7 +394,7 @@ const Users = () => {
                               <PersonVcard className="me-2 text-white" />
                               Detail
                             </Link>
-                            {role !== "" && (
+                            {role !== "All" && (
                               <Link
                                 href={`/pages/user/register/${user.id}?role=${
                                   user.role ? user.role.nama_role : ""
@@ -458,7 +459,7 @@ const Users = () => {
                               >
                                 <PersonVcard className="me-2" /> Detail
                               </Dropdown.Item>
-                              {role !== "" && (
+                              {role !== "All" && (
                                 <Dropdown.Item
                                   href={`/pages/user/register/${user.id}?role=${
                                     user.role ? user.role.nama_role : ""
