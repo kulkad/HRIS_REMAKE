@@ -174,7 +174,6 @@ const Users = () => {
       });
 
       closeCreateModal();
-      fetchUsersByRole();
       fetchRoles();
     } catch (error) {
       console.error("Error creating user:", error);
@@ -293,7 +292,6 @@ const Users = () => {
             (user) => user.id !== userId
           );
           setFilteredUsers(updatedFilteredUsers);
-          fetchUsersByRole();
           fetchRoles();
 
           Swal.fire({
