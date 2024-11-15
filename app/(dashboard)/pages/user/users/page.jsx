@@ -20,6 +20,7 @@ import {
 import { EmojiSmile, PersonVcard, TrashFill } from "react-bootstrap-icons";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import Swal from "sweetalert2";
+import "react-loading-skeleton/dist/skeleton.css";
 import { API_Frontend, API_Backend } from "../../../../api/hello.js";
 
 // Fungsi untuk menghitung luminance
@@ -253,6 +254,18 @@ const Users = () => {
       });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
+        <Skeleton height={40} count={1} className="mb-4" />
+        <Skeleton height={20} count={1} className="mb-4" />
+        <Skeleton height={20} count={1} className="mb-4" />
+        <Skeleton height={50} width={150} className="mb-4" />
+        <Skeleton height={50} width={150} className="mb-4" />
+      </div>
+    );
+  }
 
   if (!user) {
     return (
