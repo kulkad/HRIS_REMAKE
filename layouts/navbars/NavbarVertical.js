@@ -8,7 +8,6 @@ import { usePathname } from "next/navigation";
 import { useMediaQuery } from "react-responsive";
 import { ListGroup, Card, Badge } from "react-bootstrap";
 import Accordion from "react-bootstrap/Accordion";
-import Skeleton from 'react-loading-skeleton';
 import AccordionContext from "react-bootstrap/AccordionContext";
 import { useAccordionButton } from "react-bootstrap/AccordionButton";
 import { API_Backend } from "../../app/api/hello";
@@ -82,19 +81,6 @@ const NavbarVertical = (props) => {
     fetchSettings();
     fetchLetter();
   }, []);
-
-  // Tambahkan tampilan loading di sini
-  if (loading) {
-    return (
-      <div className="container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
-        <Skeleton height={40} count={1} className="mb-4" />
-        <Skeleton height={20} count={1} className="mb-4" />
-        <Skeleton height={20} count={1} className="mb-4" />
-        <Skeleton height={50} width={150} className="mb-4" />
-        <Skeleton height={50} width={150} className="mb-4" />
-      </div>
-    );
-  }
 
   const location = usePathname();
   const CustomToggle = ({ children, eventKey, icon }) => {
