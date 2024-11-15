@@ -39,6 +39,7 @@ const getLuminance = (hex) => {
 const Users = () => {
   const [user, setUser] = useState(null);
   const [allUsers, setAllUsers] = useState([]); // State untuk menyimpan semua pengguna
+  const [usersByRole, setUsersByRole] = useState([]); // Pastikan diinisialisasi sebagai array
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
@@ -168,6 +169,10 @@ const Users = () => {
       // Menambahkan user baru ke state usersByRole dan filteredUsers
       const newUser = response.data;
       setFilteredUsers((prevUsers) => [...prevUsers, newUser]);
+
+      // Fetch users by role after creating a new user
+      const usersByRoleResponse = await axios.get(`${API_Backend}/userbyrole/${roleId}`);
+      setFilteredUsers(usersByRoleResponse.data); // Update filteredUsers with the fetched data
 
       Swal.fire({
         title: "Berhasil!",
