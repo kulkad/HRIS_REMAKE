@@ -12,6 +12,8 @@ import "styles/theme.scss";
 // Import sub komponen
 import NavbarVertical from "/layouts/navbars/NavbarVertical";
 import NavbarTop from "/layouts/navbars/NavbarTop";
+import "react-loading-skeleton/dist/skeleton.css";
+import Skeleton from "react-loading-skeleton";
 
 export default function DashboardLayout({ children }) {
     const pathname = usePathname(); // Dapatkan path saat ini
@@ -81,7 +83,15 @@ export default function DashboardLayout({ children }) {
 
     // Jika loading atau tidak ada user yang terautentikasi, hanya render children tanpa sidebar atau bagian berwarna
     if (loading || !user) {
-        return <>{children}</>;
+        return (
+            <div className="container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
+                <Skeleton height={40} count={1} className="mb-4" />
+                <Skeleton height={20} count={1} className="mb-4" />
+                <Skeleton height={20} count={1} className="mb-4" />
+                <Skeleton height={50} width={150} className="mb-4" />
+                <Skeleton height={50} width={150} className="mb-4" />
+            </div>
+        );
     }
 
     return (
