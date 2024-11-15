@@ -10,7 +10,7 @@ import { ListGroup, Card, Image, Badge } from "react-bootstrap";
 import Accordion from "react-bootstrap/Accordion";
 import AccordionContext from "react-bootstrap/AccordionContext";
 import { useAccordionButton } from "react-bootstrap/AccordionButton";
-import { API_Frontend, API_Backend } from "../../app/api/hello";
+import { API_Backend } from "../../app/api/hello";
 
 // import simple bar scrolling used for notification item scrolling
 import SimpleBar from "simplebar-react";

@@ -6,9 +6,10 @@ import axios from "axios";
 import { Menu } from 'react-feather';
 import Link from 'next/link';
 import { Nav, Navbar } from 'react-bootstrap';
+import Skeleton from 'react-loading-skeleton';
 // import sub components
 import QuickMenu from 'layouts/QuickMenu';
-import { API_Frontend, API_Backend } from "../../app/api/hello";
+import { API_Backend } from "../../app/api/hello";
 
 const NavbarTop = (props) => {
 	// Untuk mengganti warna dari database
@@ -28,6 +29,19 @@ const NavbarTop = (props) => {
         };
         fetchSettings();
     }, []);
+
+    // Tambahkan tampilan loading di sini
+    if (loading) {
+        return (
+            <div className="container bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
+                <Skeleton height={40} count={1} className="mb-4" />
+                <Skeleton height={20} count={1} className="mb-4" />
+                <Skeleton height={20} count={1} className="mb-4" />
+                <Skeleton height={50} width={150} className="mb-4" />
+                <Skeleton height={50} width={150} className="mb-4" />
+            </div>
+        );
+    }
 
     return (
         <Navbar
