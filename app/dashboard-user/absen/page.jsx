@@ -90,10 +90,10 @@ const FaceComparison = () => {
   const getCurrentTime24HourFormat = () => {
     const now = new Date();
 
-    // Jika perlu zona waktu UTC
-    const hours = now.getUTCHours().toString().padStart(2, "0");
-    const minutes = now.getUTCMinutes().toString().padStart(2, "0");
-    const seconds = now.getUTCSeconds().toString().padStart(2, "0");
+    // Mengambil waktu lokal dari perangkat pengguna
+    const hours = now.getHours().toString().padStart(2, "0"); // Jam (24 jam format)
+    const minutes = now.getMinutes().toString().padStart(2, "0"); // Menit
+    const seconds = now.getSeconds().toString().padStart(2, "0"); // Detik
 
     return `${hours}:${minutes}:${seconds}`;
   };
