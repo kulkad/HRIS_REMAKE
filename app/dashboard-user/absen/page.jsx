@@ -28,34 +28,32 @@ const FaceComparison = () => {
   const officeLng = 108.461445; // Longitude kantor
   const allowedRadius = 100000; // Kalau di laptop kurang akurat, jadi diubah saja
 
-    const loadModels = async () => {
-      const MODEL_URL = "/models";
-      try {
-        await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-        await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-        await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-        await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
-        setInitializing(false);
-        console.log("Models loaded");
-      } catch (error) {
-        console.error("Error loading models:", error);
-      }
-    };
-    
-    const fetchUserPhotos = async () => {
-      try {
-        const response = await axios.get(`${API_Backend}/userfotoabsen`);
-        setUserPhotos(response.data);
-        console.log("Foto pengguna berhasil diambil");
-      } catch (error) {
-        console.error("Error mengambil foto pengguna");
-        alert(
-          "Gagal mengambil foto pengguna. Silakan periksa server dan endpoint."
-        );
-      }
-    };
-    
-    useEffect(() => {
+  const loadModels = async () => {
+    const MODEL_URL = "/models";
+    try {
+      await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+      await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+      await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+      await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+      setInitializing(false);
+      console.log("Models loaded");
+    } catch (error) {
+      console.error("Error loading models:", error);
+    }
+  };
+
+  const fetchUserPhotos = async () => {
+    try {
+      const response = await axios.get(`${API_Backend}/userfotoabsen`);
+      setUserPhotos(response.data);
+      console.log("Foto pengguna berhasil diambil");
+    } catch (error) {
+      console.error("Error mengambil foto pengguna");
+      alert("Gagal mengambil foto pengguna. Silakan periksa server dan endpoint.");
+    }
+  };
+
+  useEffect(() => {
     loadModels();
     fetchUserPhotos();
 
@@ -68,25 +66,17 @@ const FaceComparison = () => {
           //console.log(`Latitude: ${latitude}, Longitude: ${longitude}`); // Log lokasi pengguna
           setLocation({ latitude, longitude });
 
-          const withinBounds = isWithinOfficeBounds(
-            latitude,
-            longitude,
-            officeLat,
-            officeLng,
-            allowedRadius
-          );
+          const withinBounds = isWithinOfficeBounds(latitude, longitude, officeLat, officeLng, allowedRadius);
           setIsWithinBounds(withinBounds);
           //console.log(`Within Bounds: ${withinBounds}`); // Log hasil perhitungan bounds
         },
         (error) => {
           console.error("Error obtaining location:", error);
           getLocationFromIP(); // Fallback to IP-based location
-        }
+        },
       );
     } else {
-      console.log(
-        "Geolocation is not supported by this browser. Using IP-based location as fallback."
-      );
+      console.log("Geolocation is not supported by this browser. Using IP-based location as fallback.");
       getLocationFromIP(); // Fallback to IP-based location
     }
   }, []);
@@ -99,9 +89,12 @@ const FaceComparison = () => {
 
   const getCurrentTime24HourFormat = () => {
     const now = new Date();
-    const hours = now.getHours().toString().padStart(2, "0");
-    const minutes = now.getMinutes().toString().padStart(2, "0");
-    const seconds = now.getSeconds().toString().padStart(2, "0");
+
+    // Jika perlu zona waktu UTC
+    const hours = now.getUTCHours().toString().padStart(2, "0");
+    const minutes = now.getUTCMinutes().toString().padStart(2, "0");
+    const seconds = now.getUTCSeconds().toString().padStart(2, "0");
+
     return `${hours}:${minutes}:${seconds}`;
   };
 
@@ -137,21 +130,12 @@ const FaceComparison = () => {
         img1.onload = resolve;
       });
 
-      const detection1 = await faceapi
-        .detectSingleFace(img1, new faceapi.SsdMobilenetv1Options())
-        .withFaceLandmarks()
-        .withFaceDescriptor();
+      const detection1 = await faceapi.detectSingleFace(img1, new faceapi.SsdMobilenetv1Options()).withFaceLandmarks().withFaceDescriptor();
 
-      const detection2 = await faceapi
-        .detectSingleFace(img2, new faceapi.SsdMobilenetv1Options())
-        .withFaceLandmarks()
-        .withFaceDescriptor();
+      const detection2 = await faceapi.detectSingleFace(img2, new faceapi.SsdMobilenetv1Options()).withFaceLandmarks().withFaceDescriptor();
 
       if (detection1 && detection2) {
-        const distance = faceapi.euclideanDistance(
-          detection1.descriptor,
-          detection2.descriptor
-        );
+        const distance = faceapi.euclideanDistance(detection1.descriptor, detection2.descriptor);
         const similarityScore = ((1 - distance) * 100).toFixed(2); // Convert to percentage
 
         if (similarityScore >= 60) {
@@ -170,19 +154,22 @@ const FaceComparison = () => {
       // console.log("Absen berhasil untuk user:", matchedUser);
       try {
         const currentTime = getCurrentTime24HourFormat();
-        await axios.post(`${API_Backend}/absen`, { // Ganti IP dengan API_Backend
-          userId: matchedUser.id,
-          waktu_datang: currentTime,
-          lat: location.latitude,
-          long: location.longitude,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
+        await axios.post(
+          `${API_Backend}/absen`,
+          {
+            // Ganti IP dengan API_Backend
+            userId: matchedUser.id,
+            waktu_datang: currentTime,
+            lat: location.latitude,
+            long: location.longitude,
           },
-          withCredentials: true,
-        }
-      );
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          },
+        );
         Swal.fire({
           title: "Berhasil!",
           text: `Hai ${matchedUser.name}. Selamat melanjutkan aktivitas anda!`,
@@ -235,13 +222,7 @@ const FaceComparison = () => {
       // console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
       setLocation({ latitude, longitude });
 
-      const withinBounds = isWithinOfficeBounds(
-        latitude,
-        longitude,
-        officeLat,
-        officeLng,
-        allowedRadius
-      );
+      const withinBounds = isWithinOfficeBounds(latitude, longitude, officeLat, officeLng, allowedRadius);
       setIsWithinBounds(withinBounds);
       // console.log(`Within Bounds: ${withinBounds}`);
     } catch (error) {
@@ -256,9 +237,7 @@ const FaceComparison = () => {
     const Δφ = (lat2 - lat1) * (Math.PI / 180);
     const Δλ = (lon2 - lon1) * (Math.PI / 180);
 
-    const a =
-      Math.sin(Δφ / 2) ** 2 +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+    const a = Math.sin(Δφ / 2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     const distance = R * c; // hasil dalam meter
@@ -266,13 +245,7 @@ const FaceComparison = () => {
     return distance;
   };
 
-  const isWithinOfficeBounds = (
-    userLat,
-    userLng,
-    officeLat,
-    officeLng,
-    allowedRadius
-  ) => {
+  const isWithinOfficeBounds = (userLat, userLng, officeLat, officeLng, allowedRadius) => {
     const distance = calculateDistance(userLat, userLng, officeLat, officeLng);
     const withinBounds = distance <= allowedRadius;
     //console.log(`User is within bounds: ${withinBounds}`); // Log hasil perhitungan bounds
@@ -310,25 +283,15 @@ const FaceComparison = () => {
   return (
     <>
       {!initializing && (
-        <Navbar
-          bg="dark"
-          variant="dark"
-          expand="lg"
-          className="justify-content-between"
-        >
+        <Navbar bg="dark" variant="dark" expand="lg" className="justify-content-between">
           <Container>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="mx-auto">
-                <Nav.Link
-                  href="/dashboard-user/absen"
-                  className="text-white text-decoration-underline text-decoration-white"
-                >
+                <Nav.Link href="/dashboard-user/absen" className="text-white text-decoration-underline text-decoration-white">
                   Absen Hadir
                 </Nav.Link>
-                <Nav.Link href="/dashboard-user/absen/absen-pulang">
-                  Absen Pulang
-                </Nav.Link>
+                <Nav.Link href="/dashboard-user/absen/absen-pulang">Absen Pulang</Nav.Link>
               </Nav>
             </Navbar.Collapse>
           </Container>
@@ -358,9 +321,7 @@ const FaceComparison = () => {
                     setIsSubmitting(true); // Menonaktifkan tombol setelah diklik
                     calculateSimilarity();
                   } else {
-                    alert(
-                      "Anda berada di luar area kantor. Absen tidak diizinkan."
-                    );
+                    alert("Anda berada di luar area kantor. Absen tidak diizinkan.");
                   }
                 } else if (isSubmitting) {
                   handleSubmit();
@@ -371,11 +332,7 @@ const FaceComparison = () => {
               {isSubmitting ? "Sedang memproses..." : "Absen"}
             </button>
           </form>
-          {!isWithinBounds && (
-            <p className="text-danger font-weight-bold mt-3">
-              Anda berada di luar area kantor. Absen tidak diizinkan.
-            </p>
-          )}
+          {!isWithinBounds && <p className="text-danger font-weight-bold mt-3">Anda berada di luar area kantor. Absen tidak diizinkan.</p>}
         </div>
       </div>
       <br />
