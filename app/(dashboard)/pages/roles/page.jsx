@@ -325,7 +325,7 @@ const Roles = () => {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                              <Dropdown.Item onClick={() => showEditModal(role.id)}>
+                              <Dropdown.Item onClick={() => openEditModal(role)}>
                                 <TrashFill className="me-2" /> Edit
                               </Dropdown.Item>
                               <Dropdown.Item onClick={() => confirmDelete(role.id)}>
