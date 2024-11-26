@@ -5,7 +5,7 @@ import Head from "next/head";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import "react-loading-skeleton/dist/skeleton.css";
+import Skeleton from "react-loading-skeleton";
 import { MdOutlineAlternateEmail } from "react-icons/md";
 import { RiCheckDoubleLine } from "react-icons/ri";
 import { FiLock } from "react-icons/fi";
