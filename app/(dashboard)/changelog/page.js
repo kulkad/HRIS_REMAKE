@@ -1,11 +1,7 @@
-'use client'
+'use client';
 
 // import node module libraries
 import { Col, Row, Container } from 'react-bootstrap';
-
-// import sub components
-import Version_01_00_00 from 'sub-components/changelog/Version_01_00_00';
-import Version_01_01_00 from 'sub-components/changelog/Version_01_01_00';
 
 const ChangeLog = () => {
 	return (
@@ -21,10 +17,10 @@ const ChangeLog = () => {
 						</div>
 					</div>
 				</Col>
-			</Row>		
-			<Version_01_01_00/>
-			<hr/>
-			<Version_01_00_00 />
+			</Row>
+			{/* <Version_01_01_00/> */}
+			<hr />
+			{/* <Version_01_00_00 /> */}
 		</Container>
 	);
 };
