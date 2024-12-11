@@ -11,7 +11,7 @@ import moment from "moment";
 import "moment/locale/id"; // Impor locale bahasa Indonesia
 import Swal from "sweetalert2";
 import { API_Backend } from "../../../../../api/hello.js";
-import "react-loading-skeleton/dist/skeleton.css";
+import Skeleton from 'react-loading-skeleton';
 
 const DetailUser = () => {
   const [user, setUser] = useState(null);
