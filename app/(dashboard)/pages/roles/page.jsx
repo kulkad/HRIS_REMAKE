@@ -4,18 +4,7 @@ import React, { useState, useEffect, Fragment } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import axios from "axios";
-import {
-  Container,
-  Col,
-  Row,
-  Form,
-  Table,
-  Pagination,
-  Dropdown,
-  Card,
-  Button,
-  Modal,
-} from "react-bootstrap";
+import { Container, Col, Row, Form, Table, Pagination, Dropdown, Card, Button, Modal } from "react-bootstrap";
 import { TrashFill } from "react-bootstrap-icons";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import Swal from "sweetalert2";
@@ -82,13 +71,7 @@ const Roles = () => {
       setRoles(response.data);
 
       // Filter dan urutkan data setelah diambil
-      const filtered = response.data
-        .filter((role) =>
-          role.nama_role.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-        .sort((a, b) =>
-          a.nama_role.toLowerCase().localeCompare(b.nama_role.toLowerCase())
-        );
+      const filtered = response.data.filter((role) => role.nama_role.toLowerCase().includes(searchQuery.toLowerCase())).sort((a, b) => a.nama_role.toLowerCase().localeCompare(b.nama_role.toLowerCase()));
 
       setFilteredUsers(filtered);
     } catch (error) {
@@ -112,13 +95,7 @@ const Roles = () => {
     setSearchQuery(e.target.value);
 
     // Update filteredUsers saat searchQuery berubah
-    const filtered = roles
-      .filter((role) =>
-        role.nama_role.toLowerCase().includes(e.target.value.toLowerCase())
-      )
-      .sort((a, b) =>
-        a.nama_role.toLowerCase().localeCompare(b.nama_role.toLowerCase())
-      );
+    const filtered = roles.filter((role) => role.nama_role.toLowerCase().includes(e.target.value.toLowerCase())).sort((a, b) => a.nama_role.toLowerCase().localeCompare(b.nama_role.toLowerCase()));
 
     setFilteredUsers(filtered);
   };
@@ -158,16 +135,12 @@ const Roles = () => {
     formData.append("denda_telat", denda);
 
     try {
-      const response = await axios.post(
-        `${API_Backend}/roles`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await axios.post(`${API_Backend}/roles`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
+      });
 
       const newRole = response.data;
 
@@ -212,11 +185,7 @@ const Roles = () => {
         },
       });
 
-      const updatedRoles = roles.map((role) =>
-        role.id === roleId
-          ? { ...role, nama_role, jam_pulang, denda_telat: denda }
-          : role
-      );
+      const updatedRoles = roles.map((role) => (role.id === roleId ? { ...role, nama_role, jam_pulang, denda_telat: denda } : role));
 
       // Urutkan ulang data setelah mengedit data, dengan pengecekan nama_role
       const sortedRoles = updatedRoles.sort((a, b) => {
@@ -271,9 +240,7 @@ const Roles = () => {
         try {
           await axios.delete(`${API_Backend}/roles/${id}`);
           setRoles((prevRoles) => prevRoles.filter((role) => role.id !== id));
-          setFilteredUsers((prevUsers) =>
-            prevUsers.filter((role) => role.id !== id)
-          ); // Update filteredUsers
+          setFilteredUsers((prevUsers) => prevUsers.filter((role) => role.id !== id)); // Update filteredUsers
           Swal.fire({
             title: "Deleted!",
             text: "Role berhasil dihapus!.",
@@ -306,17 +273,8 @@ const Roles = () => {
           </Col>
           <Col lg={12} md={12} xs={12}>
             <div className="bg-white dark:bg-slate-900 dark:text-white my-5 p-4 rounded shadow">
-              {successMessage && (
-                <p className="text-green-600">{successMessage}</p>
-              )}
-              <input
-                type="text"
-                placeholder="Cari Role"
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className="form-control w-50"
-              />{" "}
-              <br />
+              {successMessage && <p className="text-green-600">{successMessage}</p>}
+              <input type="text" placeholder="Cari Role" value={searchQuery} onChange={handleSearchChange} className="form-control w-50" /> <br />
               {filteredUsers.length === 0 ? (
                 <p className="text-center py-4">Tidak ada data</p>
               ) : (
@@ -337,18 +295,10 @@ const Roles = () => {
                           <td>{role.jam_pulang}</td>
                           <td>{role.denda_telat}</td>
                           <td className="d-flex justify-content-center">
-                            <Button
-                              variant="warning"
-                              onClick={() => openEditModal(role)}
-                              className="d-flex align-items-center justify-content-center me-2"
-                            >
+                            <Button variant="warning" onClick={() => openEditModal(role)} className="d-flex align-items-center justify-content-center me-2">
                               Edit
                             </Button>
-                            <Button
-                              variant="danger"
-                              onClick={() => confirmDelete(role.id)}
-                              className="d-flex align-items-center justify-content-center"
-                            >
+                            <Button variant="danger" onClick={() => confirmDelete(role.id)} className="d-flex align-items-center justify-content-center">
                               <TrashFill className="me-2" /> Delete
                             </Button>
                           </td>
@@ -366,24 +316,19 @@ const Roles = () => {
                         <div className="d-flex justify-content-between align-items-center">
                           <div>
                             <Card.Title>{role.nama_role}</Card.Title>
-                            <Card.Subtitle className="mb-2 text-muted">
-                              {role.jam_pulang}
-                            </Card.Subtitle>
+                            <Card.Subtitle className="mb-2 text-muted">{role.jam_pulang}</Card.Subtitle>
                             <Card.Text>{role.denda}</Card.Text>
                           </div>
                           <Dropdown align="end">
-                            <Dropdown.Toggle
-                              variant="link"
-                              id={`dropdown-custom-components-${role.id}`}
-                              className="p-0 bg-transparent border-0"
-                            >
+                            <Dropdown.Toggle variant="link" id={`dropdown-custom-components-${role.id}`} className="p-0 bg-transparent border-0">
                               <FaEllipsisVertical />
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                              <Dropdown.Item
-                                onClick={() => confirmDelete(role.id)}
-                              >
+                              <Dropdown.Item onClick={() => openEditModal(role)}>
+                                <TrashFill className="me-2" /> Edit
+                              </Dropdown.Item>
+                              <Dropdown.Item onClick={() => confirmDelete(role.id)}>
                                 <TrashFill className="me-2" /> Delete
                               </Dropdown.Item>
                             </Dropdown.Menu>
@@ -398,11 +343,7 @@ const Roles = () => {
                 {Array.from({
                   length: Math.ceil(filteredUsers.length / usersPerPage),
                 }).map((_, index) => (
-                  <Pagination.Item
-                    key={index}
-                    active={index + 1 === currentPage}
-                    onClick={() => paginate(index + 1)}
-                  >
+                  <Pagination.Item key={index} active={index + 1 === currentPage} onClick={() => paginate(index + 1)}>
                     {index + 1}
                   </Pagination.Item>
                 ))}
@@ -419,28 +360,15 @@ const Roles = () => {
           <Form onSubmit={saveData}>
             <Form.Group className="mb-3">
               <Form.Label>Nama Role</Form.Label>
-              <Form.Control
-                type="text"
-                value={nama_role}
-                onChange={(e) => setNama_role(e.target.value)}
-              />
+              <Form.Control type="text" value={nama_role} onChange={(e) => setNama_role(e.target.value)} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Jam Pulang</Form.Label>
-              <Form.Control
-                type="time"
-                step="1"
-                value={jam_pulang}
-                onChange={(e) => setJam_pulang(e.target.value)}
-              />
+              <Form.Control type="time" step="1" value={jam_pulang} onChange={(e) => setJam_pulang(e.target.value)} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Denda</Form.Label>
-              <Form.Control
-                type="text"
-                value={denda}
-                onChange={(e) => setDenda(e.target.value)}
-              />
+              <Form.Control type="text" value={denda} onChange={(e) => setDenda(e.target.value)} />
             </Form.Group>
             <Button variant="primary" type="submit">
               Simpan
@@ -456,28 +384,15 @@ const Roles = () => {
           <Form onSubmit={updateData}>
             <Form.Group className="mb-3">
               <Form.Label>Nama Role</Form.Label>
-              <Form.Control
-                type="text"
-                value={nama_role}
-                onChange={(e) => setNama_role(e.target.value)}
-              />
+              <Form.Control type="text" value={nama_role} onChange={(e) => setNama_role(e.target.value)} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Jam Pulang</Form.Label>
-              <Form.Control
-                type="time"
-                step="1"
-                value={jam_pulang}
-                onChange={(e) => setJam_pulang(e.target.value)}
-              />
+              <Form.Control type="time" step="1" value={jam_pulang} onChange={(e) => setJam_pulang(e.target.value)} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Denda</Form.Label>
-              <Form.Control
-                type="text"
-                value={denda}
-                onChange={(e) => setDenda(e.target.value)}
-              />
+              <Form.Control type="text" value={denda} onChange={(e) => setDenda(e.target.value)} />
             </Form.Group>
             <Button variant="primary" type="submit">
               Simpan
